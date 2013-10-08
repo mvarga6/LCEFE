@@ -51,6 +51,11 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 			dat->host_F[nod+Nnodes*sweep] = 0.0;
 		}//sweep
 
+    //add force to end of beam
+    if(i_Node.get_pos(nod,0)>39.0){
+      dat->host_v[nod+Nnodes*1] = 10.0;
+    }//if rx >39.0
+
 		for(int rank=0;rank<MaxNodeRank;rank++){
 		dat->host_dr[nod+rank]=0.0;
 		}
