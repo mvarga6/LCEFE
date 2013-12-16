@@ -2,8 +2,8 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS			100000					    //total number of iterations
-#define dt              0.000001					    //timestep [s]
+#define NSTEPS			300000					    //total number of iterations
+#define dt              0.00000001					    //timestep [s]
 #define iterPerFrame    5000                            //iterations per printed frame
 
 //meshfile
@@ -17,9 +17,9 @@
 //  -there is a factor of two off here from 
 //  -the physical values, not sure if it
 //  -is a half or two... I will find out
-#define cxxxx			 29400000.0	  //--[ g / cm * s^2 ]			
-#define cxxyy			 28000000.0	  //--[ g / cm * s^2 ]			
-#define cxyxy			 570000.0	  //--[ g / cm * s^2 ]	
+#define cxxxx			 2493000000000.0 //29400000.0	  //--[ g / cm * s^2 ]			
+#define cxxyy			 969500000000.0//28000000.0	  //--[ g / cm * s^2 ]			
+#define cxyxy			 761700000000.0//570000.0	  //--[ g / cm * s^2 ]	
 
 
 //Q:elasticity coupling constant
