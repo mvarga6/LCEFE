@@ -47,8 +47,12 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 		for(int sweep = 0;sweep<3;sweep++){
 			dat->host_r[nod+Nnodes*sweep] = i_Node.get_pos(nod,sweep);
 			dat->host_r0[nod+Nnodes*sweep] = i_Node.get_pos(nod,sweep);
-			dat->host_v[nod+Nnodes*sweep] = 0.0;
-			dat->host_F[nod+Nnodes*sweep] = 0.0;
+      if (dat->host_r0[nod+Nnodes*0]>0.0){
+			  dat->host_v[nod+Nnodes*2] = 100000.0*(dat->host_r0[nod+Nnodes*0]/40.0)*(dat->host_r0[nod+Nnodes*0]/40.0);
+      }else{
+			  dat->host_v[nod+Nnodes*sweep] = 0.0;
+			  dat->host_F[nod+Nnodes*sweep] = 0.0;
+      }//if >39
 		}//sweep
 
     //add force to end of beam
