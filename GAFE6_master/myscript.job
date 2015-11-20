@@ -1,0 +1,8 @@
+#PBS -l walltime=:04:30:00
+#PBS -l nodes=1:ppn=1:gpus=1
+#PBS -N g6_benchmark
+#PBS -j oe
+module load cuda
+cd benchmark/G6
+nvcc -o g6 main.cu genrand.cpp
+./g6
