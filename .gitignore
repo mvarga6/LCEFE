@@ -5,6 +5,9 @@
 *.suo
 *.user
 *.sln.docstates
+Output/
+VTKOUT/
+Performance/
 
 # Build results
 [Dd]ebug/

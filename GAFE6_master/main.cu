@@ -24,69 +24,61 @@
 
 int main()
 {
-
-	
-	//Get Device properties
-	cudaDeviceProp prop;
-	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
-	printf( "Code executing on %s\n\n", prop.name );
-	//displayGPUinfo(prop);
-
 	//int Ntets,Nnodes;
 	//get dimensions of the mesh
 	//get_mesh_dim(Ntets,Nnodes);
-	Mesh mesh;
-	mesh.loadMeshDim();
+	Mesh * mesh = new Mesh;
+	mesh->loadMeshDim();
 	
 	//create objects of TetArray and NodeArray class with correct size
 	//TetArray Tet = TetArray(Ntets);
 	//NodeArray Node = NodeArray(Nnodes);
-	mesh.createTetAndNodeArrays();
+	mesh->createTetAndNodeArrays();
 
 	//read the mesh into Node and Tet objects
 	//get_mesh(Node,Tet,Ntets,Nnodes);
-	mesh.loadMesh();
+	mesh->loadMesh();
 
 	//get positions of tetrahedra
 	//get_tet_pos(Node,Tet,Ntets);
-	mesh.calculateTetPositions();
+	mesh->calculateTetPositions();
 
 	//set director n for each tetrahedra
 	//set_n(Tet,Ntets);
-	mesh.loadDirector();
+	mesh->loadDirector();
 
 	// comment out GPU calculations while Debugging director sim
 	//reorder tetrahedra 
 	//gorder_tet(Node,Tet,Ntets);
 	//re-order nodes and reassing tetrahedra component lists
 	//finish_order(Node,Tet,Ntets,Nnodes);
-	mesh.orderTetAndNodeArrays();
+	mesh->orderTetAndNodeArrays();
 
 	//find initial A's and invert them  store all in Tet object
 	//init_As(Node,Tet,Ntets);
-	mesh.calculateAMatrices();
+	mesh->calculateAMatrices();
 
 	//print spacefilling curve to represent adjacensy between tetrahedra
 	//printorder(Tet,Ntets);
 	//pritn director
 	//Tet.printDirector();
-	mesh.printOrderAndDirector();
+	mesh->printOrderAndDirector();
 
 	//now ready to prepare for dyanmics
 	//delcare data stuctures for data on device
 	//and host
 	//DevDataBlock dev_dat;
 	//HostDataBlock host_dat;
-	DeviceController gpu_controller(&mesh);
+	DeviceController * gpu_controller = new DeviceController(mesh);
 
 	//Pack data to send to device
 	//packdata(Node,Tet,&host_dat,Ntets,Nnodes);
-	gpu_controller.packData();
+	gpu_controller->packData();
 
 	//send data to device
 	//data_to_device(&dev_dat,&host_dat,Ntets,Nnodes);
-	gpu_controller.dataHostToDevice();
-	gpu_controller.runDynamics();
+	gpu_controller->dataHostToDevice();
+	gpu_controller->runDynamics();
 	////Print Simulation Parameters and Such
 	//printf("\n\n Prepared for dynamics with:\n  \
 	//			steps/frame	  =	  %d\n    \

@@ -185,7 +185,7 @@ void get_tet_pos(NodeArray *i_Node,TetArray *i_Tet,int Ntets){
 //re order tetrahedra so that tetrahedra which are close in number are also close
 //in space so memory on GPU can be textured and accessed quicker
 //use MC to minimize neighbors which are not close in memory
-void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
+void gorder_tet(NodeArray *i_Node,TetArray *i_Tet,int Ntets){
 
 	srand(98237);    //seed random number generator
 	mt_init();       //initialize random number generator
@@ -199,11 +199,11 @@ void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
 		count++;
 		go=0;
 		for(int n1=0;n1<Ntets-1;n1++){
-			dr1 = i_Tet.get_pos(n1,3);
-			dr2 = i_Tet.get_pos(n1+1,3);
+			dr1 = i_Tet->get_pos(n1,3);
+			dr2 = i_Tet->get_pos(n1 + 1, 3);
 				if (dr2<dr1){
 					go=1;
-					i_Tet.switch_tets(n1,n1+1);
+					i_Tet->switch_tets(n1, n1 + 1);
 				}
 		}//n1
 	}//go==1
@@ -222,21 +222,21 @@ void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
 		n1 = int(floor(genrand()*float(Ntets)));
 		n2 = int(floor(genrand()*float(Ntets)));
 		
-			olddist = i_Tet.dist(n1,n1+1) \
-					+ i_Tet.dist(n1,n1-1) \
-					+ i_Tet.dist(n2,n2+1) \
-					+ i_Tet.dist(n2,n2-1);
+		olddist = i_Tet->dist(n1, n1 + 1) \
+			+ i_Tet->dist(n1, n1 - 1) \
+			+ i_Tet->dist(n2, n2 + 1) \
+			+ i_Tet->dist(n2, n2 - 1);
 
-			newdist = i_Tet.dist(n2,n1+1) \
-					+ i_Tet.dist(n2,n1-1) \
-					+ i_Tet.dist(n1,n2+1) \
-					+ i_Tet.dist(n1,n2-1);
+		newdist = i_Tet->dist(n2, n1 + 1) \
+			+ i_Tet->dist(n2, n1 - 1) \
+			+ i_Tet->dist(n1, n2 + 1) \
+			+ i_Tet->dist(n1, n2 - 1);
 
 			if(newdist<olddist){
-				i_Tet.switch_tets(n1,n2);
+				i_Tet->switch_tets(n1, n2);
 				count = 0;
 			}else if(genrand()<exp(-(newdist-olddist)/(KbT))){
-				i_Tet.switch_tets(n1,n2);
+				i_Tet->switch_tets(n1, n2);
 				count = 0;
 			}
 		
@@ -258,7 +258,7 @@ void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
 
 //re-order nodes so that ones in tetrahedra next to each other are close
 //also renumber the nodes and tetrahedra nab lists 
-void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
+void finish_order(NodeArray *i_Node,TetArray *i_Tet,int Ntets, int Nnodes){
 
 	int nrank;
 	//set all new node numbers negative so we can 
@@ -266,7 +266,7 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//this should account for all the redundancies
 	//in the tet nab lists
 	for(int i=0;i<Nnodes;i++){
-		i_Node.set_newnum(i,-100);
+		i_Node->set_newnum(i, -100);
 	}
 	printf("init complete\n");
 	
@@ -280,10 +280,10 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	int i;
 	for(int t = 0;t<Ntets;t++){
 		for (int tn=0;tn<4;tn++){
-			i = i_Tet.get_nab(t,tn);
+			i = i_Tet->get_nab(t, tn);
 			//printf("i = %d for t= %d and tn = %d\n",i,t,tn);
-			if(i_Node.get_newnum(i)<0){
-				i_Node.set_newnum(i,newi);
+			if (i_Node->get_newnum(i)<0){
+				i_Node->set_newnum(i, newi);
 				newi++;
 			}
 		}
@@ -295,11 +295,11 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//in the new arrangement of nodes
 	for(int t = 0;t<Ntets;t++){
 		for (int tn=0;tn<4;tn++){
-			i = i_Tet.get_nab(t,tn);
-			nrank = i_Node.get_totalRank(i);
-			i_Tet.set_nabsRank(t,tn,nrank);
-			i_Node.add_totalRank(i,1);
-			i_Tet.set_nabs(t,tn,i_Node.get_newnum(i));
+			i = i_Tet->get_nab(t, tn);
+			nrank = i_Node->get_totalRank(i);
+			i_Tet->set_nabsRank(t, tn, nrank);
+			i_Node->add_totalRank(i, 1);
+			i_Tet->set_nabs(t, tn, i_Node->get_newnum(i));
 		}
 	}
 	printf("Reassign tets complete\n");
@@ -313,11 +313,11 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	while(go==1){
 		go=0;
 		for(int i=0;i<Nnodes-1;i++){
-			if(i_Node.get_newnum(i)>i_Node.get_newnum(i+1)){
-				i_Node.switch_nodes(i,i+1);
+			if (i_Node->get_newnum(i)>i_Node->get_newnum(i + 1)){
+				i_Node->switch_nodes(i, i + 1);
 				go=1;
 			}
-			if(i_Node.get_newnum(i)<0){printf("nodes not properly reassigned node %d\n",i);}
+			if (i_Node->get_newnum(i)<0){ printf("nodes not properly reassigned node %d\n", i); }
 		}
 	}
 	printf("Reordering of data complete complete\n");
@@ -325,24 +325,24 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	float tempVol;
 	int n0,n1,n2,n3;
 	for(int t=0;t<Ntets;t++){
-		n0 = i_Tet.get_nab(t,0);
-		n1 = i_Tet.get_nab(t,1);
-		n2 = i_Tet.get_nab(t,2);
-		n3 = i_Tet.get_nab(t,3);
-		tempVol = tetVolume( i_Node.get_pos(n0,0)
-							,i_Node.get_pos(n0,1)
-							,i_Node.get_pos(n0,2)
-							,i_Node.get_pos(n1,0)
-							,i_Node.get_pos(n1,1)
-							,i_Node.get_pos(n1,2)
-							,i_Node.get_pos(n2,0)
-							,i_Node.get_pos(n2,1)
-							,i_Node.get_pos(n2,2)
-							,i_Node.get_pos(n3,0)
-							,i_Node.get_pos(n3,1)
-							,i_Node.get_pos(n3,2));
+		n0 = i_Tet->get_nab(t, 0);
+		n1 = i_Tet->get_nab(t, 1);
+		n2 = i_Tet->get_nab(t, 2);
+		n3 = i_Tet->get_nab(t, 3);
+		tempVol = tetVolume(i_Node->get_pos(n0, 0)
+			, i_Node->get_pos(n0, 1)
+			, i_Node->get_pos(n0, 2)
+			, i_Node->get_pos(n1, 0)
+			, i_Node->get_pos(n1, 1)
+			, i_Node->get_pos(n1, 2)
+			, i_Node->get_pos(n2, 0)
+			, i_Node->get_pos(n2, 1)
+			, i_Node->get_pos(n2, 2)
+			, i_Node->get_pos(n3, 0)
+			, i_Node->get_pos(n3, 1)
+			, i_Node->get_pos(n3, 2));
 
-		i_Tet.set_volume(t,tempVol);
+		i_Tet->set_volume(t, tempVol);
 
 	}//t
 	//calculate volume of each tetrahedra
@@ -351,10 +351,10 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 
 	//calculate effective volume of each node
 	for(int t = 0;t<Ntets;t++){
-		tempVol = 0.25*i_Tet.get_volume(t);
+		tempVol = 0.25*i_Tet->get_volume(t);
 		for (int tn=0;tn<4;tn++){
-			i = i_Tet.get_nab(t,tn);
-			i_Node.add_volume(i,tempVol);
+			i = i_Tet->get_nab(t, tn);
+			i_Node->add_volume(i, tempVol);
 		}
 	}
 
@@ -363,7 +363,7 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//i_Node.normalize_volume(float(Nnodes));
 
 	//calculate total volume
-	i_Tet.calc_total_volume();
+	i_Tet->calc_total_volume();
 
 
 	

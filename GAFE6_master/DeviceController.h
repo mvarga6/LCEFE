@@ -4,37 +4,43 @@
 #include "mesh.h"
 
 class DeviceController {
-	DevDataBlock dev_dat;
-	HostDataBlock host_dat;
+	cudaDeviceProp * props;
+	DevDataBlock * dev_dat;
+	HostDataBlock * host_dat;
 	Mesh * mesh;
 public:
-	DeviceController(Mesh *msh) : mesh(msh){};
+	DeviceController(Mesh *msh) : mesh(msh), props(new cudaDeviceProp){
+		HANDLE_ERROR(cudaGetDeviceProperties(this->props, 0));
+		displayGPUinfo(props);
+		this->dev_dat = new DevDataBlock;
+		this->host_dat = new HostDataBlock;
+	}
 	~DeviceController(){};
 	// ----------------------------------------------------------------
-	void packData(){
-		packdata(*(this->mesh->nodeArray),
-			*(this->mesh->tetArray),
-			&this->host_dat,
+	inline void packData(){
+		packdata(this->mesh->nodeArray,
+			this->mesh->tetArray,
+			this->host_dat,
 			this->mesh->Ntets,
 			this->mesh->Nnodes);
 	}
 	// ----------------------------------------------------------------
-	void dataHostToDevice(){
-		data_to_device(&this->dev_dat,
-			&this->host_dat,
+	inline void dataHostToDevice(){
+		data_to_device(this->dev_dat,
+			this->host_dat,
 			this->mesh->Ntets,
 			this->mesh->Nnodes);
 	}
 	// ----------------------------------------------------------------
-	void runDynamics(){
+	inline void runDynamics(){
 		//Print Simulation Parameters and Such
 		printf("\n\n Prepared for dynamics with:\n  \
 				steps/frame	  =	  %d\n    \
 				Volume        =   %f cm^3\n  \
 				Mass          =   %f kg\n\n",
 				iterPerFrame,
-				host_dat.host_totalVolume,
-				host_dat.host_totalVolume*materialDensity);
+				host_dat->host_totalVolume,
+				host_dat->host_totalVolume*materialDensity);
 		//=================================================================
 		//initillize GPU syncronization arrays
 		//will store syncronization information
@@ -66,7 +72,7 @@ public:
 		//=================================================================
 		//run dynamics
 		//=================================================================
-		run_dynamics(&this->dev_dat,&this->host_dat,this->mesh->Ntets,this->mesh->Nnodes,Syncin,Syncout,g_mutex);
+		run_dynamics(this->dev_dat,this->host_dat,this->mesh->Ntets,this->mesh->Nnodes,Syncin,Syncout,g_mutex);
 
 		//check for CUDA erros
 		any_errors();
@@ -75,6 +81,6 @@ public:
 		HANDLE_ERROR( cudaFree( Syncin ) );
 		HANDLE_ERROR(cudaFree( Syncout ) );
 		HANDLE_ERROR(cudaFree( g_mutex ) );
-		exit_program(&this->dev_dat);
+		exit_program(this->dev_dat);
 	}
 };

@@ -72,6 +72,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{13417C70-E320-4AED-899C-FC56A643638F}</ProjectGuid>
     <RootNamespace>GAFE6_master</RootNamespace>
+    <ProjectName>GAFE6_classified</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
