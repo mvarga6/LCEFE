@@ -137,17 +137,17 @@ float TetArray::get_pos(int i, int j){
 		return TetPos[i*4+j];		
 }
 
-void TetArray::set_theta(int i ,const float &newval){
-		ThPhi[i*2] = newval;
+void TetArray::set_theta(int i , const float &newval){
+	ThPhi[i * 2 + 0] = newval;
 }
 
-void TetArray::set_phi(int i ,const float &newval){
-		ThPhi[i*2+1] = newval;
+void TetArray::set_phi(int i , const float &newval){
+	ThPhi[i * 2 + 1] = newval;
 }
 
 int TetArray::get_ThPhi(int i){
-	int th = int(floor(1000.0*ThPhi[i*2]/PI));
-	int phi = int(floor(500.0*ThPhi[i*2+1]/PI));
+	int th = int(floor(1000.0*ThPhi[i * 2 + 0] / PI));
+	int phi = int(floor(500.0*ThPhi[i * 2 + 1] / PI));
 	return th*10000+phi;
 }
 
@@ -229,7 +229,6 @@ void TetArray::switch_tets(int i, int j){
 	}
 }
 
-
 float TetArray::are_we_bros(int n1, int n2){
 	float ret=0.0;
 	if(n2>-1&&n2<size){
@@ -268,12 +267,9 @@ void TetArray::calc_total_volume(){
 	totalVolume =  totalVOLUME;
 }//calc_total_volume
 
-
 float TetArray::get_total_volume(){
 	return totalVolume;
 }//get total volume
-
-
 
 float TetArray::max(int cord){
 	float maxVal = -100000.0;
@@ -299,10 +295,6 @@ float TetArray::min(int cord){
 	return minVal;
 }//find smallest point in [0 1 2] = [x y z] directions
 
-
-
-
-
 // class to hold the information at each node
 class NodeArray{
 
@@ -314,8 +306,6 @@ public:
 	int *totalRank;
 	float *volume;
 	int size;
-
-
 
 	NodeArray(int l);
 	~NodeArray();

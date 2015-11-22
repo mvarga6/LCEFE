@@ -17,13 +17,10 @@ __device__ void update_v(float (&vnew)[3]
 						,int myNode
 						,float mass){
 
-
-
 	for (int cord=0;cord<3;cord++){
-		vnew[cord] = vold[cord]*damp+ dto2*((Fold[cord]+Fnew[cord])/mass);  //--[ mm / s ]
-		v[vshift*cord+myNode]=vnew[cord];
+		vnew[cord] = vold[cord] * damp + dto2*((Fold[cord] + Fnew[cord]) / mass);  //--[ mm / s ]
+		v[vshift*cord + myNode] = vnew[cord];
 	}//cord
-
 }//update_v
 
 
@@ -40,12 +37,12 @@ __device__ void update_r( float *r
 
 
 //update only if not on edge
-if (r[rshift*0+myNode]>0.0001){  //if rx>0.0001
+//if (r[rshift*0+myNode]>0.0001){  //if rx>0.0001
 	//update new r's from new v and new F
 	for (int cord=0;cord<3;cord++){
-		r[rshift*cord+myNode] += dt*vnew[cord]+dt2o2*(Fnew[cord]/mass); //--[ mm ]
+		r[rshift*cord + myNode] += dt*vnew[cord] + dt2o2*(Fnew[cord] / mass); //--[ mm ]
 	}//i
-}//if rshift
+//}//if rshift
 
 }//update_r
 

@@ -21,37 +21,27 @@ __global__ void force_kernel(	float *A
 								,int pitchTetToNode
 								,float t){
 
-
-	int Ashift = pitchA/sizeof(float);
-	int dFshift = pitchdF/sizeof(float);
-	int vshift = pitchv/sizeof(float);
-	int TTNshift = pitchTetToNode/sizeof(int);
-	float Ainv[16];
-	float r[12];
-	float r0[12];
-	float F[12]={0.0};
-	float vlocal[12];
-	int node_num[4];
-	int TetNodeRank[4];
-	float Q[9] = {0.0};
-	float myVol;
-
-	
-
-
-	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-
-
 	if(tid<Ntets){ //if thread executed has a tetrahedra
 
+		int Ashift = pitchA / sizeof(float);
+		int dFshift = pitchdF / sizeof(float);
+		int vshift = pitchv / sizeof(float);
+		int TTNshift = pitchTetToNode / sizeof(int);
+		float Ainv[16];
+		float r[12];
+		float r0[12];
+		float F[12] = { 0.0 };
+		float vlocal[12];
+		int node_num[4];
+		int TetNodeRank[4];
+		float Q[9] = { 0.0 };
+		float myVol = TetVol[tid];
 
 		//========================================
 		//read in all the data that will not change 
 		//though entire simulation
 		//========================================
-		myVol = TetVol[tid];   //simple enough here
-
 		get_initial_data(Ainv
 						,r0
 						,node_num

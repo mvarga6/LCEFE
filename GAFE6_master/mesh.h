@@ -52,11 +52,11 @@ public:
 	}
 	// ----------------------------------------------------------------------------
 	inline void calculateAMatrices(){
-		init_As(*this->nodeArray, *this->tetArray, this->Ntets);
+		init_As(this->nodeArray, this->tetArray, this->Ntets);
 	}
 	// ----------------------------------------------------------------------------
 	inline bool printOrderAndDirector(){
-		printorder(*this->tetArray, this->Ntets);
+		printorder(this->tetArray, this->Ntets);
 		this->tetArray->printDirector();
 		return true;
 	}

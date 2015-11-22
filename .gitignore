@@ -5,9 +5,9 @@
 *.suo
 *.user
 *.sln.docstates
-Output/
-VTKOUT/
-Performance/
+GAFE6_master/Output/
+GAFE6_master/VTKOUT/
+GAFE6_master/Performance/
 
 # Build results
 [Dd]ebug/
