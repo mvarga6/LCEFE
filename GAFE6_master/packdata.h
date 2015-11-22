@@ -24,7 +24,6 @@ void packdata(NodeArray *i_Node,TetArray *i_Tet, HostDataBlock *dat,int Ntets,in
 	dat->host_TetVol = (float*)malloc(Ntets*sizeof(float));
 	dat->host_ThPhi = (int*)malloc(Ntets*sizeof(int));
 
-
 	for (int tet = 0;tet<Ntets;tet++){
 		dat->host_TetVol[tet] = i_Tet->get_volume(tet);
 		dat->host_ThPhi[tet] = i_Tet->get_ThPhi(tet);
@@ -51,10 +50,10 @@ void packdata(NodeArray *i_Node,TetArray *i_Tet, HostDataBlock *dat,int Ntets,in
 			dat->host_F[nod+Nnodes*sweep] = 0.0;
 		}//sweep
 
-    //add force to end of beam
-		if (i_Node->get_pos(nod, 0)>39.9){
-			dat->host_v[nod+Nnodes*2] =100.0;
-		}//if rx >39.0
+		////add force to end of beam
+		//if (i_Node->get_pos(nod, 0)>39.9){
+		//	dat->host_v[nod+Nnodes*2] = 100.0;
+		//}//if rx >39.0
 
 		for(int rank=0;rank<MaxNodeRank;rank++){
 			dat->host_dr[nod+rank]=0.0;

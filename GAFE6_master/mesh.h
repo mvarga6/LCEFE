@@ -27,7 +27,15 @@ public:
 	// ----------------------------------------------------------------------------
 	inline bool loadMesh(){
 		get_mesh(this->nodeArray, this->tetArray, this->Ntets, this->Nnodes);
-		return true; // mv::get_mesh(this->tetArray, this->nodeArray, this->Ntets, this->Nnodes);
+		return true;
+	}
+	// ----------------------------------------------------------------------------
+	// Must call 'calculateTetPositions' afterwards
+	inline void rescaleMesh(const float &scaleFactor, AXIS dimension){
+		for (int i = 0; i < this->Nnodes; i++){
+			float scaledPos = scaleFactor * this->nodeArray->get_pos(i, dimension);
+			this->nodeArray->set_pos(i, dimension, scaledPos);
+		}
 	}
 	// ----------------------------------------------------------------------------
 	inline void calculateTetPositions(){
@@ -35,7 +43,7 @@ public:
 	}
 	// ----------------------------------------------------------------------------
 	inline void loadDirector(){
-		set_n(*this->tetArray, this->Ntets);
+		set_n(this->tetArray, this->Ntets);
 	}
 	// ----------------------------------------------------------------------------
 	inline void orderTetAndNodeArrays(){

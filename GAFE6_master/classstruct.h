@@ -2,7 +2,11 @@
 #define __CLASSSTRUCT_H__
 
 #include "parameters.h"
-
+typedef enum {
+	X,
+	Y,
+	Z
+} AXIS;
 
 //  class to hold the tetrahedral array with instances which will be usefull for renumbering
 class TetArray{
@@ -17,8 +21,6 @@ public:
 	float *ThPhi;
 	float totalVolume;
 	int size;
-
-
 
 	TetArray(int size);
 	~TetArray();
@@ -48,7 +50,6 @@ public:
 	float max(int cord);
 	float min(int cord);
   void printDirector();
-
 };
 
 TetArray::TetArray(int N){

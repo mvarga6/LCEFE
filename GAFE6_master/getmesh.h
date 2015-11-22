@@ -50,7 +50,7 @@ void get_mesh_dim(int &Ntets, int &Nnodes){
 
 
 
-	for(int i=0;i<Nnodes;i++){
+	for(int i = 0; i < Nnodes;i++){
 		fscanf(meshin,"%d %e %e %e",&d2,&f0,&f1,&f2);
 	}
 	int count=0;

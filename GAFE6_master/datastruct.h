@@ -25,7 +25,6 @@ struct DevDataBlock {
 	size_t dev_drpitch;
 	size_t dev_dFpitch;
 
-
 	cudaEvent_t     start, stop;
     float           totalTime;
 };

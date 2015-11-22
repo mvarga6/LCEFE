@@ -4,7 +4,7 @@
 //standard simulation parameters
 #define NSTEPS			100000					    //total number of iterations
 #define dt              0.000001					    //timestep [s]
-#define iterPerFrame    5000                            //iterations per printed frame
+#define iterPerFrame    1000                            //iterations per printed frame
 
 //meshfile
 #define MESHFILE "Mesh//beam400_50_50_n277_e734_f508.dat"
@@ -23,7 +23,7 @@
 
 
 //Q:elasticity coupling constant
-#define alph            570000.0*1.5 //--[ g / cm * s^2 ]
+#define alph            570000.0 * 0.0001f //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -44,7 +44,7 @@
 //100 seems pretty optimal on GTX275
 //might be better with larger on 
 //better card/ differnt card
-#define TPB				100			
+#define TPB				256			
 
 
 
