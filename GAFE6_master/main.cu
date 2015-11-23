@@ -24,6 +24,8 @@
 
 int main()
 {
+	//.. TEST MERGING
+
 	Mesh * mesh = new Mesh;
 	mesh->loadMeshDim();
 	mesh->createTetAndNodeArrays();
