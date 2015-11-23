@@ -18,8 +18,8 @@ void setThPh(float &theta,float &phi,
 	float y = (ry - ry_min) / ry_range;
 	float z = (rz - rz_min) / rz_range;
 	
-	theta = PI * z - PI / 2.0f;
-	phi = PI / 2.0f;
+	phi = y*PI / 2.0f - z*(PI / 2.0f);
+	theta = x*PI / 3.0f;
 }//setThPh
 
 

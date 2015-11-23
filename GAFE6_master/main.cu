@@ -28,9 +28,9 @@ int main()
 	mesh->loadMeshDim();
 	mesh->createTetAndNodeArrays();
 	mesh->loadMesh();
-	mesh->rescaleMesh(2.0f, AXIS::X);
-	mesh->rescaleMesh(2.0f, AXIS::Y);
-	mesh->rescaleMesh(0.25f, AXIS::Z);
+	mesh->rescaleMesh(4.0f, AXIS::X);
+	mesh->rescaleMesh(0.25f, AXIS::Y);
+	mesh->rescaleMesh(2.0f, AXIS::Z);
 	mesh->calculateTetPositions();
 	mesh->loadDirector();
 	mesh->orderTetAndNodeArrays();

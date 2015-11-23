@@ -2,9 +2,9 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS			100000					    //total number of iterations
-#define dt              0.00001					    //timestep [s]
-#define iterPerFrame    1000                            //iterations per printed frame
+#define NSTEPS			100000		//total number of iterations
+#define dt              0.00005		//timestep [s]
+#define iterPerFrame    1000		//iterations per printed frame
 
 //meshfile
 #define MESHFILE "Mesh//beam400_50_50_n604_e2129_f844.dat"
@@ -18,12 +18,12 @@
 //  -the physical values, not sure if it
 //  -is a half or two... I will find out
 #define cxxxx			 29400000.0	  //--[ g / cm * s^2 ]			
-#define cxxyy			 28000000.0	  //--[ g / cm * s^2 ]			
+#define cxxyy			 2800000.0	  //--[ g / cm * s^2 ]			
 #define cxyxy			 570000.0	  //--[ g / cm * s^2 ]	
 
 
 //Q:elasticity coupling constant
-#define alph            570000.0 * 1.5f //--[ g / cm * s^2 ]
+#define alph            570000.0 * 3.0f //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -32,7 +32,7 @@
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp             1.0  //1.0=no damping      //--[ unitless ]
+#define damp             1.0f  //1.0=no damping      //--[ unitless ]
 
 
 //x and y dimensions of n profile
@@ -44,7 +44,7 @@
 //100 seems pretty optimal on GTX275
 //might be better with larger on 
 //better card/ differnt card
-#define TPB				512		
+#define TPB				256		
 
 
 

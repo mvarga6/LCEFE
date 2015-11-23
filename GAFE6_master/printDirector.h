@@ -22,10 +22,10 @@ for(int i=0;i<inX;i++){
 			
 			th = THETA[(i*inY+ j)*inZ+k];
 			ph = PHI[(i*inY+ j)*inZ+k];
-
-			nx = sin(th)*cos(ph);
-			ny = sin(th)*sin(ph);
-			nz = cos(th);
+			
+			nx = cosf(th)*sinf(ph);
+			ny = sinf(th)*sinf(ph);
+			nz = cosf(ph);
 
 			fprintf(locOut,"A %d %d %d %f %f %f\n",i,j,k,nx,ny,nz);
 

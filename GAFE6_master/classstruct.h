@@ -2,6 +2,9 @@
 #define __CLASSSTRUCT_H__
 
 #include "parameters.h"
+#include <string>
+#include <fstream>
+
 typedef enum {
 	X,
 	Y,
@@ -49,7 +52,9 @@ public:
 	int get_ThPhi(int i);
 	float max(int cord);
 	float min(int cord);
-  void printDirector();
+	void printDirector();
+
+	bool printDirectorXYZV(std::string);
 };
 
 TetArray::TetArray(int N){
@@ -153,7 +158,7 @@ int TetArray::get_ThPhi(int i){
 
 void TetArray::printDirector(){
   float th, ph;
-  FILE*out;
+  FILE * out;
   out = fopen("Output\\dir.vtk","w");
   fprintf(out,"# vtk DataFile Version 3.1\n");
   fprintf(out,"director profile\n");
@@ -185,16 +190,38 @@ void TetArray::printDirector(){
   //vector data
   fprintf(out,"POINT_DATA %d\n",size);
   fprintf(out,"VECTORS director FLOAT\n");
-  for(int i=0;i<size;i++){
-    th = ThPhi[i*2];
-    ph = ThPhi[i*2+1];
-    fprintf(out,"%f %f %f\n",sin(th)*cos(ph),sin(th)*sin(ph),cos(th));
+  for(int i = 0; i < size; i++){
+	  th = ThPhi[i * 2];
+	  ph = ThPhi[i * 2 + 1];
+    fprintf(out,"%f %f %f\n",cosf(th)*sinf(ph),sinf(th)*sinf(ph),cos(ph));
   }//i
   fprintf(out,"\n");
-
   fclose(out); 
 
 }//print director
+
+bool TetArray::printDirectorXYZV(std::string fileName){
+	std::ofstream fout("Output\\" + fileName + ".xyzv", std::ios::out);
+	if (!fout.is_open()) return false;
+
+	fout << this->size << std::endl;
+	fout << "commentLine" << std::endl;
+	float th, ph, x, y, z, nx, ny, nz;
+	for (int i = 0; i < this->size; i++){
+		th = this->ThPhi[i * 2 + 0];
+		ph = this->ThPhi[i * 2 + 1];
+		x = this->get_pos(i, AXIS::X) / meshScale;
+		y = this->get_pos(i, AXIS::Y) / meshScale;
+		z = this->get_pos(i, AXIS::Z) / meshScale;
+		nx = cosf(th)*sinf(ph);
+		ny = sinf(th)*sinf(ph);
+		nz = cosf(ph);
+		fout << "A " << x  << " " << y  << " " << z  << " "
+					 << nx << " " << ny << " " << nz << std::endl;
+	}
+	fout.close();
+	return true;
+}
 
 //switch all elemnts of both Tet arrays for i and j
 void TetArray::switch_tets(int i, int j){

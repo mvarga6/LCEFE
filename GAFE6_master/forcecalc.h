@@ -125,7 +125,7 @@ __device__ void force_calc(float *Ainv,
 		F[2 + n * 3] += -4.0*cxyxy*eps[3 * 2 + 0] * Ainv[4 * 3 + n] * c[1];
 
 		//force from Q
-		F[0 + n * 3] += alph*(Q[0 * 3 + 0] * Ainv[4 * 1 + n] * (1.0 + a[1])
+		F[0 + n * 3] += alph*Q[0 * 3 + 0] * Ainv[4 * 1 + n] * ((1.0 + a[1])
 			+ Q[1 * 3 + 1] * Ainv[4 * 2 + n] * a[2]
 			+ Q[2 * 3 + 2] * Ainv[4 * 3 + n] * a[3]
 			+ Q[0 * 3 + 1] * (Ainv[4 * 2 + n] * (1.0 + a[1]) + Ainv[4 * 1 + n] * a[2])

@@ -48,8 +48,6 @@ void get_mesh_dim(int &Ntets, int &Nnodes){
 	//read total number of nodes and tetrahedras
 	fscanf(meshin,"%d %d\n",&Nnodes,&Ttot);
 
-
-
 	for(int i = 0; i < Nnodes;i++){
 		fscanf(meshin,"%d %e %e %e",&d2,&f0,&f1,&f2);
 	}
