@@ -3,7 +3,7 @@
 
 //standard simulation parameters
 #define NSTEPS			100000		//total number of iterations
-#define dt              0.00005		//timestep [s]
+#define dt              0.00001		//timestep [s]
 #define iterPerFrame    1000		//iterations per printed frame
 
 //meshfile
@@ -23,7 +23,7 @@
 
 
 //Q:elasticity coupling constant
-#define alph            570000.0 * 3.0f //--[ g / cm * s^2 ]
+#define alph            570000.0 * 1.5f //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -32,7 +32,7 @@
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp             1.0f  //1.0=no damping      //--[ unitless ]
+#define damp             0.99999f  //1.0=no damping      //--[ unitless ]
 
 
 //x and y dimensions of n profile
@@ -44,7 +44,7 @@
 //100 seems pretty optimal on GTX275
 //might be better with larger on 
 //better card/ differnt card
-#define TPB				256		
+#define TPB				512		
 
 
 
