@@ -8,7 +8,8 @@
 typedef enum {
 	X,
 	Y,
-	Z
+	Z,
+	R
 } AXIS;
 
 //  class to hold the tetrahedral array with instances which will be usefull for renumbering
@@ -356,6 +357,7 @@ public:
 	float max_point(int cord);
 	float min_point(int cord);
 
+	float3 centroid();
 };
 
 
@@ -367,7 +369,6 @@ NodeArray::NodeArray(int l){
 	NewNum = new int[size];
 	totalRank = new int[size];
 	volume = new float[size];
-
 
 	for(int i=0;i<size;i++){
 		volume[i] = 0.0;
@@ -387,6 +388,22 @@ NodeArray::~NodeArray(){
 	MyForce = NULL;
 	delete NewNum;
 	NewNum = NULL;
+}
+
+float3 NodeArray::centroid(){
+	float3 result = { 0.0f, 0.0f, 0.0f };
+	for (int i = 0; i < this->size; i++){
+		if (i % 3 == AXIS::X)	   
+			result.x += this->get_pos(i, AXIS::X);
+		else if (i % 3 == AXIS::Y) 
+			result.y += this->get_pos(i, AXIS::Y);
+		else					   
+			result.z += this->get_pos(i, AXIS::Z);
+	}
+	result.x /= float(this->size); 
+	result.y /= float(this->size); 
+	result.z /= float(this->size);
+	return result;
 }
 
 void NodeArray::set_pos(int i, int j, const float &newval){	

@@ -23,8 +23,9 @@ __device__ void getQ(int myThPhi    //theta and Phi
 					,float t){       //time
 
 	float mythphi = float(myThPhi);
-	float S = -1.0*t / 0.2;
-	if (S < -1.0) S = -1.0;
+	//float S = -1.0*t / 0.2;
+	//if (S < -1.0) S = -1.0;
+	float S = 0.5f;
 
 	//convert ThPhi into theta and phi
 	float nTh, nPhi, theta, phi;
