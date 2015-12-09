@@ -147,14 +147,27 @@ void run_dynamics(DevDataBlock *data
 			//printXYZV(data, host_data, Ntets, Nnodes, float(iKern)*dt);
 
 			//print energy
+			float Vx, Vy, Vz;
 			getEnergy(	 data
 					,host_data
 					,Ntets
 					,Nnodes
 					,pE
-					,kE );
+					,kE 
+					,Vx
+					,Vy
+					,Vz);
+
+			//.. print energy
 			fprintf(Eout,"%f %f %f %f\n",float(iKern)*dt,pE,kE,pE+kE);
 			fflush(Eout);
+
+			//.. fix translational drift
+			printf("Vx = %f, Vy = %f, Vz = %f\n", Vx, Vy, Vz);
+			add_v <<< BlocksNode, Threads_Per_Block >>>(data->dev_v,
+														data->dev_vpitch,
+														Nnodes,
+														-Vx, -Vy, -Vz);
 
 		}//if((iKern+1)%iterPerFrame==0)
 

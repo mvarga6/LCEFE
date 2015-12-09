@@ -50,7 +50,20 @@ __device__ void update_r( float *r
 // zero translationsal momentum
 //==============================================================
 
-//  ADD THIS HERE 
+__global__ void add_v(float *v,
+						int pitchv,
+						int Nnodes,
+						float sx,
+						float sy,
+						float sz){
+	int id = blockIdx.x * blockDim.x + threadIdx.x;
+	if (id < Nnodes){
+		int vshift = pitchv / sizeof(float);
+		v[vshift * 0 + id] += sx;
+		v[vshift * 1 + id] += sy;
+		v[vshift * 2 + id] += sz;
+	}
+}
 
 
 #endif//__UPDATE_R_H__

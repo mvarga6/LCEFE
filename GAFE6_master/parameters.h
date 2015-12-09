@@ -18,7 +18,7 @@
 //  -the physical values, not sure if it
 //  -is a half or two... I will find out
 #define cxxxx			 29400000.0	  //--[ g / cm * s^2 ]			
-#define cxxyy			 2800000.0	  //--[ g / cm * s^2 ]			
+#define cxxyy			 28000000.0	  //--[ g / cm * s^2 ]			
 #define cxyxy			 570000.0	  //--[ g / cm * s^2 ]	
 
 
