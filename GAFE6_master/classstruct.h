@@ -193,7 +193,7 @@ void TetArray::printDirector(){
   for(int i = 0; i < size; i++){
 	  th = ThPhi[i * 2];
 	  ph = ThPhi[i * 2 + 1];
-    fprintf(out,"%f %f %f\n",cosf(th)*sinf(ph),sinf(th)*sinf(ph),cos(ph));
+    fprintf(out,"%f %f %f\n",cosf(ph)*sinf(th),sinf(ph)*sinf(th),cos(th));
   }//i
   fprintf(out,"\n");
   fclose(out); 
@@ -210,12 +210,12 @@ bool TetArray::printDirectorXYZV(std::string fileName){
 	for (int i = 0; i < this->size; i++){
 		th = this->ThPhi[i * 2 + 0];
 		ph = this->ThPhi[i * 2 + 1];
-		x = this->get_pos(i, AXIS::X) / meshScale;
-		y = this->get_pos(i, AXIS::Y) / meshScale;
-		z = this->get_pos(i, AXIS::Z) / meshScale;
-		nx = cosf(th)*sinf(ph);
-		ny = sinf(th)*sinf(ph);
-		nz = cosf(ph);
+		x = this->get_pos(i, 0) / meshScale;
+		y = this->get_pos(i, 1) / meshScale;
+		z = this->get_pos(i, 2) / meshScale;
+		nx = cosf(ph)*sinf(th);
+		ny = sinf(ph)*sinf(th);
+		nz = cosf(th);
 		fout << "A " << x  << " " << y  << " " << z  << " "
 					 << nx << " " << ny << " " << nz << std::endl;
 	}

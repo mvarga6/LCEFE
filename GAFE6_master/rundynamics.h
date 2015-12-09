@@ -2,11 +2,11 @@
 #define __RUNDYNAMICS_H__
 #include "mainhead.h"
 #include "parameters.h"
-#include "printVTKframe.h"
 #include "gpuForce.h"
 #include "updateKernel.h"
 #include "getEnergy.h"
-
+#include "printVTKframe.h"
+#include "printXYZV.h"
 
 
 //This funciton handles all dynamics which will be run
@@ -91,8 +91,8 @@ void run_dynamics(DevDataBlock *data
 		HANDLE_ERROR(cudaEventRecord(stopF, 0));
 		HANDLE_ERROR(cudaEventSynchronize(stopF));
 		HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeF, startF, stopF));
-		HANDLE_ERROR( cudaEventDestroy( startF ));
-		HANDLE_ERROR( cudaEventDestroy( stopF ));
+		HANDLE_ERROR(cudaEventDestroy( startF ));
+		HANDLE_ERROR(cudaEventDestroy( stopF ));
 
 		//start timer for update routine	
 		HANDLE_ERROR(cudaEventCreate(&startU));
@@ -144,6 +144,8 @@ void run_dynamics(DevDataBlock *data
 						,iKern+1);
 			printf("time = %f seconds\n", float(iKern)*dt);
 
+			//printXYZV(data, host_data, Ntets, Nnodes, float(iKern)*dt);
+
 			//print energy
 			getEnergy(	 data
 					,host_data
@@ -169,7 +171,9 @@ void run_dynamics(DevDataBlock *data
 		HANDLE_ERROR(cudaMemset( g_mutex, 0, sizeof(int)));
 	}//iKern
 
+	//.. close files
 	fclose(Eout);
+	//printXYZV(data, host_data, Ntets, Nnodes, float(NSTEPS)*dt, true);
 
 	FILE*pout;
 	pout = fopen("Performance//timing.dat","w");

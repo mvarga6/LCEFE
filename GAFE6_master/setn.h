@@ -18,8 +18,9 @@ void setThPh(float &theta,float &phi,
 	float y = (ry - ry_min) / ry_range;
 	float z = (rz - rz_min) / rz_range;
 	
-	phi = y*PI / 2.0f - z*(PI / 2.0f);
-	theta = x*PI / 3.0f;
+	phi = PI / 2.0f; //y*(PI / 2.0f);
+	theta = z*PI / 2.0f; //(1.0f - y)*(PI / 2.0f);
+
 }//setThPh
 
 
@@ -29,12 +30,12 @@ void setThPh(float &theta,float &phi,
 void set_n(TetArray *i_Tet,int Ntets){
 	
 	float rx, ry, rz, theta = 0.0, phi = 0.0;
-	float rx_min = i_Tet->min(AXIS::X);
-	float ry_min = i_Tet->min(AXIS::Y);
-	float rz_min = i_Tet->min(AXIS::Z);
-	float rx_range = i_Tet->max(AXIS::X) - rx_min;
-	float ry_range = i_Tet->max(AXIS::Y) - ry_min;
-	float rz_range = i_Tet->max(AXIS::Z) - rz_min;
+	float rx_min = i_Tet->min(0);
+	float ry_min = i_Tet->min(1);
+	float rz_min = i_Tet->min(2);
+	float rx_range = i_Tet->max(0) - rx_min;
+	float ry_range = i_Tet->max(1) - ry_min;
+	float rz_range = i_Tet->max(2) - rz_min;
 	for(int i = 0; i < Ntets; i++){
 
 		//get position of tetrahedra

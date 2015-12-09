@@ -39,7 +39,7 @@ void packdata(NodeArray *i_Node,TetArray *i_Tet, HostDataBlock *dat,int Ntets,in
 		}//sweep
 	}//tet
 
-	for(int nod = 0;nod<Nnodes;nod++){
+	for(int nod = 0; nod < Nnodes; nod++){
 		dat->host_nodeRank[nod] = i_Node->get_totalRank(nod);
 		dat->host_m[nod] = abs(i_Node->get_volume(nod)*materialDensity);
 
@@ -56,7 +56,7 @@ void packdata(NodeArray *i_Node,TetArray *i_Tet, HostDataBlock *dat,int Ntets,in
 		//}//if rx > 39.0
 
 		for(int rank=0;rank<MaxNodeRank;rank++){
-			dat->host_dr[nod+rank]=0.0;
+			dat->host_dr[nod + rank] = 0.0;
 		}
 	}//nod
 

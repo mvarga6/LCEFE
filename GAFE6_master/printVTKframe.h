@@ -71,7 +71,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 									 ,host_dat->host_TetToNode[nt+Ntets*3]);
 	}//nt
 	fprintf(out,"\n");
-
+	
 
 	fprintf(out,"CELL_TYPES %d\n",Ntets);
 	for(int nt=0;nt<Ntets;nt++){

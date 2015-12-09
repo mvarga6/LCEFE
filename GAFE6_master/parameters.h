@@ -2,9 +2,9 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS			100000		//total number of iterations
-#define dt              0.00005		//timestep [s]
-#define iterPerFrame    1000		//iterations per printed frame
+#define NSTEPS			200000		//total number of iterations
+#define dt              0.000005	//timestep [s]
+#define iterPerFrame    2000		//iterations per printed frame
 
 //meshfile
 #define MESHFILE "Mesh//beam400_50_50_n604_e2129_f844.dat"
@@ -23,7 +23,7 @@
 
 
 //Q:elasticity coupling constant
-#define alph            570000.0 * 3.0f //--[ g / cm * s^2 ]
+#define alph            570000.0 * 1.5f //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -32,7 +32,7 @@
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp             1.0f  //1.0=no damping      //--[ unitless ]
+#define damp             0.9999f  //1.0=no damping      //--[ unitless ]
 
 
 //x and y dimensions of n profile

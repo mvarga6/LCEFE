@@ -49,6 +49,7 @@
     <ClInclude Include="printDirector.h" />
     <ClInclude Include="printmeshorder.h" />
     <ClInclude Include="printVTKframe.h" />
+    <ClInclude Include="printXYZV.h" />
     <ClInclude Include="read_dev_data.h" />
     <ClInclude Include="rundynamics.h" />
     <ClInclude Include="sendForce.h" />
