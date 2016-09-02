@@ -15,9 +15,16 @@
 __device__ void getQ(int myThPhi    //theta and Phi
 					,float (&Q)[9]  //array to store Q in
 					,float t)       //time
+					/*,float dt*/
 					{
 
+// new calculation of S
+// Magnitude of order parameters relaxes back
+// to equilibrium with time const tau_S after
+// being illuminated by light source.
+// S(dt) = S0 * {1 - exp(-dt/tau_S)}
 
+// old calculation of S
 float oneThird = 1.0/3.0;
 float mythphi = float(myThPhi);
 float S=-1.0*t/0.2;
