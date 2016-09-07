@@ -15,11 +15,11 @@ __device__ float sigmoid(const float &x){
 //==============================================
 __device__ void getQ(int myThPhi    //theta and Phi
 					,float (&Q)[9]  //array to store Q in
-					,float t)       //time
+					,float t       //time
 					,float t_on 	//total time element has been illuminated in simulation
 					,float S_prev	//previous order parameter
 					,float L		//illumination amount
-					{
+					){
 
 
 const float oneThird = 1.0/3.0;

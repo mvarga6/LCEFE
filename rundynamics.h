@@ -69,7 +69,12 @@ void run_dynamics(DevDataBlock *data
 	HANDLE_ERROR(cudaEventCreate(&stopF));
 	HANDLE_ERROR(cudaEventRecord(startF,0));
 	
-	//calculate illumination from light source in kernel
+	//calculate illumination from light source in kernel (every so often...)
+	if(iKern % Illuminate_Rate = 0){
+		// do anything for calculating S due illumination
+		// 1.  find shadowed surfaces (illumination)
+		// 2.  caluclate S from illumination
+	}
 
 	//calculate force and send force components to be summed
 	force_kernel<<<BlocksTet,Threads_Per_Block>>>( data->dev_A

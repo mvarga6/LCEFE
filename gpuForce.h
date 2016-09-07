@@ -19,8 +19,6 @@ __global__ void force_kernel(	float *A
 								,int *ThPhi
 								,int *TetToNode
 								,int pitchTetToNode
-								//,float *lastIllum_t
-								//,int pitchlastIllum
 								,float t){
 
 
@@ -28,7 +26,6 @@ __global__ void force_kernel(	float *A
 	int dFshift = pitchdF/sizeof(float);
 	int vshift = pitchv/sizeof(float);
 	int TTNshift = pitchTetToNode/sizeof(int);
-	//int lItshift = pitchlastIllum/sizeof(int);
 	float Ainv[16];
 	float r[12];
 	float r0[12];
@@ -38,9 +35,6 @@ __global__ void force_kernel(	float *A
 	int TetNodeRank[4];
 	float Q[9] = {0.0};
 	float myVol;
-	float dt_since_illum;
-	
-
 
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
@@ -86,7 +80,7 @@ __global__ void force_kernel(	float *A
 		//Calcuate Q as a function of Position
 		//and time for this tetrahedra
 		//========================================
-		getQ(ThPhi[tid],Q,t);
+		getQ(ThPhi[tid],Q,t,0,1,0); // just for debugging
 
 		//========================================
 		//calculate the force on each node due
