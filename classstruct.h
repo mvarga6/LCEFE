@@ -86,11 +86,11 @@ TetArray::~TetArray(){
 	delete [] ThPhi;
 	ThPhi = NULL;
 	delete [] S;
-	S = NULL
+	S = NULL;
 	delete [] TetVolume;
 	TetVolume = NULL;
 	delete [] TetNodeRank;
-	TetNodeRank = NULL
+	TetNodeRank = NULL;
 	
 }
 
