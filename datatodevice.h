@@ -54,31 +54,26 @@ void data_to_device(DevDataBlock *dev_dat, HostDataBlock *host_dat,int Ntets,int
 									, widthNODE*sizeof(float) 
 									, height3 ) );
 	
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev_dat->dev_F 
-									, &dev_dat->dev_Fpitch
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev_dat->dev_F, &dev_dat->dev_Fpitch
 									, widthNODE*sizeof(float) 
 									, height3 ) );
 
-	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_TetNodeRank
-									,Ntets*4*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_TetNodeRank,Ntets*4*sizeof(int) ) );
 
-	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_nodeRank
-									,Nnodes*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_nodeRank,Nnodes*sizeof(int) ) );
 
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_m,Nnodes*sizeof(float) ) );
 
-	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_m
-									,Nnodes*sizeof(float) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_pe,Ntets*sizeof(float) ) );
 
-	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_pe
-									,Ntets*sizeof(float) ) );
-	
-	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_TetVol
-									,Ntets*sizeof(float) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_TetVol,Ntets*sizeof(float) ) );
 
-	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_ThPhi
-									,Ntets*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_ThPhi,Ntets*sizeof(int) ) );
 
-	
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_S, Ntets*sizeof(int) ) );
+
+	HANDLE_ERROR( cudaMalloc( (void**) &dev_dat->dev_L, Ntets*sizeof(int) ) );
+
 	//copy data to device
 	//This will copy each 1D array as if it 
 	//is a pitched linear array which can be accessed like
@@ -109,12 +104,20 @@ void data_to_device(DevDataBlock *dev_dat, HostDataBlock *host_dat,int Ntets,int
 								,Ntets*sizeof(float)
 								,cudaMemcpyHostToDevice) );
 
+	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S
+								,host_dat->host_S
+								,Ntets*sizeof(int)
+								,cudaMemcpyHostToDevice) );
+
+	HANDLE_ERROR( cudaMemset( dev_dat->dev_L, 0, Ntets*sizeof(int) ) );
+
+
 	HANDLE_ERROR( cudaMemcpy2D( dev_dat->dev_A
 								, dev_dat->dev_Apitch
 								, host_dat->host_A
 								, widthTETS*sizeof(float)
 								, widthTETS*sizeof(float)
-                                , height16
+                                				, height16
 								, cudaMemcpyHostToDevice ) );
 
 	HANDLE_ERROR( cudaMemcpy2D( dev_dat->dev_TetToNode
@@ -145,9 +148,9 @@ void data_to_device(DevDataBlock *dev_dat, HostDataBlock *host_dat,int Ntets,int
 	HANDLE_ERROR( cudaMemcpy2D( dev_dat->dev_v
 								, dev_dat->dev_vpitch
 								, host_dat->host_v
-                                , widthNODE*sizeof(float)
+                                				, widthNODE*sizeof(float)
 								, widthNODE*sizeof(float)
-                                , height3
+                                				, height3
 								, cudaMemcpyHostToDevice ) );
 
 
@@ -155,9 +158,9 @@ void data_to_device(DevDataBlock *dev_dat, HostDataBlock *host_dat,int Ntets,int
 	HANDLE_ERROR( cudaMemcpy2D( dev_dat->dev_F
 								, dev_dat->dev_Fpitch
 								, host_dat->host_F
-                                , widthNODE*sizeof(float)
+                                				, widthNODE*sizeof(float)
 								, widthNODE*sizeof(float)
-                                , height3
+                                				, height3
 								, cudaMemcpyHostToDevice ) );
 
 

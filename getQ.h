@@ -16,15 +16,14 @@ __device__ float sigmoid(const float &x){
 __device__ void getQ(int myThPhi    //theta and Phi
 					,float (&Q)[9]  //array to store Q in
 					,float t       //time
-					,float t_on 	//total time element has been illuminated in simulation
-					,float S_prev	//previous order parameter
+					//,float t_on 	//total time element has been illuminated in simulation
+					,float &S_in	//previous order parameter to calc/set new
 					,float L		//illumination amount
 					){
 
 
 const float oneThird = 1.0/3.0;
 const float mythphi = float(myThPhi);
-const float S0 = 1.0f; // starting order parameter
 const float tau = 0.001f; // trans-cis transition characteristic time
 const float t_off = t - t_on;
 
@@ -32,10 +31,11 @@ const float t_off = t - t_on;
 // if {t_on - _t_off = 0} then {S = S0 / 2}
 // if {t_on >> t_off}     then {S --> S0}
 // if {t_on << t_off}	  then {S --> 0} 
-const float S = S0 * sigmoid((t_on - t_off)/tau);
+// maybe this
+//const float S = S0 * sigmoid((t_on - t_off)/tau);
 // or maybe this
-//const float a = 0.5f, b = 0.5f;
-//const float S = sigmoid(a*S_prev + b*L);
+const float a = 0.5f, b = 0.5f;
+const float S = S0 * sigmoid(a*S_in + b*L);
 
 //old calculation
 //float S=-1.0*t/0.2;
@@ -65,6 +65,9 @@ Q[1*3+0]=Q[0*3+1];
 Q[1*3+2]=S*ny*nz;
 Q[2*3+1]=Q[1*3+2];
 Q[2*3+0]=Q[0*3+2];
+
+// set S with new updated value
+S_in = S;
 
 }//end get Q
 
