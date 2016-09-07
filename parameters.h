@@ -12,6 +12,9 @@
 //convert mesh length scale to cm
 #define meshScale        0.1         //--[ cm / mesh unit]                      
 
+//order parameter calculation from illumination
+#define SRES		1000	     //--solution for float to int conversion for gpu storage
+#define S0		1.0	     //--naturally occuring order parameter (no illuminiation)
 
 //Elasticity constants (Lame' Coefficients)
 //  -there is a factor of two off here from 

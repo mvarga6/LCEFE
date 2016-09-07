@@ -3,7 +3,6 @@
 
 #include "parameters.h"
 
-
 //  class to hold the tetrahedral array with instances which will be usefull for renumbering
 class TetArray{
 
@@ -14,7 +13,8 @@ public:
 	float *TetA;
 	float *TetinvA;
 	float *TetVolume;
-	float *ThPhi;
+	float *ThPhi; // orientation of director in 3D
+	int *S; // value of order parameter inside tet.  map(0 -> SRES == 0.0 -> 1.0)
 	float totalVolume;
 	int size;
 
@@ -43,7 +43,10 @@ public:
 	float get_total_volume();
 	void set_theta(int i, const float &newval);
 	void set_phi(int i, const float &newval);
+	void set_S(int i, const float &newval);
 	int get_ThPhi(int i);
+	float get_fS(int i);
+	int get_iS(int i);
 	float max(int cord);
 	float min(int cord);
   void printDirector();
@@ -59,25 +62,36 @@ TetArray::TetArray(int N){
 	TetinvA = new float[size*16];
 	TetNodeRank = new int[size*4];
 	ThPhi = new float[size*2];
+	S = new int[size];
 	totalVolume = 0.0;
 
 	for(int i=0;i<size*4;i++){
 		TetNodeRank[i] =0;
 		if(i<size){
 			TetVolume[i] = 0.0;
+			S[i] = -1; // init S to -1 for debugging
 		}//if i
 	}//i
 }
 
 TetArray::~TetArray(){
-	delete TetNab;
+	delete [] TetNab;
 	TetNab = NULL;
-	delete TetPos;
+	delete [] TetPos;
 	TetNab = NULL;
-	delete TetA;
+	delete [] TetA;
 	TetA= NULL;
-	delete TetinvA;
+	delete [] TetinvA;
 	TetinvA= NULL;
+	delete [] ThPhi;
+	ThPhi = NULL;
+	delete [] S;
+	S = NULL
+	delete [] TetVolume;
+	TetVolume = NULL;
+	delete [] TetNodeRank;
+	TetNodeRank = NULL
+	
 }
 
 void TetArray::set_A(int i, int j, int k,const float &newval){
@@ -136,10 +150,27 @@ void TetArray::set_phi(int i ,const float &newval){
 		ThPhi[i*2+1] = newval;
 }
 
+// sets S for ith tet by converting to int with _S_RES factor
+void TetArray::set_S(int i, const float &newval){
+		int ival;
+		if(newval > 1.0f) ival = 1;
+		else if(newval < 0) ival = 0;
+		else ival = int(newval * SRES);
+		this->S[i] = ival;
+}
+
 int TetArray::get_ThPhi(int i){
 	int th = int(floor(1000.0*ThPhi[i*2]/PI));
 	int phi = int(floor(500.0*ThPhi[i*2+1]/PI));
 	return th*10000+phi;
+}
+
+float TetArray::get_fS(int i){ //returns float
+	return (float(this->S[i]) / SRES); // converts S back to float in [ 0.0 : 1.0 ]
+}
+
+int TetArray::get_iS(int i){
+	return this->S[i]; //returns int w/o converting back to float range
 }
 
 void TetArray::printDirector(){

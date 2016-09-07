@@ -17,6 +17,8 @@ __global__ void force_kernel(	float *A
 								,float *pe
 								,float *TetVol
 								,int *ThPhi
+								,int *S //order parameter
+								,int *L //illumination parameter
 								,int *TetToNode
 								,int pitchTetToNode
 								,float t){
@@ -79,8 +81,12 @@ __global__ void force_kernel(	float *A
 		//========================================
 		//Calcuate Q as a function of Position
 		//and time for this tetrahedra
+		//
+		//	-- NEW --
+		// Send S and L to Q calculation and update
+		// S for next calculation.
 		//========================================
-		getQ(ThPhi[tid],Q,t,0,1,0); // just for debugging
+		getQ(ThPhi[tid],Q,t,S[tid],L[tid]); // just for debugging
 
 		//========================================
 		//calculate the force on each node due

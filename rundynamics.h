@@ -88,6 +88,8 @@ void run_dynamics(DevDataBlock *data
 											  , data->dev_pe
 											  , data->dev_TetVol
 											  , data->dev_ThPhi
+											  , data->dev_S
+											  , data->dev_L
 											  , data->dev_TetToNode
 											  , data->dev_TetToNodepitch
 											  , dt*float(iKern));

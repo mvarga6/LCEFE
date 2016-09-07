@@ -16,6 +16,8 @@ struct DevDataBlock {
 	float *dev_pe;
 	float *dev_TetVol;
 	int *dev_ThPhi;
+	int *dev_S;
+	int *dev_L;
 	size_t dev_Apitch;
 	size_t dev_TetToNodepitch;
 	size_t dev_r0pitch;
@@ -27,7 +29,7 @@ struct DevDataBlock {
 
 
 	cudaEvent_t     start, stop;
-    float           totalTime;
+    	float           totalTime;
 };
 
 struct HostDataBlock {
@@ -45,7 +47,7 @@ struct HostDataBlock {
 	float host_totalVolume;
 	float *host_TetVol;
 	int *host_ThPhi;
-
+	int *host_S;
 };
 
 
