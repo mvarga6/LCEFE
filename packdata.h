@@ -28,7 +28,7 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 	for (int tet = 0;tet<Ntets;tet++){
 		dat->host_TetVol[tet] = i_Tet.get_volume(tet);
 		dat->host_ThPhi[tet] = i_Tet.get_ThPhi(tet);
-		dat->host_S[tet] = i_Tet.get_iS(tet)
+		dat->host_S[tet] = i_Tet.get_iS(tet);
 		for (int sweep = 0;sweep<4;sweep++){
 
 				dat->host_TetToNode[tet+sweep*Ntets] = i_Tet.get_nab(tet,sweep);

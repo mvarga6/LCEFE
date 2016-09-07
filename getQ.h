@@ -17,8 +17,8 @@ __device__ void getQ(int myThPhi    //theta and Phi
 					,float (&Q)[9]  //array to store Q in
 					,float t       //time
 					//,float t_on 	//total time element has been illuminated in simulation
-					,float &S_in	//previous order parameter to calc/set new
-					,float L		//illumination amount
+					,int &S_in	//previous order parameter to calc/set new
+					,int L		//illumination amount
 					){
 
 
@@ -34,8 +34,10 @@ const float mythphi = float(myThPhi);
 // maybe this
 //const float S = S0 * sigmoid((t_on - t_off)/tau);
 // or maybe this
+const float fS_in = float(S_in) / SRES; //map to float range
+const float fL = float(L);
 const float a = 0.5f, b = 0.5f;
-const float S = S0 * sigmoid(a*S_in + b*L);
+const float S = S0 * sigmoid(a*fS_in + b*fL);
 
 //old calculation
 //float S=-1.0*t/0.2;
@@ -67,7 +69,7 @@ Q[2*3+1]=Q[1*3+2];
 Q[2*3+0]=Q[0*3+2];
 
 // set S with new updated value
-S_in = S;
+S_in = int(S*SRES);
 
 }//end get Q
 
