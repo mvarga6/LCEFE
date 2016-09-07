@@ -16,13 +16,9 @@ __device__ float sigmoid(const float &x){
 __device__ void getQ(int myThPhi    //theta and Phi
 					,float (&Q)[9]  //array to store Q in
 					,float t)       //time
-<<<<<<< HEAD
-					/*,float dt*/
-=======
 					,float t_on 	//total time element has been illuminated in simulation
 					,float S_prev	//previous order parameter
 					,float L		//illumination amount
->>>>>>> ffdc7935f50f33ffa9d2a4332054562431410cc9
 					{
 
 // new calculation of S
@@ -31,13 +27,6 @@ __device__ void getQ(int myThPhi    //theta and Phi
 // being illuminated by light source.
 // S(dt) = S0 * {1 - exp(-dt/tau_S)}
 
-<<<<<<< HEAD
-// old calculation of S
-float oneThird = 1.0/3.0;
-float mythphi = float(myThPhi);
-float S=-1.0*t/0.2;
-if(S<-1.0){S=-1.0;}
-=======
 const float oneThird = 1.0/3.0;
 const float mythphi = float(myThPhi);
 const float S0 = 1.0f; // starting order parameter
@@ -56,7 +45,6 @@ const float S = S0 * sigmoid((t_on - t_off)/tau);
 //old calculation
 //float S=-1.0*t/0.2;
 //if(S<-1.0){S=-1.0;}
->>>>>>> ffdc7935f50f33ffa9d2a4332054562431410cc9
 
 //convert ThPhi into theta and phi
 float nTh,nPhi,theta,phi;
