@@ -70,7 +70,7 @@ void run_dynamics(DevDataBlock *data
 	HANDLE_ERROR(cudaEventRecord(startF,0));
 	
 	//calculate illumination from light source in kernel (every so often...)
-	if(iKern % LRATE = 0){
+	if(iKern % LRATE == 0){
 		// do anything for calculating S due illumination
 		// 1.  find shadowed surfaces (illumination)
 		// 2.  caluclate S from illumination
