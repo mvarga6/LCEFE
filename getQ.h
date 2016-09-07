@@ -24,8 +24,8 @@ __device__ void getQ(int myThPhi    //theta and Phi
 
 const float oneThird = 1.0/3.0;
 const float mythphi = float(myThPhi);
-const float tau = 0.001f; // trans-cis transition characteristic time
-const float t_off = t - t_on;
+//const float tau = 0.001f; // trans-cis transition characteristic time
+//const float t_off = t - t_on;
 
 //calculate S as sigmoid function:
 // if {t_on - _t_off = 0} then {S = S0 / 2}
