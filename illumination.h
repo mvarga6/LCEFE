@@ -4,26 +4,20 @@
 #include "parameters.h"
 #include <math.h>
 
-__device__ void illumination(float (&r)[12]
-				,int (&node_num)[4]
-				,int *TetToNode
-				,int TTNshift
-				,int nodeRanks[4]
-				,float &last_illum_time
-				,float &dt_since_illum
-				,float (&light_src)[3]
-				,float t
-				){
 
-	// if not a surface tetra stop
+//.. for each surface triangle find the point of illumination
+__global__ void point_of_illumination_kernel(
+	float (&illum_vector)[3] // incident wave vector
+	,int &cell_illum_from	 // cell_id where light emanates from
+	){
 	
-	// calculate ray to light source
-
-	// if ray passes through another surface 
-	// tetra (not currently illuminated) calc
-	// time since illuminated. calc by looping
-	//
-	// dt_since_illum = t - last_illum_time
-	//
-	// else dt_since_illum = 0
+	// 1) Grab surface triangle node positions
+	
+	// 2) Trace ray from triangle pos to wave front plane
+	//	  in -k_hat direction (k: normal of incident light).
+	
+	// 3) Find cell (on wave front plane) which light must emanate 
+	//    from and mark id in list. Each tetra is (possibly) hit by 
+	//    light from discrete parts of wave front, each with unique 
+	//    ids.  Each tet gets an id telling where the light came from.
 }
