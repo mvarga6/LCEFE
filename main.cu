@@ -25,9 +25,8 @@
 
 
 
-int main()
+int main(int argc, char *argv[])
 {
-
 	
 	//Get Device properties
 	cudaDeviceProp prop;

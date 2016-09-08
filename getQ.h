@@ -34,14 +34,15 @@ const float mythphi = float(myThPhi);
 // maybe this
 //const float S = S0 * sigmoid((t_on - t_off)/tau);
 // or maybe this
-const float fS_in = float(S_in) / SRES; //map to float range
-const float fL = float(L);
-const float a = 0.5f, b = 0.5f;
-const float S = S0 * sigmoid(a*fS_in + b*fL);
+//const float fS_in = float(S_in) / SRES; //map to float range
+//const float fL = float(L);
+//const float a = 0.5f, b = 0.5f;
+//const float S = fS_in;
+//const float S = S0 * sigmoid(a*fS_in + b*fL);
 
 //old calculation
-//float S=-1.0*t/0.2;
-//if(S<-1.0){S=-1.0;}
+float S=-1.0*t/0.2;
+if(S<-1.0){S=-1.0;}
 
 //convert ThPhi into theta and phi
 float nTh,nPhi,theta,phi;
