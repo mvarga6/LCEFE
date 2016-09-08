@@ -2,7 +2,7 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS			100000					    //total number of iterations
+#define NSTEPS			1000000					    //total number of iterations
 #define dt              0.000001					    //timestep [s]
 #define iterPerFrame    5000                            //iterations per printed frame
 
