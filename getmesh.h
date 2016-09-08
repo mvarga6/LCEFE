@@ -38,12 +38,12 @@ return abs(vol0);
 
 
 //read the mesh from mesh.dat
-void get_mesh_dim(int &Ntets, int &Nnodes){
+void get_mesh_dim(int &Ntets, int &Nnodes, const std::string &meshFile = DEFAULTMESHFILE){
 	int d1A,d2,d3,d4,d5,d1B;
 	float f0,f1,f2;
 	int Ttot;
 	FILE* meshin;
-    meshin = fopen(MESHFILE,"r");
+    meshin = fopen(meshFile.c_str(),"r");
 
 	//read total number of nodes and tetrahedras
 	fscanf(meshin,"%d %d\n",&Nnodes,&Ttot);
@@ -92,14 +92,14 @@ void get_mesh_dim(int &Ntets, int &Nnodes){
 	printf("Mesh loaded \n Nodes=%d \n Tetrahedra = %d\n",Nnodes,Ntets);
 }
 
-void get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
+void get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes, const std::string &meshFile = DEFAULTMESHFILE){
 	int dummy,Ttot;
 	float rx,ry,rz;
 	int n0,n1,n2,n3;
 
 	//open file to read mesh data from
 	FILE* meshin;
-    meshin = fopen(MESHFILE,"r");
+    meshin = fopen(meshFile.c_str(),"r");
 
 	//read total number of nodes and tetrahedras
 	fscanf(meshin,"%d %d\n",&dummy,&Ttot);
