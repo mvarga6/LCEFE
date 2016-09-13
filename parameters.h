@@ -2,9 +2,9 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS			1000000					    //total number of iterations
-#define dt              0.000001					    //timestep [s]
-#define iterPerFrame    5000                            //iterations per printed frame
+#define NSTEPS		1000000		   //total number of iterations
+#define dt              0.000001	   //timestep [s]
+#define iterPerFrame    5000               //iterations per printed frame
 
 //meshfile
 #define DEFAULTMESHFILE "Mesh//beam400_50_50_n277_e734_f508.dat"
@@ -13,7 +13,7 @@
 #define meshScale        0.1         //--[ cm / mesh unit]                      
 
 //parameters regarding sample illumination
-#define SRES		1000	     //--solution for float to int conversion for gpu storage
+#define SRES		1000	     //--resolution for float to int conversion for gpu storage
 #define S0		1.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE		10
 
@@ -59,8 +59,9 @@
 
 
 //constants declared on the stack for speed
-#define PI				3.14159265359
+#define PI		3.14159265359
 #define dt2o2           (dt*dt)/2.0					    //for speed
 #define dto2             dt/2.0						    //for speed
+#define DEG2RAD		0.017453293
 
 #endif //__PARAMETERS_H__

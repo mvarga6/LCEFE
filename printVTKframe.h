@@ -2,14 +2,15 @@
 #define __PRINTVTKFRAME_H__
 
 #include "mainhead.h"
+#include "illumination_cpu.h"
 
 //=============================================================
 //print new vtk file for a time step
 void printVTKframe(   DevDataBlock *dev_dat
-					, HostDataBlock *host_dat
-					,int Ntets
-					,int Nnodes
-					,int step){
+			, HostDataBlock *host_dat
+			, int Ntets
+			, int Nnodes
+			, int step){
 
 	//need to pitch 1D memory correctly to send to device
 	size_t height3 = 3;
@@ -38,6 +39,22 @@ void printVTKframe(   DevDataBlock *dev_dat
 								, Ntets*sizeof(float)
 								, cudaMemcpyDeviceToHost ) );
 								
+	//.. optics calculation for setting S
+	int * sloc = new int[Ntets]; // each tet has an S
+	for(int i = 0; i < Ntets; i++)
+		sloc[i] = SRES; // set all S = 1
+
+	float light_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
+	calc_S_from_light(light_k, 
+				host_dat->host_r, 
+				host_dat->host_TetToNode, 
+				Ntets, 
+				Nnodes, 
+				sloc, 
+				1.0f, 5.0f);
+	
+	//.. copy new S to device
+	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, sloc, Ntets*sizeof(int), cudaMemcpyHostToDevice));
 
 	char fout[60];
 	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
@@ -86,8 +103,10 @@ void printVTKframe(   DevDataBlock *dev_dat
 	for(int nt=0;nt<Ntets;nt++){
 		tetpe=host_dat->host_pe[nt];
 		peTOTAL+=tetpe;
-		fprintf(out,"%f\n",tetpe+10.0);
+		//fprintf(out,"%f\n",tetpe+10.0);
+		fprintf(out, "%f\n", float(sloc[nt])/float(SRES)); // print S for debugging
 	}//nt
+	delete [] sloc;
 
 	//peTOTAL = peTOTAL*10000000.0;
 

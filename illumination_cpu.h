@@ -1,0 +1,123 @@
+#ifndef __ILLUMINATION_CPU_H__
+#define __ILLUMINATION_CPU_H__
+
+#include "mainhead.h"
+#include <vector>
+#include <algorithm>
+#include <map>
+
+struct adrs_tet_pos {
+	int adrs;
+	int tet;
+	float posx, posy, posz;
+};
+
+bool sort_on_adrs(adrs_tet_pos a, adrs_tet_pos b) {
+	return (a.adrs<b.adrs);
+}
+
+float dist_point_to_plane(float r[3], float n[3], float d){
+	const float numer = n[0]*r[0]+n[1]*r[1]+n[2]*r[2]+d;
+	const float denom = sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
+	return (numer/denom);
+}
+
+//=============================================================
+//  On CPU (every print), calculate and set S for each tet
+
+void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnodes, int *S, float cell_dx, float cell_dy){
+
+	//.. allocate whats needed
+	int * illum_cell = new int[Ntets*2]; // { i1, j1, i2, j2, ... , iN, jN }
+	std::vector<adrs_tet_pos> tetData(Ntets); // maps node to cell address
+	int max_i = -100000, min_i = 100000, max_j = -100000, min_j = 100000; // range of cells
+	int icell, jcell;
+
+	//.. first, calculate where light eminates from on plane wave (which cell with coords)
+	for(int t = 0; t < Ntets; t++){ // for all tets
+		float _r[12], _rcom[3] = {0, 0, 0}; // position of nodes and tet c.o.m
+		int mynode;
+		for(int n = 0; n < 4; n++){ // for nodes 1,2,3,4
+			mynode = TetToNode[t + n*Ntets]; // get node n of tet t
+			for(int c = 0; c < 3; c++){ // for x,y,z
+				_r[c+n*3] = r[mynode + c*Nnodes]; 
+				_rcom[c] += _r[c+n*3] * 0.25f;  // implicit averaging
+			}
+		}
+
+		//.. store tet ave pos 
+		tetData.at(t).posx = _rcom[0];
+		tetData.at(t).posy = _rcom[1];
+		tetData.at(t).posz = _rcom[2];
+
+		//.. rotate com vector to place incident light along -z_hat
+		const float k_mag = sqrt(k[0]*k[0]+k[1]*k[1]+k[2]*k[2]);
+		const float k_mag_xy = sqrt(k[0]*k[0]+k[1]*k[1]);
+		const float phi = atan2(-k[1], -k[0]);  // angle in xy plane
+		const float the = PI - atan2(-k[2], k_mag_xy); // angle from z axis
+		const float cphi = cos(phi), sphi = sin(phi), cthe = cos(the), sthe = sin(the);
+		const float R[3][3] = {{cthe*cphi, -cthe*sphi, -sthe},
+				       {sphi,	    cphi,	0},
+				       {sthe*cphi, -sthe*sphi,  cthe}};
+
+		float _rcomp[3] = {0, 0, 0}, isum;
+		for(int i = 0; i < 3; i++){ // matrix multiplication r'[i] = R[i][j]*r[j]
+			isum = 0;
+			for(int j = 0; j < 3; j++){
+				isum += R[i][j]*_rcom[j];
+			{
+			_rcomp[i] = isum;
+		}
+
+		icell = int(floor(_rcomp[0] / cell_dx));
+		jcell = int(floor(_rcomp[1] / cell_dy));
+		illum_cell[t + 0] = icell;
+		illum_cell[t + 1] = jcell;
+		if(icell > max_i) max_i = icell; // store max/min
+		if(icell < min_i) min_i = icell;
+		if(jcell > max_j) max_j = jcell;
+		if(jcell < min_j) min_j = jcell;
+	}
+
+	//.. shift to only positive indices
+	const int width = (max_i - min_i), height = (max_j - min_j);
+	printf("\nIncident light grid dimensions: %d x %d", width, height);
+	for(int t = 0; t < Ntets; t++){
+		illum_cell[t + 0] -= min_i; // shift to start at zero
+		illum_cell[t + 1] -= min_j; // shift to start at zero
+		tetData.at(t).adrs = illum_cell[t + 0] + width*illum_cell[t + 1]; // make address
+		tetData.at(i).tet = t;
+	}
+	delete [] illum_cell;
+
+	//.. sort address to tet map on address, this puts all tets
+	//   with same illumination origin next to eachother
+	std::sort(tetData.begin(), tetData.end(), &sort_on_adrs);
+
+	//.. mark only the closest tets (per unique illumination origin) as lit
+	std::vector<adrs_tet_pos>::iterator end = tetData.end(), it = tetData.begin();
+	while(it != end){
+
+		//.. setup queue pointing to all tetData with same adrs
+		std::vector<adrs_tet_pos*> queue; // ptrs to data
+		do { queue.push_back(&(*it)); } // add reference to where it points to queue
+		while(((*it).adrs == (*(it+1)).adrs) && (((it++)+1) != end)); // continue if next element has same address and exists
+
+		//.. find closed tet in queue
+		int closest_tet; float min_dist = 1000000, dist;
+		for(int i = 0; i < queue.size(); i++){
+			float pos[3] = { queue.at(i)->posx, queue.at(i)->posy, queue.at(i)->posz};
+			dist = dist_point_to_plane(pos , k, 1000);
+			if(dist < min_dist) closest_tet = queue.at(i)->tet;
+		}
+
+		//.. set order parameter to 0 for that tet
+		if(closest_tet >= 0 && closest_tet < Ntets)
+			S[closest_tet] = 0;
+	}
+
+	// DONE !
+	printf("\nS adjusted based on illumination");
+}
+
+#endif
