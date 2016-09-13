@@ -12,7 +12,7 @@
 #include <cuda_texture_types.h>
 #include <texture_fetch_functions.h>
 #include <texture_types.h>
-#include "extlib/cmdparser.hpp"
+//#include "extlib/cmdparser.hpp"
 
 #include "gpuinfo.h"
 #include "errorhandle.h"
@@ -33,6 +33,7 @@
 #include "exit_program.h"
 #include "update_r.h"
 #include "printVTKframe.h"
+#include "illumination_cpu.h"
 
 #include "gpuForce.h"
 #include "sendForce.h"

@@ -57,6 +57,8 @@ void run_dynamics(DevDataBlock *data
 	float elapsedTimeF,elapsedTimeU;
 	float etF = 0.0, etU = 0.0;
   float countF = 0.0, countU = 0.0;
+	
+	float light_wave_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
 
 	//================================================================
 	// Begin Dynamics
@@ -70,11 +72,14 @@ void run_dynamics(DevDataBlock *data
 	HANDLE_ERROR(cudaEventRecord(startF,0));
 	
 	//calculate illumination from light source in kernel (every so often...)
-	if(iKern % LRATE == 0){
-		// do anything for calculating S due illumination
-		// 1.  find shadowed surfaces (illumination)
-		// 2.  caluclate S from illumination
-	}
+	//if(iKern % LRATE == 0){
+	//	find_illumination_origin<<<BlocksTet,Threads_Per_Block>>>(light_wave_k
+	//								, data->dev_TetToNode
+	//								, data->dev_TetToNodePitch
+	//								, Ntets
+	//								, data->dev_I_cell
+	//								, I_cell_d);
+	//}
 
 	//calculate force and send force components to be summed
 	force_kernel<<<BlocksTet,Threads_Per_Block>>>( data->dev_A
@@ -153,7 +158,8 @@ void run_dynamics(DevDataBlock *data
 						,host_data
 						,Ntets
 						,Nnodes
-						,iKern+1);
+						,iKern+1
+						,light_wave_k);
 		printf("time = %f seconds\n", float(iKern)*dt);
 
 
