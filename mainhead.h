@@ -5,6 +5,8 @@
 #ifndef __MAINHEAD_H__
 #define __MAINHEAD_H__
 
+//#include <fstream>
+
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
@@ -19,6 +21,7 @@
 #include "datastruct.h"
 #include "classstruct.h"
 #include "getmesh.h"
+//#include "getmeshios.h"
 #include "getAs.h"
 #include "printmeshorder.h"
 #include "packdata.h"

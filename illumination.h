@@ -21,3 +21,5 @@ __global__ void point_of_illumination_kernel(
 	//    light from discrete parts of wave front, each with unique 
 	//    ids.  Each tet gets an id telling where the light came from.
 }
+
+#endif

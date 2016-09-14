@@ -51,7 +51,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 				Ntets, 
 				Nnodes, 
 				sloc, 
-				1.0f, 5.0f);
+				1.0f, 1.0f);
 	
 	//.. copy new S to device
 	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 
@@ -60,7 +60,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 								cudaMemcpyHostToDevice));
 
 	char fout[60];
-	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
+	sprintf(fout,"VTKOUT\\mesh%d.vtk",step);
 	FILE*out;
 	out = fopen(fout,"w");
 
