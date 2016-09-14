@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <string>
 
 struct adrs_tet_pos {
 	int adrs;
@@ -32,9 +33,11 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 	std::vector<adrs_tet_pos> tetData(Ntets); // maps node to cell address
 	int max_i = -100000, min_i = 100000, max_j = -100000, min_j = 100000; // range of cells
 	int icell, jcell;
+	printf("\nScanning through all %d  tetrahedras...\n",Ntets);
 
 	//.. first, calculate where light eminates from on plane wave (which cell with coords)
 	for(int t = 0; t < Ntets; t++){ // for all tets
+		//printf("%d\t",t);
 		float _r[12];
 		float _rcom[3] = {0, 0, 0}; // position of nodes and tet c.o.m
 		int mynode;
@@ -71,35 +74,51 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 		R[2][1] = -sthe*sphi;
 		R[2][2] = cthe;
 
-		float _rcomp[3] = {0, 0, 0}, isum;
+		float _rcomp[3] = {0, 0, 0};
+		float jsum;
 		for(int i = 0; i < 3; i++){ // matrix multiplication r'[i] = R[i][j]*r[j]
-			isum = 0;
+			jsum = 0;
 			for(int j = 0; j < 3; j++){
-				isum += R[i][j]*_rcom[j];
+				jsum += R[i][j]*_rcom[j];
 			}
-			_rcomp[i] = isum;
+			_rcomp[i] = jsum;
 		}
 
 		icell = int(floor(_rcomp[0] / cell_dx));
-		jcell = int(floor(_rcomp[1] / cell_dy));
+		jcell = int(floor(_rcomp[2] / cell_dy));
 		illum_cell[t + 0] = icell;
 		illum_cell[t + 1] = jcell;
 		if(icell > max_i) max_i = icell; // store max/min
 		if(icell < min_i) min_i = icell;
 		if(jcell > max_j) max_j = jcell;
 		if(jcell < min_j) min_j = jcell;
+		printf("\n%d\t%d\t%d",t,icell,jcell);
 	}
 
+	printf("\n--------------------");
+	printf("\nmax\t%d\t%d",max_i,max_j);
+	printf("\nmin\t%d\t%d",min_i,min_j);
+	printf("\nrange\t%d\t%d",max_i-min_i,max_j-min_j);
+
+	printf("\nDONE");
+	//printf("\ni: %d -> %d\nj: %d -> %d", min_i, max_i, min_j, max_j); 
+	printf("\nLabelling all addresses...");
 	//.. shift to only positive indices
-	const int width = (max_i - min_i), height = (max_j - min_j);
-	printf("\nIncident light grid dimensions: %d x %d", width, height);
+	int width = max_i - min_i;
+	//int length = (max_j - min_j);
+	//printf("\nwidth:  %d", width);
+	//printf("\nlength: %d", length);
+	//printf("\nIncident light grid dimensions: %d x %d", width, height);
 	for(int t = 0; t < Ntets; t++){
 		illum_cell[t + 0] -= min_i; // shift to start at zero
 		illum_cell[t + 1] -= min_j; // shift to start at zero
-		tetData.at(t).adrs = illum_cell[t + 0] + width*illum_cell[t + 1]; // make address
-		tetData.at(t).tet = t;
+		tetData[t].adrs = illum_cell[t + 0] + width*illum_cell[t + 1]; // make address
+		//printf("%d\t",tetData.at(t).adrs);
+		tetData[t].tet = t;
 	}
 	delete [] illum_cell;
+
+	printf("\tDONE");
 
 	//.. sort address to tet map on address, this puts all tets
 	//   with same illumination origin next to eachother
