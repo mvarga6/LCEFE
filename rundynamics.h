@@ -58,7 +58,7 @@ void run_dynamics(DevDataBlock *data
 	float etF = 0.0, etU = 0.0;
   float countF = 0.0, countU = 0.0;
 	
-	float light_wave_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
+	//loat light_wave_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
 
 	//================================================================
 	// Begin Dynamics

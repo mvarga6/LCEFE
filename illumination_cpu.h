@@ -11,6 +11,9 @@ struct adrs_tet_pos {
 	int adrs;
 	int tet;
 	float posx, posy, posz;
+	bool operator < (const adrs_tet_pos& cmp) const{
+		return (adrs < cmp.adrs);
+	}
 };
 
 bool sort_on_adrs(adrs_tet_pos a, adrs_tet_pos b) {
@@ -37,9 +40,8 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 
 	//.. first, calculate where light eminates from on plane wave (which cell with coords)
 	for(int t = 0; t < Ntets; t++){ // for all tets
-		//printf("%d\t",t);
-		float _r[12];
-		float _rcom[3] = {0, 0, 0}; // position of nodes and tet c.o.m
+		float _r[12]; 
+		float _rcom[3] = { 0, 0, 0 }; // position of nodes and tet c.o.m
 		int mynode;
 		for(int n = 0; n < 4; n++){ // for nodes 1,2,3,4
 			mynode = TetToNode[t + n*Ntets]; // get node n of tet t
@@ -104,17 +106,14 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 	//printf("\ni: %d -> %d\nj: %d -> %d", min_i, max_i, min_j, max_j); 
 	printf("\nLabelling all addresses...");
 	//.. shift to only positive indices
-	int width = max_i - min_i;
-	//int length = (max_j - min_j);
-	//printf("\nwidth:  %d", width);
-	//printf("\nlength: %d", length);
-	//printf("\nIncident light grid dimensions: %d x %d", width, height);
+	const int width = (max_i - min_i); 
+	const int height = (max_j - min_j);
+	printf("\nIncident light grid dimensions: %d x %d", width, height);
 	for(int t = 0; t < Ntets; t++){
 		illum_cell[t + 0] -= min_i; // shift to start at zero
 		illum_cell[t + 1] -= min_j; // shift to start at zero
-		tetData[t].adrs = illum_cell[t + 0] + width*illum_cell[t + 1]; // make address
-		//printf("%d\t",tetData.at(t).adrs);
-		tetData[t].tet = t;
+		tetData.at(t).adrs = illum_cell[t + 0] + width*illum_cell[t + 1]; // make address
+		tetData.at(t).tet = t;
 	}
 	delete [] illum_cell;
 
@@ -122,27 +121,40 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 
 	//.. sort address to tet map on address, this puts all tets
 	//   with same illumination origin next to eachother
-	std::sort(tetData.begin(), tetData.end(), &sort_on_adrs);
+	std::sort(tetData.begin(), tetData.end());
 
 	//.. mark only the closest tets (per unique illumination origin) as lit
-	std::vector<adrs_tet_pos>::iterator end = tetData.end(), it = tetData.begin();
-	while(it != end){
-
+	//std::vector<adrs_tet_pos>::iterator _end = tetData.end(); 
+	//std::vector<adrs_tet_pos>::iterator it = tetData.begin();
+	//while(it != _end){
+	for (int i = 0; i < Ntets - 1;){
+		
 		//.. setup queue pointing to all tetData with same adrs
-		std::vector<adrs_tet_pos*> queue; // ptrs to data
-		do { queue.push_back(&(*it)); } // add reference to where it points to queue
-		while(((*it).adrs == (*(it+1)).adrs) && (((it++)+1) != end)); // continue if next element has same address and exists
+		std::vector<adrs_tet_pos> queue; // ptrs to data
+		
+		do {
+			queue.push_back(tetData[i++]);
+			if (i >= Ntets) break;
+		} while (tetData[i-1].adrs == tetData[i].adrs);
+			
+		//do { 
+		// queue.push_back(&(*it)); // add reference to where it points to queue
+		//} while(((*it).adrs == (*(it+1)).adrs) && (((it++)+1) != _end)); // continue if next element has same address and exists
 
 		//.. find closed tet in queue
 		int closest_tet; float min_dist = 1000000;
 		float dist;
 		for(int i = 0; i < queue.size(); i++){
 			float pos[3] = { queue.at(i)->posx, queue.at(i)->posy, queue.at(i)->posz};
+		int closest_tet; 
+		float min_dist = 1000000;
+		float dist;
+		for(int q = 0; q < queue.size(); q++){
+			float pos[3] = { queue[q].posx, queue[q].posy, queue[q].posz};
 			dist = dist_point_to_plane(pos , k, 1000);
-			if(dist < min_dist) closest_tet = queue.at(i)->tet;
+			if(dist < min_dist) closest_tet = queue[q].tet;
 		}
 
-		//.. set order parameter to 0 for that tet
 		S[closest_tet] = 0;
 	}
 

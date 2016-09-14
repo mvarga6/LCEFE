@@ -7,7 +7,7 @@
 #define iterPerFrame    5000               //iterations per printed frame
 
 //meshfile
-#define MESHFILE "Mesh//beam400_50_50_n277_e734_f508.dat"
+#define MESHFILE "Mesh\\beam400_50_50_n277_e734_f508.dat"
 
 //convert mesh length scale to cm
 #define meshScale        0.1         //--[ cm / mesh unit]                      
