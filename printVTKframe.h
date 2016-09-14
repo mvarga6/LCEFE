@@ -54,7 +54,10 @@ void printVTKframe(   DevDataBlock *dev_dat
 				1.0f, 5.0f);
 	
 	//.. copy new S to device
-	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, sloc, Ntets*sizeof(int), cudaMemcpyHostToDevice));
+	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 
+								sloc, 
+								Ntets*sizeof(int), 
+								cudaMemcpyHostToDevice));
 
 	char fout[60];
 	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
