@@ -159,7 +159,7 @@ void run_dynamics(DevDataBlock *data
 						,Ntets
 						,Nnodes
 						,iKern+1
-						,light_wave_k);
+						);
 		printf("time = %f seconds\n", float(iKern)*dt);
 
 
