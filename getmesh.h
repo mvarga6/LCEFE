@@ -37,12 +37,16 @@ return abs(vol0);
 
 
 //read the mesh from mesh.dat
-void get_mesh_dim(int &Ntets, int &Nnodes){
+bool get_mesh_dim(int &Ntets, int &Nnodes){
 	int d1A,d2,d3,d4,d5,d1B;
 	float f0,f1,f2;
 	int Ttot;
 	FILE* meshin;
     meshin = fopen(MESHFILE,"r");
+
+	if (meshin == NULL){
+		return false;
+	}
 
 	//read total number of nodes and tetrahedras
 	fscanf(meshin,"%d %d\n",&Nnodes,&Ttot);
@@ -89,9 +93,10 @@ void get_mesh_dim(int &Ntets, int &Nnodes){
 	Ntets = Ttot-count;
 	fclose(meshin);
 	printf("Mesh loaded \n Nodes=%d \n Tetrahedra = %d\n",Nnodes,Ntets);
+	return true;
 }
 
-void get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
+bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	int dummy,Ttot;
 	float rx,ry,rz;
 	int n0,n1,n2,n3;
@@ -99,6 +104,10 @@ void get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//open file to read mesh data from
 	FILE* meshin;
     meshin = fopen(MESHFILE,"r");
+
+	if (meshin == NULL){
+		return false;
+	}
 
 	//read total number of nodes and tetrahedras
 	fscanf(meshin,"%d %d\n",&dummy,&Ttot);
@@ -138,7 +147,7 @@ void get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	}
 
 	fclose(meshin);
-
+	return true;
 }
 
 
