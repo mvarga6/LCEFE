@@ -3,11 +3,12 @@
 
 //standard simulation parameters
 #define NSTEPS		1000000		   //total number of iterations
-#define dt              0.000001	   //timestep [s]
+//#define dt              0.000001	   //timestep [s]
+#define dt              0.0000005	   //timestep [s]
 #define iterPerFrame    5000               //iterations per printed frame
 
 //meshfile
-#define MESHFILE "Mesh\\beam400_50_50_n277_e734_f508.dat"
+#define MESHFILE "Mesh//beam400_50_50_n1566_e6037_f2022.dat"
 
 //convert mesh length scale to cm
 #define meshScale        0.1         //--[ cm / mesh unit]                      
@@ -36,7 +37,7 @@
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp             0.95	//1.0=no damping      //--[ unitless ]
+#define damp             0.99999	//1.0=no damping      //--[ unitless ]
 
 
 //x and y dimensions of n profile
