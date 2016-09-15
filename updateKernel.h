@@ -10,16 +10,18 @@
 // -send updated positions to global memory 
 //================================================
 __global__ void updateKernel(	 float *dF
-								,int pitchdF
-								,float *F
-								,int pitchF
-								,int Nnodes 
-								,int *NodeRank
-								,float *v
-								,int pitchv
-								,float *r
-								,int pitchr	
-								,float *mass ){
+				,int pitchdF
+				,float *F
+				,int pitchF
+				,int Nnodes 
+				,int *NodeRank
+				,float *v
+				,int pitchv
+				,float *r
+				,int pitchr	
+				,float *mass
+				,float xclamp1, float xclamp2
+				,float ztable){  // puts sim on table
 	
 	int dFshift = pitchdF/sizeof(float);
 	int Fshift = pitchF/sizeof(float);
@@ -35,49 +37,22 @@ __global__ void updateKernel(	 float *dF
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
-
 	if (tid<Nnodes){  //if a node is here
 		myNode=tid;
 		myNodeRank = NodeRank[myNode];
 		localMass = mass[myNode];
 
 		//get new and old forces + old velocities
-		sumForce(	 myNode
-					,myNodeRank
-					,Fnew
-					,Fold
-					,vold
-					,dF
-					,dFshift
-					,F
-					,Fshift
-					,v
-					,vshift);
+		sumForce(myNode,myNodeRank,Fnew,Fold,vold,dF,dFshift,F,Fshift,v,vshift);
 
 		//calculate and store new velocites
-		update_v(	 vnew
-					,vold
-					,Fold
-					,Fnew
-					,v
-					,vshift
-					,myNode
-					,localMass);
+		update_v(vnew,vold,Fold,Fnew,v,vshift,myNode,localMass);
 
 		//calculate and store new positions
-		update_r(	 r
-					,rshift
-					,vnew
-					,Fnew
-					,myNode
-					,localMass);
-
+		float xclamps[2] = { xclamp1, xclamp2 };
+		update_r(r,rshift,vnew,Fnew,myNode,localMass,xclamps,ztable);
 
 	}//tid<Nnodes
-
-
-
-
 }//updateKernel
 
 
