@@ -40,7 +40,7 @@ const float mythphi = float(myThPhi);
 //const float S = fS_in;
 //const float S = S0 * sigmoid(a*fS_in + b*fL);
 
-const float S = S_in;
+const float S = float(S_in)/float(SRES);
 
 //old calculation
 //float S=-1.0*t/0.2;

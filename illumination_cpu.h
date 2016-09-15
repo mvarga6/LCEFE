@@ -36,7 +36,7 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 	std::vector<adrs_tet_pos> tetData(Ntets); // maps node to cell address
 	int max_i = -100000, min_i = 100000, max_j = -100000, min_j = 100000; // range of cells
 	int icell, jcell;
-	printf("\nScanning through all %d  tetrahedras...\n",Ntets);
+	//printf("\nScanning through all %d  tetrahedras...\n",Ntets);
 
 	//.. first, calculate where light eminates from on plane wave (which cell with coords)
 	for(int t = 0; t < Ntets; t++){ // for all tets
@@ -46,8 +46,8 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 		for(int n = 0; n < 4; n++){ // for nodes 1,2,3,4
 			mynode = TetToNode[t + n*Ntets]; // get node n of tet t
 			for(int c = 0; c < 3; c++){ // for x,y,z
-				_r[c+n*3] = r[mynode + c*Nnodes]; 
-				_rcom[c] += _r[c+n*3] * 0.25f;  // implicit averaging
+				_r[n+c*3] = r[mynode + c*Nnodes]; 
+				_rcom[c] += _r[n+c*3] * 0.25f;  // implicit averaging
 			}
 		}
 
@@ -67,13 +67,13 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 		const float sthe = sin(the);
 		float R[3][3];
 		R[0][0] = cthe*cphi;
-		R[0][1] = -cthe*sphi;
-		R[0][2] = -sthe;
-		R[1][0] = sphi;
+		R[1][0] = -cthe*sphi;
+		R[2][0] = -sthe;
+		R[0][1] = sphi;
 		R[1][1] = cphi;
-		R[1][2] = 0;
-		R[2][0] = sthe*cphi;
-		R[2][1] = -sthe*sphi;
+		R[2][1] = 0;
+		R[0][2] = sthe*cphi;
+		R[1][2] = -sthe*sphi;
 		R[2][2] = cthe;
 
 		float _rcomp[3] = {0, 0, 0};
@@ -86,25 +86,20 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 			_rcomp[i] = jsum;
 		}
 
-		icell = int(floor(_rcomp[0] / cell_dx));
-		jcell = int(floor(_rcomp[2] / cell_dy));
+		icell = int(floor(_rcom[0] / cell_dx));
+		jcell = int(floor(_rcom[1] / cell_dy));
 		illum_cell[t + 0] = icell;
 		illum_cell[t + 1] = jcell;
 		if(icell > max_i) max_i = icell; // store max/min
 		if(icell < min_i) min_i = icell;
 		if(jcell > max_j) max_j = jcell;
 		if(jcell < min_j) min_j = jcell;
-		printf("\n%d\t%d\t%d",t,icell,jcell);
 	}
 
-	printf("\n--------------------");
-	printf("\nmax\t%d\t%d",max_i,max_j);
+	printf("\n\nmax\t%d\t%d",max_i,max_j);
 	printf("\nmin\t%d\t%d",min_i,min_j);
 	printf("\nrange\t%d\t%d",max_i-min_i,max_j-min_j);
 
-	printf("\nDONE");
-	//printf("\ni: %d -> %d\nj: %d -> %d", min_i, max_i, min_j, max_j); 
-	printf("\nLabelling all addresses...");
 	//.. shift to only positive indices
 	const int width = (max_i - min_i); 
 	const int height = (max_j - min_j);
@@ -124,42 +119,35 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 	std::sort(tetData.begin(), tetData.end());
 
 	//.. mark only the closest tets (per unique illumination origin) as lit
-	//std::vector<adrs_tet_pos>::iterator _end = tetData.end(); 
-	//std::vector<adrs_tet_pos>::iterator it = tetData.begin();
-	//while(it != _end){
+	int count = 0;
 	for (int i = 0; i < Ntets - 1;){
-		
+
 		//.. setup queue pointing to all tetData with same adrs
 		std::vector<adrs_tet_pos> queue; // ptrs to data
-		
+
 		do {
 			queue.push_back(tetData[i++]);
 			if (i >= Ntets) break;
 		} while (tetData[i-1].adrs == tetData[i].adrs);
-			
-		//do { 
-		// queue.push_back(&(*it)); // add reference to where it points to queue
-		//} while(((*it).adrs == (*(it+1)).adrs) && (((it++)+1) != _end)); // continue if next element has same address and exists
 
 		//.. find closed tet in queue
 		int closest_tet; float min_dist = 1000000;
 		float dist;
-		for(int i = 0; i < queue.size(); i++){
-			float pos[3] = { queue.at(i)->posx, queue.at(i)->posy, queue.at(i)->posz};
-		int closest_tet; 
-		float min_dist = 1000000;
-		float dist;
 		for(int q = 0; q < queue.size(); q++){
 			float pos[3] = { queue[q].posx, queue[q].posy, queue[q].posz};
-			dist = dist_point_to_plane(pos , k, 1000);
-			if(dist < min_dist) closest_tet = queue[q].tet;
+			dist = dist_point_to_plane(pos , k, 100);
+			if(dist < min_dist){
+				closest_tet = queue[q].tet;
+				min_dist = dist;
+			}
 		}
-
+		count++;
 		S[closest_tet] = 0;
 	}
 
 	// DONE !
 	printf("\nS adjusted based on illumination");
+	printf("\n%d%c of tets illuminated",int(100*float(count)/float(Ntets)),'%');
 }
 
 #endif

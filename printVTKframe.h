@@ -44,23 +44,24 @@ void printVTKframe(   DevDataBlock *dev_dat
 	for(int i = 0; i < Ntets; i++)
 		sloc[i] = SRES; // set all S = 1
 
-	float light_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
+	//float light_k[3] = { asin(50.0*DEG2RAD), 0, -acos(50.0*DEG2RAD) };
+	float light_k[3] = { 0, 0, -1 };
 	calc_S_from_light(light_k, 
 				host_dat->host_r, 
 				host_dat->host_TetToNode, 
 				Ntets, 
 				Nnodes, 
 				sloc, 
-				1.0f, 1.0f);
+				0.5f, 0.5f);
 	
 	//.. copy new S to device
 	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 
-								sloc, 
-								Ntets*sizeof(int), 
-								cudaMemcpyHostToDevice));
+					sloc, 
+					Ntets*sizeof(int), 
+					cudaMemcpyHostToDevice));
 
 	char fout[60];
-	sprintf(fout,"VTKOUT\\mesh%d.vtk",step);
+	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
 	FILE*out;
 	out = fopen(fout,"w");
 
@@ -77,8 +78,8 @@ void printVTKframe(   DevDataBlock *dev_dat
 	//write node points
 	for(int n=0;n<Nnodes;n++){
 		fprintf(out,"%f %f %f\n",host_dat->host_r[n+0*Nnodes]
-								,host_dat->host_r[n+1*Nnodes]
-								,host_dat->host_r[n+2*Nnodes]);
+					,host_dat->host_r[n+1*Nnodes]
+					,host_dat->host_r[n+2*Nnodes]);
 	}//n
 	fprintf(out,"\n");
 
@@ -86,9 +87,9 @@ void printVTKframe(   DevDataBlock *dev_dat
 	fprintf(out,"CELLS %d %d\n",Ntets,5*Ntets);
 	for(int nt=0;nt<Ntets;nt++){
 		fprintf(out,"4 %d %d %d %d\n",host_dat->host_TetToNode[nt+Ntets*0]
-									 ,host_dat->host_TetToNode[nt+Ntets*1]
-									 ,host_dat->host_TetToNode[nt+Ntets*2]
-									 ,host_dat->host_TetToNode[nt+Ntets*3]);
+						,host_dat->host_TetToNode[nt+Ntets*1]
+						,host_dat->host_TetToNode[nt+Ntets*2]
+						,host_dat->host_TetToNode[nt+Ntets*3]);
 	}//nt
 	fprintf(out,"\n");
 
@@ -108,6 +109,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 		peTOTAL+=tetpe;
 		//fprintf(out,"%f\n",tetpe+10.0);
 		fprintf(out, "%f\n", float(sloc[nt])/float(SRES)); // print S for debugging
+		//fprintf(out, "%f\n", ); // print S for debugging
 	}//nt
 	delete [] sloc;
 
@@ -129,7 +131,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 	}//nt
 	keTOTAL = keTOTAL;
 	float totalVolume = host_dat->host_totalVolume*10.0;
-	printf("pE = %f J/cm^3  kE = %f J/cm^3  pE+kE = %f J/cm^3\n",peTOTAL/totalVolume,keTOTAL/totalVolume,(peTOTAL+keTOTAL)/totalVolume);
+	printf("\npE = %f J/cm^3  kE = %f J/cm^3  pE+kE = %f J/cm^3\n",peTOTAL/totalVolume,keTOTAL/totalVolume,(peTOTAL+keTOTAL)/totalVolume);
 	/*printf("\nCheck for blowup: %f %f %f\n\n",host_dat->host_r[200+0*Nnodes]
 								,host_dat->host_r[200+1*Nnodes]
 								,host_dat->host_r[200+2*Nnodes]);*/
