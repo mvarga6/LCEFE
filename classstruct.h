@@ -41,6 +41,7 @@ public:
 	// Method to manipulate nodes as whole body
 	void translate(const float&, const float &, const float &);
 	void eulerRotation(const float&, const float&, const float&);
+	void deform(const float lambda[3]);
 };
 
 
@@ -256,6 +257,13 @@ void NodeArray::eulerRotation(const float &about_z = 0, const float &about_new_x
 	this->translate(comx, comy, comz);
 }
 
+void NodeArray::deform(const float lambda[3]){
+	for(int n = 0; n < size; n++){
+		for(int c = 0; c < 3; c++){
+			MyPos[n*3+c] *= lambda[c];
+		}
+	}
+}
 
 
 //  class to hold the tetrahedral array with instances which will be usefull for renumbering

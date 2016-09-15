@@ -15,6 +15,7 @@
 #include <texture_fetch_functions.h>
 #include <texture_types.h>
 //#include "extlib/cmdparser.hpp"
+#include "extlib/gmsh_io/gmsh_io.hpp"
 
 #include "gpuinfo.h"
 #include "errorhandle.h"

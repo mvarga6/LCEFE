@@ -48,6 +48,8 @@ struct HostDataBlock {
 	float *host_TetVol;
 	int *host_ThPhi;
 	int *host_S;
+
+	float min[3], max[3];
 };
 
 

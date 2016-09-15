@@ -45,14 +45,14 @@ void printVTKframe(   DevDataBlock *dev_dat
 		sloc[i] = SRES; // set all S = 1
 
 	//float light_k[3] = { asin(50.0*DEG2RAD), 0, -acos(50.0*DEG2RAD) };
-	float light_k[3] = { 0, 0, -1 };
+	float light_k[3] = { 0, -1, 0 };
 	calc_S_from_light(light_k, 
 				host_dat->host_r, 
 				host_dat->host_TetToNode, 
 				Ntets, 
 				Nnodes, 
 				sloc, 
-				0.5f, 0.5f);
+				0.4f, 0.4f);
 	
 	//.. copy new S to device
 	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 

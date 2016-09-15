@@ -87,7 +87,7 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 		}
 
 		icell = int(floor(_rcom[0] / cell_dx));
-		jcell = int(floor(_rcom[1] / cell_dy));
+		jcell = int(floor(_rcom[2] / cell_dy));
 		illum_cell[t + 0] = icell;
 		illum_cell[t + 1] = jcell;
 		if(icell > max_i) max_i = icell; // store max/min
