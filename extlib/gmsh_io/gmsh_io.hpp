@@ -1,3 +1,10 @@
+#ifndef __GMSH_IO_HPP__
+#define __GMSH_IO_HPP__
+
+#include <string>
+
+using namespace std;
+
 char ch_cap ( char ch );
 
 bool ch_eqi ( char ch1, char ch2 );
@@ -66,3 +73,4 @@ double s_to_r8 ( string s, int &lchar, bool &error );
 
 void timestamp ( );
 
+#endif

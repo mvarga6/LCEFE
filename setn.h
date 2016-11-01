@@ -11,7 +11,7 @@
 void setThPh(float &theta,float &phi, float rx, float ry, float rz){
 
   theta = PI/2.0;
-  phi = 0.0;
+  phi = 0;
 
 }//setThPh
 
@@ -30,7 +30,7 @@ void set_n(TetArray &i_Tet,int Ntets){
 		rz = i_Tet.get_pos(i,2);
 		
 		//turn positions into director
-    setThPh(theta,phi,rx,ry,rz);
+    		setThPh(theta,phi,rx,ry,rz);
 
 		//assign theta and phi to tetrahedra
 		i_Tet.set_theta(i,theta);

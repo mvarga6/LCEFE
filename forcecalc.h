@@ -53,13 +53,13 @@ __device__ void force_calc(float *Ainv,float *r0,float *r,float *Q,float (&F)[12
 	localPe += cxxxx*(eps[3*0+0]*eps[3*0+0]+eps[3*1+1]*eps[3*1+1]+eps[3*2+2]*eps[3*2+2]);
 	localPe += 2.0*cxxyy*(eps[3*0+0]*eps[3*1+1]+eps[3*1+1]*eps[3*2+2]+eps[3*0+0]*eps[3*2+2]);
 	localPe += 4.0*cxyxy*(eps[3*0+1]*eps[3*0+1]+eps[3*1+2]*eps[3*1+2]+eps[3*2+0]*eps[3*2+0]);
-/*
+
 	localPe += -1.0*alpha*(eps[3*0+0]*Q[3*0+0]
 				+eps[3*1+1]*Q[3*1+1]+eps[3*2+2]*Q[3*2+2]
 				+eps[3*0+1]*Q[3*0+1]+eps[3*1+0]*Q[3*1+0]
 				+eps[3*1+2]*Q[3*1+2]+eps[3*2+1]*Q[3*2+1]
 				+eps[3*0+2]*Q[3*0+2]+eps[3*2+0]*Q[3*2+0]);
-*/
+
 
 	//send potential to global memory
 	pe[mytet] = localPe*myVol;

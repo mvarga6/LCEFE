@@ -5,6 +5,8 @@
 #ifndef __MAINHEAD_H__
 #define __MAINHEAD_H__
 
+#include "getgmsh.h"
+
 //#include <fstream>
 
 #include <cuda.h>
@@ -15,7 +17,6 @@
 #include <texture_fetch_functions.h>
 #include <texture_types.h>
 //#include "extlib/cmdparser.hpp"
-#include "extlib/gmsh_io/gmsh_io.hpp"
 
 #include "gpuinfo.h"
 #include "errorhandle.h"
@@ -46,6 +47,7 @@
 #include "setn.h"
 
 #include "UserDefined.h"
+#include "extlib/gmsh_io/gmsh_io.hpp"
 
 
 
