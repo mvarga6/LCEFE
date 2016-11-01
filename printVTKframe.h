@@ -38,25 +38,30 @@ void printVTKframe(   DevDataBlock *dev_dat
 								, dev_dat->dev_pe
 								, Ntets*sizeof(float)
 								, cudaMemcpyDeviceToHost ) );
-								
-	//.. optics calculation for setting S
-	int * sloc = new int[Ntets]; // each tet has an S
-	for(int i = 0; i < Ntets; i++)
-		sloc[i] = SRES; // set all S = 1
 
-	//float light_k[3] = { asin(50.0*DEG2RAD), 0, -acos(50.0*DEG2RAD) };
-	float light_k[3] = { 0, -1, 0 };
+	HANDLE_ERROR( cudaMemcpy ( host_dat->host_S
+								, dev_dat->dev_S
+								, Ntets*sizeof(int)
+								, cudaMemcpyDeviceToHost ) );
+
+	//.. optics calculation for setting S
+	//int * sloc = new int[Ntets]; // each tet has an S
+	//for(int i = 0; i < Ntets; i++)
+		//sloc[i] = -S0*SRES; // set all S = 1
+
+	float light_k[3] = {sin(87.0*DEG2RAD), 0, -cos(87.0*DEG2RAD)};
+	//float light_k[3] = {1, 0, 0};
 	calc_S_from_light(light_k, 
 				host_dat->host_r, 
 				host_dat->host_TetToNode, 
 				Ntets, 
 				Nnodes, 
-				sloc, 
-				0.4f, 0.4f);
-	
+				host_dat->host_S, 
+				1.5*meshScale, 1.5*meshScale);
+
 	//.. copy new S to device
 	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 
-					sloc, 
+					host_dat->host_S, 
 					Ntets*sizeof(int), 
 					cudaMemcpyHostToDevice));
 
@@ -108,10 +113,10 @@ void printVTKframe(   DevDataBlock *dev_dat
 		tetpe=host_dat->host_pe[nt];
 		peTOTAL+=tetpe;
 		//fprintf(out,"%f\n",tetpe+10.0);
-		fprintf(out, "%f\n", float(sloc[nt])/float(SRES)); // print S for debugging
+		fprintf(out, "%f\n", float(host_dat->host_S[nt])/float(SRES)); // print S for debugging
 		//fprintf(out, "%f\n", ); // print S for debugging
 	}//nt
-	delete [] sloc;
+	//delete [] sloc;
 
 	//peTOTAL = peTOTAL*10000000.0;
 

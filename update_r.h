@@ -45,7 +45,7 @@ if (x>xclamps[0] && x<xclamps[1] ){  //clamps both ends of LCE
 		r[rshift*cord+myNode] += dt*vnew[cord]+dt2o2*(Fnew[cord]/mass); //--[ mm ]
 	}//i
 
-	if(z<ztable) r[rshift*1+myNode] = ztable; // puts sim on a table
+	if(z<ztable) r[rshift*2+myNode] = ztable; // puts sim on a table
 }//if rshift
 
 }//update_r

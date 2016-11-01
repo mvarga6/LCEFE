@@ -2,16 +2,17 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS		1000000		   //total number of iterations
-//#define dt              0.000001	   //timestep [s]
-#define dt              0.0000005	   //timestep [s]
-#define iterPerFrame    5000               //iterations per printed frame
+#define NSTEPS		500000		   //total number of iterations
+#define dt              0.00001	   //timestep [s]
+//#define dt              0.0000005	   //timestep [s]
+#define iterPerFrame    2000              //iterations per printed frame
 
 //meshfile
-#define MESHFILE "Mesh//beam400_50_50_n1566_e6037_f2022.dat"
+#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
+//#define MESHFILE "Mesh/lcefilm2.msh"
 
 //convert mesh length scale to cm
-#define meshScale        0.1         //--[ cm / mesh unit]                      
+#define meshScale        0.1         //--[ cm / mesh unit]
 
 //parameters regarding sample illumination
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
@@ -19,12 +20,12 @@
 #define LRATE		10
 
 //Elasticity constants (Lame' Coefficients)
-//  -there is a factor of two off here from 
+//  -there is a factor of two off here from
 //  -the physical values, not sure if it
 //  -is a half or two... I will find out
-#define cxxxx			 29400000.0	  //--[ g / cm * s^2 ]			
-#define cxxyy			 28000000.0	  //--[ g / cm * s^2 ]			
-#define cxyxy			 570000.0	  //--[ g / cm * s^2 ]	
+#define cxxxx		29400000.0	  //--[ g / cm * s^2 ]
+#define cxxyy		28000000.0	  //--[ g / cm * s^2 ]
+#define cxyxy		570000.0	  //--[ g / cm * s^2 ]
 
 
 //Q:elasticity coupling constant
@@ -32,30 +33,30 @@
 
 
 //Density of elastomer material
-#define materialDensity  1.2   //--[ g / cm^3 ]  =  [  10^3 kg / m^3 ]
+#define materialDensity  1.2  		//--[ g / cm^3 ]  =  [  10^3 kg / m^3 ]
 
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp             0.99999	//1.0=no damping      //--[ unitless ]
+#define damp            0.999		//1.0=no damping      //--[ unitless ]
 
 
 //x and y dimensions of n profile
-//input arrays 
+//input arrays
 #define inX 200
 #define inY 200
 
 //Threads per block to exicute
 //100 seems pretty optimal on GTX275
-//might be better with larger on 
+//might be better with larger on
 //better card/ differnt card
-#define TPB				100			
+#define TPB		256
 
 
 
 //maximum number of tetrahedra
 //a Node can belone to
-#define MaxNodeRank     90							
+#define MaxNodeRank     90
 
 
 

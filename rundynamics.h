@@ -55,7 +55,7 @@ void run_dynamics(DevDataBlock *data
 	//================================================================
 
 	//loat light_wave_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
-	float tableZ = host_data->min[1] - 2.5f;	//table position
+	float tableZ = host_data->min[2] - meshScale;	//table position
 	float clamps[2] = {host_data->min[0] + 0.1f,  	//left clamp 
 			 host_data->max[0] - 0.1f}; 	//right clamp
 

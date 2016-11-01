@@ -329,7 +329,7 @@ TetArray::TetArray(int N){
 		TetNodeRank[i] =0;
 		if(i<size){
 			TetVolume[i] = 0.0;
-			S[i] = -1; // init S to -1 for debugging
+			S[i] = 0; // init S to -1 for debugging
 		}//if i
 	}//i
 }
@@ -436,7 +436,7 @@ int TetArray::get_iS(int i){
 void TetArray::printDirector(){
   float th, ph;
   FILE*out;
-  out = fopen("Output\\dir.vtk","w");
+  out = fopen("Output//dir.vtk","w");
   fprintf(out,"# vtk DataFile Version 3.1\n");
   fprintf(out,"director profile\n");
   fprintf(out,"ASCII\n");

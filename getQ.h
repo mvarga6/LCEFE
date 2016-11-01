@@ -40,11 +40,12 @@ const float mythphi = float(myThPhi);
 //const float S = fS_in;
 //const float S = S0 * sigmoid(a*fS_in + b*fL);
 
-const float S = float(S_in)/float(SRES);
+float S = float((S_in)/float(SRES));//*(t/2.0);
+
 
 //old calculation
 //float S=-1.0*t/0.2;
-//if(S<-1.0){S=-1.0;}
+if(S<-1.0){S=-1.0;}
 
 //convert ThPhi into theta and phi
 float nTh,nPhi,theta,phi;
