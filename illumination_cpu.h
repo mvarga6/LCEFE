@@ -76,29 +76,6 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 	printf("\nk  = { %f, %f, %f }", k[0], k[1], k[2]);
 	printf("\nkp = { %f, %f, %f }", kp[0], kp[1], kp[2]);
 
-	//const float phi = 0;
-	//const float the = -PI/3.0;
-	//const float psi = 0;
-	//const float cosphi = cos(phi);
-	//const float sinphi = sin(phi);
-	//const float costhe = cos(the);
-	//const float sinthe = sin(the);
-	//const float cospsi = cos(psi);
-	//const float sinpsi = sin(psi);
-	//R[0][0] = costhe*cosphi;
-	//R[0][1] = costhe*sinphi;
-	//R[0][2] = -sinthe;
-	//R[1][0] = sinpsi*sinthe*cosphi - cospsi*sinphi;
-	//R[1][1] = sinpsi*sinthe*sinphi + cospsi*cosphi;
-	//R[1][2] = costhe*sinpsi;
-	//R[2][0] = cospsi*sinthe*cosphi + sinpsi*sinphi;
-	//R[2][1] = cospsi*sinthe*sinphi - sinpsi*cosphi;
-	//R[2][2] = costhe*cospsi;
-	//k[0] = 1;
-	//k[1] = 0;
-	//k[2] = 0;
-
-
 	//.. construct node to tet map
 	//for(int t = 0; t < Ntets; t++){
 	//	int node;
@@ -241,8 +218,8 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 		for(int q = 0; q < que_size; q++){
 			tet = queue[q].tet;
 			if(tet == closest_tet) // closed tet lowers
-				S[tet] += (S0*SRES)/10;
-			else S[tet] -= (S0*SRES)/20; // all other raise
+				S[tet] -= (S0*SRES)/10;
+			else S[tet] += (S0*SRES)/10; // all other raise
 
 			if(S[tet] > S0*SRES) S[tet] = S0*SRES; // constrain to S range
 			else if (S[tet] < 0) S[tet] = 0;

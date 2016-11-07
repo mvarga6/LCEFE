@@ -25,10 +25,14 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 	dat->host_ThPhi = (int*)malloc(Ntets*sizeof(int));
 	dat->host_S = (int*)malloc(Ntets*sizeof(int));
 
+	float L, w, h;
 	for(int c = 0; c < 3; c++){
 		dat->min[c] = i_Node.min_point(c);
 		dat->max[c] = i_Node.max_point(c);
 	}
+	L = dat->max[0] - dat->min[0];
+	w = dat->max[1] - dat->min[1];
+	h = dat->max[2] - dat->min[2];
 
 	for (int tet = 0;tet<Ntets;tet++){
 		dat->host_TetVol[tet] = i_Tet.get_volume(tet);
@@ -57,15 +61,36 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 			dat->host_F[nod+Nnodes*sweep] = 0.0;
 		}//sweep
 
-    //add force to end of beam
-    //if(i_Node.get_pos(nod,0)>39.9){
-    //  dat->host_v[nod+Nnodes*2] =100.0;
-    //}//if rx >39.0
+    		//add force to end of beam
+    		//if(i_Node.get_pos(nod,0)>39.9){
+    		//  dat->host_v[nod+Nnodes*2] =100.0;
+    		//}//if rx >39.0
 
 		for(int rank=0;rank<MaxNodeRank;rank++){
-		dat->host_dr[nod+rank]=0.0;
+			dat->host_dr[nod+rank]=0.0;
 		}
 	}//nod
+
+	
+
+	//.. transformation of initial state (leaves reference state intact)
+	float x, z, minx=1000, maxx=0, minz=1000, maxz=0;
+	for(int n = 0; n < Nnodes; n++){
+		x = dat->host_r[n + Nnodes*0];
+		z = dat->host_r[n + Nnodes*2];
+		z += (0.18f * L) * sin(PI * (x - dat->min[0]) / L);
+		x *= 0.8f;
+		dat->host_r[n + Nnodes*0] = x;
+		dat->host_r[n + Nnodes*2] = z;
+		if(x > maxx) maxx = x;
+		else if(x < minx) minx = x;
+		if(z > maxz) maxz = z;
+		else if(z < minz) minz = z;
+	}
+	dat->max[0] = maxx;
+	dat->max[2] = maxz;
+	dat->min[0] = minx;
+	dat->min[2] = minz;
 
 	printf("Data packed to go to device\n");
 }

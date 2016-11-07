@@ -77,15 +77,19 @@ void getThPhi(float rx				// x position [cm]
 //   Output: F[12] refference return                         //
 //                                                           //
 //===========================================================//
-__device__ void userForce(float *r                // node positions
-						, float *Q                // Q tensor 
-						, float (&F)[12]          // node-force tensor
+__device__ void userForce(float *r                // node pos 
+			, float (&F)[12]          // node-force tensor
+			, float xmax
 						 ){
 //-----------------------------------------------------------//
 //                 WRITE YOUR CODE HERE                      //
-
-
-
+	for(int n = 0; n < 4; n++){
+		for(int i = 0; i < 3; i++){
+			if(r[i+n*3] > xmax - 0.5f){
+				F[i+n*3] -= cxxxx*0.00001f;
+			}
+		}
+	}
 
 //-----------------------------------------------------------//
 }//userForce

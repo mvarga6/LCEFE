@@ -46,6 +46,11 @@ if (x>xclamps[0] && x<xclamps[1] ){  //clamps both ends of LCE
 	}//i
 
 	if(z<ztable) r[rshift*2+myNode] = ztable; // puts sim on a table
+//}
+
+//else if (x > xclamps[1] && squeeze != 0.0f){ // shift outer end closer by squeeze
+//	r[rshift*0 + myNode] -= squeeze;
+
 }//if rshift
 
 }//update_r

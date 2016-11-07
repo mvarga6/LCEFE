@@ -145,7 +145,7 @@ __device__ void force_calc(float *Ainv,float *r0,float *r,float *Q,float (&F)[12
 
 
 	//add user calculated force (UserDefined.h)
-	userForce(r,Q,F);
+	//userForce(r,F,xmax);
 
 
 }//force_calc

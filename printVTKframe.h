@@ -49,15 +49,18 @@ void printVTKframe(   DevDataBlock *dev_dat
 	//for(int i = 0; i < Ntets; i++)
 		//sloc[i] = -S0*SRES; // set all S = 1
 
-	float light_k[3] = {sin(87.0*DEG2RAD), 0, -cos(87.0*DEG2RAD)};
+	float light_k[3] = {sin(80.0*DEG2RAD), 0, -cos(80.0*DEG2RAD)};
 	//float light_k[3] = {1, 0, 0};
-	calc_S_from_light(light_k, 
+	
+	if(step > iterPerFrame*50) {
+		calc_S_from_light(light_k, 
 				host_dat->host_r, 
 				host_dat->host_TetToNode, 
 				Ntets, 
 				Nnodes, 
 				host_dat->host_S, 
-				1.5*meshScale, 1.5*meshScale);
+				0.15*meshScale, 0.15*meshScale);
+	}
 
 	//.. copy new S to device
 	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 

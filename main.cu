@@ -36,19 +36,19 @@ int main(int argc, char *argv[])
 
 	int Ntets,Nnodes;
 	//get dimensions of the mesh
-	get_mesh_dim(Ntets, Nnodes);
-	//get_gmsh_dim(std::string(MESHFILE), Ntets, Nnodes);
+	//get_mesh_dim(Ntets, Nnodes);
+	get_gmsh_dim(std::string(MESHFILE), Ntets, Nnodes);
 
 	//create objects of TetArray and NodeArray class with correct size
 	TetArray Tet = TetArray(Ntets);
 	NodeArray Node = NodeArray(Nnodes);
 
 	//read the mesh into Node and Tet objects
-	get_mesh(Node,Tet,Ntets,Nnodes);
-	//get_gmsh(std::string(MESHFILE), Node, Tet, Ntets, Nnodes);
+	//get_mesh(Node,Tet,Ntets,Nnodes);
+	get_gmsh(std::string(MESHFILE), Node, Tet, Ntets, Nnodes);
 	
-	const float flatten_Z[3] = {2.0f, 2.0f, 0.5f};
-	Node.deform(flatten_Z);
+	//const float flatten_Z[3] = {1.0f, 1.0f, 0.5f};
+	//Node.deform(flatten_Z);
 	//Node.eulerRotation(0, PI/2.0, 0);
 
 	//get positions of tetrahedra
@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
 	//print spacefilling curve to represent adjacensy between tetrahedra
 	printorder(Tet, Ntets);
 
-  	//pritn director
-  	Tet.printDirector();
+	//pritn director
+	Tet.printDirector();
 
 	//now ready to prepare for dyanmics
 	//delcare data stuctures for data on device

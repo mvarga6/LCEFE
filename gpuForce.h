@@ -21,7 +21,8 @@ __global__ void force_kernel(	float *A
 								,int *L //illumination parameter
 								,int *TetToNode
 								,int pitchTetToNode
-								,float t){
+								,float t
+								){
 
 
 	int Ashift = pitchA/sizeof(float);
