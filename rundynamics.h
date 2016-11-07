@@ -57,7 +57,7 @@ void run_dynamics(DevDataBlock *data
 	//loat light_wave_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
 	float tableZ = host_data->min[2] - meshScale;	//table position
 	float clamps[2] = {host_data->min[0] + 0.1f,  	//left clamp 
-			 host_data->max[0] - 0.1f}; 	//right clamp
+			   host_data->max[0] - 0.1f}; 	//right clamp 
 
 	for(int iKern=0;iKern<NSTEPS;iKern++){
 
@@ -65,16 +65,6 @@ void run_dynamics(DevDataBlock *data
 	HANDLE_ERROR(cudaEventCreate(&startF));
 	HANDLE_ERROR(cudaEventCreate(&stopF));
 	HANDLE_ERROR(cudaEventRecord(startF,0));
-
-	//calculate illumination from light source in kernel (every so often...)
-	//if(iKern % LRATE == 0){
-	//	find_illumination_origin<<<BlocksTet,Threads_Per_Block>>>(light_wave_k
-	//								, data->dev_TetToNode
-	//								, data->dev_TetToNodePitch
-	//								, Ntets
-	//								, data->dev_I_cell
-	//								, I_cell_d);
-	//}
 
 	//calculate force and send force components to be summed
 	force_kernel<<<BlocksTet,Threads_Per_Block>>>( data->dev_A
@@ -92,7 +82,8 @@ void run_dynamics(DevDataBlock *data
 							, data->dev_L
 							, data->dev_TetToNode
 							, data->dev_TetToNodepitch
-							, dt*float(iKern));
+							, dt*float(iKern)
+							);
 
 	//sync threads before updating
 	cudaThreadSynchronize();
@@ -109,7 +100,6 @@ void run_dynamics(DevDataBlock *data
 	HANDLE_ERROR(cudaEventCreate(&stopU));
 	HANDLE_ERROR(cudaEventRecord(startU,0));
 
-
 	//sum forces and update positions
 	updateKernel<<<BlocksNode,Threads_Per_Block>>>( data->dev_dF
 							, data->dev_dFpitch
@@ -122,7 +112,8 @@ void run_dynamics(DevDataBlock *data
 							, data->dev_r
 							, data->dev_rpitch
 							, data->dev_m
-							, clamps[0], clamps[1], tableZ);
+							, clamps[0], clamps[1]
+							, tableZ);
 
 	//sync threads before updating
 	cudaThreadSynchronize();
