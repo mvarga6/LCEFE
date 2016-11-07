@@ -329,7 +329,7 @@ TetArray::TetArray(int N){
 		TetNodeRank[i] =0;
 		if(i<size){
 			TetVolume[i] = 0.0;
-			S[i] = 0; // init S to -1 for debugging
+			S[i] = 0; //S0*SRES; // init S to -1 for debugging
 		}//if i
 	}//i
 }

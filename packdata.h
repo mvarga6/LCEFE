@@ -78,8 +78,8 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 	for(int n = 0; n < Nnodes; n++){
 		x = dat->host_r[n + Nnodes*0];
 		z = dat->host_r[n + Nnodes*2];
-		z += (0.18f * L) * sin(PI * (x - dat->min[0]) / L);
-		x *= 0.8f;
+		z += (0.1f * L) * sin(PI * (x - dat->min[0]) / L);
+		x *= 0.9f;
 		dat->host_r[n + Nnodes*0] = x;
 		dat->host_r[n + Nnodes*2] = z;
 		if(x > maxx) maxx = x;

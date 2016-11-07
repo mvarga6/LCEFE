@@ -5,11 +5,11 @@
 #define NSTEPS		500000		   //total number of iterations
 #define dt              0.00001	   //timestep [s]
 //#define dt              0.0000005	   //timestep [s]
-#define iterPerFrame    5000              //iterations per printed frame
+#define iterPerFrame    2000              //iterations per printed frame
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
-#define MESHFILE "Mesh/thinfilm.msh"
+#define MESHFILE "Mesh/thinfilm2.msh"
 
 //convert mesh length scale to cm
 #define meshScale        1.0         //--[ cm / mesh unit]
@@ -50,7 +50,7 @@
 //100 seems pretty optimal on GTX275
 //might be better with larger on
 //better card/ differnt card
-#define TPB		512
+#define TPB		256
 
 
 
