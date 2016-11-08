@@ -59,7 +59,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 				Ntets, 
 				Nnodes, 
 				host_dat->host_S, 
-				0.15*meshScale, 0.15*meshScale);
+				0.2*meshScale, 0.2*meshScale);
 	}
 
 	//.. copy new S to device

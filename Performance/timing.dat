@@ -1,4 +1,4 @@
-nodes = 1566
-elements = 6037
-forcecalc time (ms) = 0.535941
-update time (ms) = 0.071068
+nodes = 5717
+elements = 19478
+forcecalc time (ms) = 1.657811
+update time (ms) = 0.256417
