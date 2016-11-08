@@ -23,7 +23,7 @@ void set_n(TetArray &i_Tet,int Ntets){
 
 	float rx,ry,rz,theta=0.0,phi=0.0;
 	const float min = i_Tet.min(2), max = i_Tet.max(2);
-	const float range = (max - min);
+	const float range = max - min;
 	float u;
 	for(int i = 0; i < Ntets; i++){
 
@@ -33,7 +33,7 @@ void set_n(TetArray &i_Tet,int Ntets){
 		rz = i_Tet.get_pos(i,2);
 
 		u = (rz - min) / range;
-		theta = u*(PI/2.0);
+		theta = (1.0-u)*(PI/2.0);
 		phi = 0;
 
 		//turn positions into director
