@@ -9,7 +9,7 @@
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
-#define MESHFILE "Mesh/thinfilm3.msh"
+#define MESHFILE "Mesh/thinfilm4.msh"
 
 //convert mesh length scale to cm
 #define meshScale        1.0         //--[ cm / mesh unit]
@@ -43,8 +43,8 @@
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-#define SQZAMP		0.1f		//--[ ratio of height to length ]
-#define SQZRATIO	0.95f		//--[ new length / old length ]
+#define SQZAMP		0.15f		//--[ ratio of height to length ]
+#define SQZRATIO	0.9f		//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
