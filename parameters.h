@@ -9,10 +9,11 @@
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
-#define MESHFILE "Mesh/thinfilm4.msh"
+#define MESHFILE "Mesh/thinfilm6.msh"
 
 //convert mesh length scale to cm
-#define meshScale        1.0         //--[ cm / mesh unit]
+#define meshScale        0.0002         //--[ cm / mesh unit]
+//#define meshScale        1.0         //--[ cm / mesh unit]
 
 //parameters regarding sample illumination
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
