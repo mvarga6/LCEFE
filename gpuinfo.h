@@ -21,6 +21,7 @@ else
 printf( "Disabled\n" );
 printf( " \n\n---           Memory Information           ---\n\n");
 printf( "Total global mem: %ld\n", prop.totalGlobalMem );
+printf( "Total # of floats: %ld\n", prop.totalGlobalMem / sizeof(float));
 printf( "Total constant Mem: %ld\n", prop.totalConstMem );
 printf( "Max mem pitch: %ld\n", prop.memPitch );
 printf( "Texture Alignment: %ld\n", prop.textureAlignment );

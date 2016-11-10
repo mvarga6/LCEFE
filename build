@@ -6,3 +6,4 @@ else NAME="$1";
 fi
 
 time nvcc -ccbin /usr/bin/g++-4.9 extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu -lcurand -o "$NAME";
+time nvcc -ccbin /usr/bin/g++-4.9 extlib/gmsh_io/gmsh_io.cpp genrand.cpp gpuinfo.cu -lcurand -o "$NAME";
