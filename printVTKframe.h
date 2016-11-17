@@ -69,7 +69,8 @@ void printVTKframe(   DevDataBlock *dev_dat
 					cudaMemcpyHostToDevice));
 
 	char fout[60];
-	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
+//	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
+	sprintf(fout,VTKNAME,step);
 	FILE*out;
 	out = fopen(fout,"w");
 

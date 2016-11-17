@@ -218,11 +218,11 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode, int Ntets, int Nnod
 		for(int q = 0; q < que_size; q++){
 			tet = queue[q].tet;
 			if(tet == closest_tet) // closed tet lowers
-				S[tet] += (S0*SRES)*SRATE_ON;
-			else S[tet] -= (S0*SRES)*SRATE_OFF; // all other raise
+				S[tet] += int(SRES*SRATE_ON);
+			else S[tet] += int(SRES*SRATE_OFF); // all other raise
 
-			if(S[tet] > SMAX*SRES) S[tet] = SMAX*SRES; // constrain to S range
-			else if (S[tet] < 0) S[tet] = 0;
+			if(S[tet] > SMAX*SRES) S[tet] = int(SMAX*SRES); // constrain to S range
+			else if (S[tet] < SMIN*SRES) S[tet] = int(SMIN*SRES);
 		}
 	}
 

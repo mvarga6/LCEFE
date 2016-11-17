@@ -10,6 +10,7 @@
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
 #define MESHFILE "Mesh/thinfilm3.msh"
+#define VTKNAME "VTKOUT//mesh%d.vtk"
 
 //convert mesh length scale to cm
 //#define meshScale        0.0002         //--[ cm / mesh unit]
@@ -17,11 +18,12 @@
 
 //parameters regarding sample illumination
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
-#define S0		1.0	     //--naturally occuring order parameter (no illuminiation)
+#define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE		10
-#define SMAX		1.0
-#define SRATE_ON	0.1
-#define SRATE_OFF	0.25
+#define SMAX		0.0
+#define SMIN		-0.7
+#define SRATE_ON	-0.1
+#define SRATE_OFF	0.1
 #define IANGLE		85.0
 
 //Elasticity constants (Lame' Coefficients)
