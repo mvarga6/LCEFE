@@ -49,7 +49,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 	//for(int i = 0; i < Ntets; i++)
 		//sloc[i] = -S0*SRES; // set all S = 1
 
-	float light_k[3] = {sin(85.0*DEG2RAD), 0, -cos(85.0*DEG2RAD)};
+	float light_k[3] = {sin(IANGLE*DEG2RAD), 0, -cos(IANGLE*DEG2RAD)};
 	//float light_k[3] = {1, 0, 0};
 	
 	if(step > iterPerFrame*25) {
