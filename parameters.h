@@ -10,7 +10,7 @@
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
 #define MESHFILE "Mesh/thinfilm3.msh"
-#define VTKNAME "VTKOUT//mesh%d.vtk"
+#define VTKNAME "VTKOUT//mesh2_%d.vtk"
 
 //convert mesh length scale to cm
 //#define meshScale        0.0002         //--[ cm / mesh unit]
@@ -50,8 +50,8 @@
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-#define SQZAMP		0.1f		//--[ ratio of height to length ]
-#define SQZRATIO	0.95f		//--[ new length / old length ]
+#define SQZAMP		0.15f		//--[ ratio of height to length ]
+#define SQZRATIO	0.925f		//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
