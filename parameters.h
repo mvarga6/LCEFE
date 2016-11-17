@@ -9,11 +9,11 @@
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
-#define MESHFILE "Mesh/thinfilm6.msh"
+#define MESHFILE "Mesh/thinfilm4.msh"
 
 //convert mesh length scale to cm
-#define meshScale        0.0002         //--[ cm / mesh unit]
-//#define meshScale        1.0         //--[ cm / mesh unit]
+//#define meshScale        0.0002         //--[ cm / mesh unit]
+#define meshScale        1.0         //--[ cm / mesh unit]
 
 //parameters regarding sample illumination
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
@@ -30,7 +30,7 @@
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*7.5	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*5.0	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -44,8 +44,8 @@
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-#define SQZAMP		0.15f		//--[ ratio of height to length ]
-#define SQZRATIO	0.9f		//--[ new length / old length ]
+#define SQZAMP		0.1f		//--[ ratio of height to length ]
+#define SQZRATIO	0.95f		//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
