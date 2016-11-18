@@ -20,11 +20,11 @@
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
 #define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE		10
-#define SMAX		0.0
-#define SMIN		-0.7
+static float SMAX =	0.0;
+static float SMIN =	-0.7;
 #define SRATE_ON	-0.1
 #define SRATE_OFF	0.1
-#define IANGLE		85.0
+static float IANGLE =	85.0;
 
 //Elasticity constants (Lame' Coefficients)
 //  -there is a factor of two off here from
@@ -50,8 +50,8 @@
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-#define SQZAMP		0.15f		//--[ ratio of height to length ]
-#define SQZRATIO	0.925f		//--[ new length / old length ]
+static float SQZAMP = 0.15f;		//--[ ratio of height to length ]
+static float SQZRATIO = 0.925f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
