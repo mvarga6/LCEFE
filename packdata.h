@@ -25,14 +25,14 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 	dat->host_ThPhi = (int*)malloc(Ntets*sizeof(int));
 	dat->host_S = (int*)malloc(Ntets*sizeof(int));
 
-	float L, w, h;
+	float L;//, w, h;
 	for(int c = 0; c < 3; c++){
 		dat->min[c] = i_Node.min_point(c);
 		dat->max[c] = i_Node.max_point(c);
 	}
 	L = dat->max[0] - dat->min[0];
-	w = dat->max[1] - dat->min[1];
-	h = dat->max[2] - dat->min[2];
+//	w = dat->max[1] - dat->min[1];
+//	h = dat->max[2] - dat->min[2];
 
 	for (int tet = 0;tet<Ntets;tet++){
 		dat->host_TetVol[tet] = i_Tet.get_volume(tet);

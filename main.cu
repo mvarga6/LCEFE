@@ -21,13 +21,11 @@
 #include "mainhead.h"
 
 
-
-
-
-
 int main(int argc, char *argv[])
 {
-	
+	//Get commandline arguments
+	parseCommandLine(argc, argv);
+
 	//Get Device properties
 	cudaDeviceProp prop;
 	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));

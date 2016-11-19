@@ -41,7 +41,7 @@
 #include "printVTKframe.h"
 
 #include "illumination_cpu.h"
-//#include "clparse.h"
+#include "clparse.h"
 
 #include "gpuForce.h"
 #include "sendForce.h"
