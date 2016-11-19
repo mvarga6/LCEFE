@@ -154,8 +154,8 @@ void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int 
 	ifstream input;
 	int n, c, k;
 	bool ierror;
-	int length;
-	int level, igarb;
+	int length, igarb;
+	int level;
 	string text;
 	string nodesStart("$Nodes");
 	string nodesEnd("$EndNodes");

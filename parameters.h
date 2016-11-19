@@ -10,7 +10,7 @@
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
 #define MESHFILE "Mesh/thinfilm3.msh"
-#define VTKNAME "VTKOUT//mesh2_%d.vtk"
+#define VTKNAME "VTKOUT//meshD_%d.vtk"
 
 //convert mesh length scale to cm
 //#define meshScale        0.0002         //--[ cm / mesh unit]
@@ -36,7 +36,7 @@ static float IANGLE =	85.0;
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*5.0	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*7.0	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -51,7 +51,7 @@ static float IANGLE =	85.0;
 //Pre-bend parameters
 //"squeezes mesh in x direction
 static float SQZAMP = 0.15f;		//--[ ratio of height to length ]
-static float SQZRATIO = 0.925f;	//--[ new length / old length ]
+static float SQZRATIO = 0.85f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
