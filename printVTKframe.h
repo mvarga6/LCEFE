@@ -70,7 +70,8 @@ void printVTKframe(   DevDataBlock *dev_dat
 
 	char fout[60];
 //	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
-	sprintf(fout,VTKNAME,step);
+	sprintf(fout,"%s_%d.vtk",OUTPUT.c_str(),step);
+//	sprintf(fout,VTKNAME,step);
 	FILE*out;
 	out = fopen(fout,"w");
 

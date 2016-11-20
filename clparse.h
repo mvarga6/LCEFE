@@ -3,6 +3,8 @@
 #include <string>
 #include <cstdlib>
 
+void printOptions();
+
 // Cannot figure out proper build configuration to use extlib/cxxopts.hpp
 /*void parseCommandLine(int argc, char* argv[]){
 
@@ -28,7 +30,11 @@ void parseCommandLine(int argc, char* argv[]){
 	for (int i = 1; i < argc; i++) {
 		std::string arg = argv[i];
 		std::string val;
-		if (arg == "-p" || arg == "--phi"){
+		if (arg == "-h" || arg == "--help"){
+			printOptions();
+			exit(0);
+		}
+		else if (arg == "-p" || arg == "--phi"){
 			if (i + 1 < argc) IANGLE = std::strtof(argv[1 + i++], NULL);
 			else printf("\nOption '-p,--phi' requires one parameter.");
 		}
@@ -51,6 +57,24 @@ void parseCommandLine(int argc, char* argv[]){
 			if (i + 1 < argc) SQZAMP = std::strtof(argv[1 + i++], NULL);
 			else printf("\nOption '-h,--sqzdheight' requires one parameter.");
 		}
+		else if (arg == "-o" || arg == "--output"){
+			if (i + 1 < argc) OUTPUT.assign(argv[1 + i++]);
+			else printf("\nOption '-o,--output' requires one parameter."); 
+		}
 		else printf("\nUnknown option: %s", arg.c_str());
 	}
+}
+
+
+void printOptions(){
+	printf("\n\n---------------------------------------------------------------------");
+	printf("\n   GAFE6 -->  LIQUID CRYSTAL ELASTOMER FINITE ELEMENT SIMULATIONS  ");
+	printf("\n---------------------------------------------------------------------");
+	printf("\n\n  -p, --phi .............. Set incident light angle.");
+	printf("\n  -a, --alpha ............ Set nematic order elastic coupling strenght.");
+	printf("\n  -t, --smax ............. Set maximum value of order parameter.");
+	printf("\n  -b, --smin ............. Set minimum value of order parameter.");
+	printf("\n  -l, --sqzdlength ....... Length of mesh after x-squeeze.");
+	printf("\n  -h, --sqzdheight ....... Height of mesh after x-squeeze.");
+	printf("\n  -o, --output ........... VTK output of simulation.\n\n");
 }
