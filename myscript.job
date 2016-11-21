@@ -2,7 +2,7 @@
 
 #PBS -l walltime=:04:30:00
 #PBS -l nodes=1:ppn=1:gpus=1
-#PBS -N LCE simulation
+#PBS -N LCE_simulation
 #PBS -j oe
 
 if [ -z ${datadir+x} ]
