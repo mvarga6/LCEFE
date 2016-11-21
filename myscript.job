@@ -31,4 +31,4 @@ mv thinfilm3.msh Mesh/
 module load cuda/7.5.18
 module load gnu/4.9.1
 time ./gafe6 ${List[@]}
-pbsdcp *.vtk ${datadir}
+pbsdcp ${out}* ${datadir}
