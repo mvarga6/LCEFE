@@ -9,8 +9,9 @@ void printDirector(float *THETA
 //print to file to test
 float nx,ny,nz,th,ph;
 
-char fout[60];
-sprintf(fout,"Output//director%d.xyzv",label);
+char fout[128];
+//sprintf(fout,"Output//director%d.xyzv",label);
+sprintf(fout,"%s_director%d.xyzv",OUTPUT.c_str(),label);
 FILE* locOut;
 locOut = fopen(fout,"w");
 fprintf(locOut,"%d\n",inX*inY*inZ);

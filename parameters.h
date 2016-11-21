@@ -2,10 +2,10 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS		1000000		   //total number of iterations
+#define NSTEPS		2000000		   //total number of iterations
 #define dt              0.00002	   	//timestep [s]
 //#define dt              0.0000005	   //timestep [s]
-#define iterPerFrame    5000              //iterations per printed frame
+#define iterPerFrame    10000              //iterations per printed frame
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
@@ -23,8 +23,8 @@ std::string OUTPUT = "VTKOUT/mesh";
 #define LRATE		10
 static float SMAX =	0.0;
 static float SMIN =	-0.7;
-#define SRATE_ON	-0.1
-#define SRATE_OFF	0.1
+#define SRATE_ON	-0.2
+#define SRATE_OFF	0.2
 static float IANGLE =	85.0;
 
 //Elasticity constants (Lame' Coefficients)
