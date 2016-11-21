@@ -5,6 +5,12 @@
 #PBS -N LCE simulation
 #PBS -j oe
 
+if [ -z ${datadir+x} ]
+then
+	echo "Data folder not specified. Use '-v datadir[=value]'"
+	exit 1
+fi
+
 List=()
 i=0
 
@@ -22,4 +28,4 @@ cd $TMPDIR
 module load cuda/7.5.18
 module load gnu/4.9.1
 time ./gafe6 ${List[@]}
-pbsdcp *.vtk ~/mvarga/VTK/
+pbsdcp *.vtk ${datadir}
