@@ -59,7 +59,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 				Ntets, 
 				Nnodes, 
 				host_dat->host_S, 
-				0.2*meshScale, 0.2*meshScale);
+				0.25*meshScale, 0.25*meshScale);
 	}
 
 	//.. copy new S to device
@@ -68,7 +68,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 					Ntets*sizeof(int), 
 					cudaMemcpyHostToDevice));
 
-	char fout[60];
+	char fout[128];
 //	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
 	sprintf(fout,"%s_%d.vtk",OUTPUT.c_str(),step);
 //	sprintf(fout,VTKNAME,step);

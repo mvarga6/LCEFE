@@ -435,8 +435,11 @@ int TetArray::get_iS(int i){
 
 void TetArray::printDirector(){
   float th, ph;
+  char fout[128];
+  sprintf(fout, "%s_dir.vtk", OUTPUT.c_str());
   FILE*out;
-  out = fopen("Output//dir.vtk","w");
+//  out = fopen("Output//dir.vtk","w");
+  out = fopen(fout,"w");
   fprintf(out,"# vtk DataFile Version 3.1\n");
   fprintf(out,"director profile\n");
   fprintf(out,"ASCII\n");

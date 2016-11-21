@@ -21,8 +21,11 @@ void run_dynamics(DevDataBlock *data
 	//==============================================================
 	//file to write energies to
 	//===============================================================
+	char fout[128];
+	sprintf(fout, "%s_EvsT.dat", OUTPUT.c_str());
 	FILE*Eout;
-	Eout = fopen("Output//EvsT.dat","w");
+//	Eout = fopen("Output//EvsT.dat","w");
+	Eout = fopen(fout,"w");
 	float pE,kE;
 
 	//=================================================================
@@ -178,8 +181,11 @@ void run_dynamics(DevDataBlock *data
 
 	fclose(Eout);
 
+	char fout2[128];
+	sprintf(fout2, "%s_timing.dat", OUTPUT.c_str());
   	FILE*pout;
-  	pout = fopen("Performance//timing.dat","w");
+//  	pout = fopen("Performance//timing.dat","w");
+  	pout = fopen(fout2,"w");
   	fprintf(pout,"nodes = %d\n",Nnodes);
   	fprintf(pout,"elements = %d\n",Ntets);
   	fprintf(pout,"forcecalc time (ms) = %f\n",etF/countF);	
