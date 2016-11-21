@@ -53,7 +53,7 @@ void parseCommandLine(int argc, char* argv[]){
 			if (i + 1 < argc) SQZRATIO = std::strtof(argv[1 + i++], NULL);
 			else printf("\nOption '-l,--sqzdlength' requires one parameter.");
 		}
-		else if (arg == "-h" || arg == "--sqzdheight"){
+		else if (arg == "-H" || arg == "--sqzdheight"){
 			if (i + 1 < argc) SQZAMP = std::strtof(argv[1 + i++], NULL);
 			else printf("\nOption '-h,--sqzdheight' requires one parameter.");
 		}
@@ -75,6 +75,6 @@ void printOptions(){
 	printf("\n  -t, --smax ............. Set maximum value of order parameter.");
 	printf("\n  -b, --smin ............. Set minimum value of order parameter.");
 	printf("\n  -l, --sqzdlength ....... Length of mesh after x-squeeze.");
-	printf("\n  -h, --sqzdheight ....... Height of mesh after x-squeeze.");
+	printf("\n  -H, --sqzdheight ....... Height of mesh after x-squeeze.");
 	printf("\n  -o, --output ........... VTK output of simulation.\n\n");
 }
