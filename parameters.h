@@ -2,10 +2,10 @@
 #define __PARAMETERS_H__
 
 //standard simulation parameters
-#define NSTEPS		2000000		   //total number of iterations
+#define NSTEPS		2000000		//total number of iterations
 #define dt              0.00002	   	//timestep [s]
-//#define dt              0.0000005	   //timestep [s]
-#define iterPerFrame    10000              //iterations per printed frame
+//#define dt              0.0000005	//timestep [s]
+#define iterPerFrame    5000       	//iterations per printed frame
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
@@ -37,7 +37,7 @@ static float IANGLE =	85.0;
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*7.0	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*5.0	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
