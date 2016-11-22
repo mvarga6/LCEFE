@@ -1,4 +1,4 @@
-// A Change
+// Another Change
 // =============================================
 //   Hold all headers to keep things nice    
 // =============================================
@@ -39,7 +39,6 @@
 #include "exit_program.h"
 #include "update_r.h"
 #include "printVTKframe.h"
-
 #include "illumination_cpu.h"
 #include "clparse.h"
 
