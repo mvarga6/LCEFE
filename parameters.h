@@ -23,8 +23,8 @@ std::string OUTPUT = "VTKOUT/mesh";
 #define LRATE		10
 static float SMAX =	0.0;
 static float SMIN =	-0.7;
-#define SRATE_ON	-0.05
-#define SRATE_OFF	0.05
+#define SRATE_ON	-0.1
+#define SRATE_OFF	0.1
 static float IANGLE =	85.0;
 
 //Elasticity constants (Lame' Coefficients)
@@ -52,7 +52,7 @@ static float IANGLE =	85.0;
 //Pre-bend parameters
 //"squeezes mesh in x direction
 static float SQZAMP = 0.15f;		//--[ ratio of height to length ]
-static float SQZRATIO = 0.85f;	//--[ new length / old length ]
+static float SQZRATIO = 0.95f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
