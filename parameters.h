@@ -18,6 +18,7 @@ std::string OUTPUT = "VTKOUT/mesh";
 #define meshScale        1.0         //--[ cm / mesh unit]
 
 //parameters regarding sample illumination
+static bool PLANARTOP = true;
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
 #define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE		10
