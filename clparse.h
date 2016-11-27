@@ -61,6 +61,12 @@ void parseCommandLine(int argc, char* argv[]){
 			if (i + 1 < argc) OUTPUT.assign(argv[1 + i++]);
 			else printf("\nOption '-o,--output' requires one parameter."); 
 		}
+		else if (arg == "-P" || arg == "--planartop"){
+			PLANARTOP = true;
+		}
+		else if (arg == "-T" || arg == "--homeotop"){
+			PLANARTOP = false;
+		}
 		else printf("\nUnknown option: %s", arg.c_str());
 	}
 }

@@ -33,8 +33,8 @@ void set_n(TetArray &i_Tet,int Ntets){
 		rz = i_Tet.get_pos(i,2);
 
 		u = (rz - min) / range;
-//		theta = (1.0-u)*(PI/2.0);
-		theta = u*(PI/2.0);
+		if(PLANARTOP) theta = u*(PI/2.0);
+		else theta = (1.0-u)*(PI/2.0); // homeotropic top
 		phi = 0;
 
 		//turn positions into director
