@@ -5,6 +5,21 @@ GPU based finite element based electrodynamics simulation.
 
 ---
 
+## Build/Usage Instructions -- Run ./build to create 'gafe6' and 'printgpuinfo' executables. This 
+##	requires cuda/7.5.18 and gnu/4.9.1 on the Ohio Supercomputing Center envirnoment. Use
+##
+##		module load cuda/7.5.18
+##		module load gnu/4.9.1
+##		./build
+##		./gafe6 [-option] [value] ...
+##
+##	in an interactive development shell.  Otherwise, build 'gafe6' then submit myscript.job as 
+##	PBS job.  An example of how to produce data for a whole parameter space is shown in 
+##	'angle_experiment.sh', where many jobs are submitted with different parameters.  'myscript.job'
+##	now requires at least a DATADIR option, defing where to put the output of the sim.  It would be
+##	smart to make sure to define the sim output pre-fix using OUT option.  This is examplified in
+##	'angle_experiment.sh'.
+
 ##Material Parameters
 
 ####All material parameters set within `parameters.h`
