@@ -43,4 +43,4 @@ cp ${out}* ${datadir}
 
 # Archeive data into tarball
 cd ${datadir}
-tar -zcvf --remove-files "${out}.tar.gz" ${out}*
+tar --remove-files -zcvf "${out}.tar.gz" ${out}*
