@@ -40,3 +40,7 @@ module load gnu/4.9.1
 # Run simulation then copy output with $out prefix key to data directory.
 time ./gafe6 --homeotop ${List[@]}
 cp ${out}* ${datadir}
+
+# Archeive data into tarball
+cd ${datadir}
+tar -zcvf --remove-files "${out}.tar.gz" ${out}*
