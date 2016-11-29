@@ -79,7 +79,8 @@ int main(int argc, char *argv[])
 	HostDataBlock host_dat;
 
 	//Pack data to send to device
-	packdata(Node,Tet,&host_dat,Ntets,Nnodes);
+	std::vector<int> surfTets;
+	packdata(Node,Tet,&host_dat,Ntets,Nnodes, &surfTets);
 
 	//send data to device
 	data_to_device(&dev_dat,&host_dat,Ntets,Nnodes);
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
 	//run dynamics
 	//=================================================================
 
-	run_dynamics(&dev_dat,&host_dat,Ntets,Nnodes,Syncin,Syncout,g_mutex);
+	run_dynamics(&dev_dat,&host_dat,Ntets,Nnodes,Syncin,Syncout,g_mutex, &surfTets);
 
 	//check for CUDA erros
 	any_errors();
