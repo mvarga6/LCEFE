@@ -16,7 +16,8 @@ void run_dynamics(DevDataBlock *data
 				, int Nnodes
 				,int *Syncin
 				,int *Syncout
-				,int *g_mutex){
+				,int *g_mutex
+				,std::vector<int>* surf_tets){
 
 	//==============================================================
 	//file to write energies to
@@ -54,13 +55,15 @@ void run_dynamics(DevDataBlock *data
  	float countF = 0.0, countU = 0.0;
 
 	//================================================================
-	// Begin Dynamics
+	// initiallize experimental setup contraints
 	//================================================================
-
-	//loat light_wave_k[3] = { asin(50.0*DEG2RAD), 0, acos(50.0*DEG2RAD) };
 	float tableZ = host_data->min[2] - meshScale;	//table position
 	float clamps[2] = {host_data->min[0] + 0.1f,  	//left clamp 
 			   host_data->max[0] - 0.1f}; 	//right clamp 
+
+	//================================================================
+	// Begin Dynsmics
+	//================================================================
 
 	for(int iKern=0;iKern<NSTEPS;iKern++){
 
@@ -148,6 +151,7 @@ void run_dynamics(DevDataBlock *data
 				,host_data
 				,Ntets
 				,Nnodes
+				,surf_tets
 				,iKern+1);
 
 		printf("time = %f seconds\n", float(iKern)*dt);

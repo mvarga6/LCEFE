@@ -10,6 +10,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 			, HostDataBlock *host_dat
 			, int Ntets
 			, int Nnodes
+			, std::vector<int>* illum_list
 			, int step){
 
 	//need to pitch 1D memory correctly to send to device
@@ -59,6 +60,7 @@ void printVTKframe(   DevDataBlock *dev_dat
 				Ntets, 
 				Nnodes, 
 				host_dat->host_S, 
+				illum_list,
 				0.2*meshScale, 0.2*meshScale);
 	}
 

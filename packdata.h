@@ -2,11 +2,12 @@
 #define __PACKDATA_H__
 #include "parameters.h"
 #include <math.h>
-
+#include <vector>
 
 //this function takes all the data about the simulatin and 
 //packs it in a way that will make it easy to copy to GPU
-void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,int Nnodes){
+void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,int Nnodes,
+		std::vector<int>* surf_Tets){
 
 	//allocate memory on host
 	dat->host_A = (float*)malloc(Ntets*16*(sizeof(float)));
@@ -25,6 +26,7 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 	dat->host_ThPhi = (int*)malloc(Ntets*sizeof(int));
 	dat->host_S = (int*)malloc(Ntets*sizeof(int));
 
+	//.. untransformed max's and min's
 	float L;//, w, h;
 	for(int c = 0; c < 3; c++){
 		dat->min[c] = i_Node.min_point(c);
@@ -33,6 +35,19 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 	L = dat->max[0] - dat->min[0];
 //	w = dat->max[1] - dat->min[1];
 //	h = dat->max[2] - dat->min[2];
+
+	//.. determine tets on the top surface of film and build list
+	float rz;
+	for(int t = 0; t < Ntets; t++){ // for all tets
+		rz = 0;
+		for(int i = 0; i < 4; i++){ // tet neighbors (to get average z pos)
+			rz += 0.25f * i_Node.get_pos(i_Tet.get_nab(t,i), 2); // z pos of node in tet
+		}
+
+		//.. condition to consider on surface (within one mesh unit of top surface)
+		if(rz > (dat->max[2] - meshScale)) surf_Tets->push_back(t);
+	}
+
 
 	for (int tet = 0;tet<Ntets;tet++){
 		dat->host_TetVol[tet] = i_Tet.get_volume(tet);
@@ -71,7 +86,6 @@ void packdata(NodeArray &i_Node,TetArray &i_Tet, HostDataBlock *dat,int Ntets,in
 		}
 	}//nod
 
-	
 
 	//.. transformation of initial state (leaves reference state intact)
 	float x, z, minx=1000, maxx=0, minz=1000, maxz=0;
