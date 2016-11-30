@@ -38,7 +38,7 @@ static float IANGLE =	85.0;
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*5.0	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*3.0	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -47,7 +47,7 @@ static float IANGLE =	85.0;
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp            0.999		//1.0=no damping      //--[ unitless ]
+#define damp            0.99999		//1.0=no damping      //--[ unitless ]
 
 
 //Pre-bend parameters
