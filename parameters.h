@@ -24,8 +24,8 @@ static bool PLANARTOP = true;
 #define LRATE		10
 static float SMAX =	0.0;
 static float SMIN =	-0.7;
-#define SRATE_ON	-0.2
-#define SRATE_OFF	0.2
+#define SRATE_ON	-0.1
+#define SRATE_OFF	0.1
 static float IANGLE =	85.0;
 
 //Elasticity constants (Lame' Coefficients)
@@ -38,7 +38,7 @@ static float IANGLE =	85.0;
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*3.0	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*1.0	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
@@ -47,7 +47,7 @@ static float IANGLE =	85.0;
 
 //scalar velocity dampening
 //each velocity multiplied by this at each step
-#define damp 		0.9999		//1.0=no damping      //--[ unitless ]
+#define damp 		0.99995		//1.0=no damping      //--[ unitless ]
 
 
 //Pre-bend parameters

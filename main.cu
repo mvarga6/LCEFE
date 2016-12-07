@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	get_gmsh(std::string(MESHFILE), Node, Tet, Ntets, Nnodes);
 	
 	//const float flatten_Z[3] = {1.0f, 1.0f, 0.5f};
-	//Node.deform(flatten_Z);
+	Node.deform(flatten_Z);
 	//Node.eulerRotation(0, PI/2.0, 0);
 
 	//get positions of tetrahedra
