@@ -24,8 +24,8 @@ static bool PLANARTOP = true;
 #define LRATE		10
 static float SMAX =	0.0;
 static float SMIN =	-0.7;
-#define SRATE_ON	-0.1
-#define SRATE_OFF	0.1
+#define SRATE_ON	-0.2
+#define SRATE_OFF	0.2
 static float IANGLE =	85.0;
 
 //Elasticity constants (Lame' Coefficients)
