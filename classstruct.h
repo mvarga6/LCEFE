@@ -258,9 +258,13 @@ void NodeArray::eulerRotation(const float &about_z = 0, const float &about_new_x
 }
 
 void NodeArray::deform(const float lambda[3]){
+	float min[3], shifted_scaled;
+	for(int d = 0; d < 3; d++) min[d] = this->min_point(d);
 	for(int n = 0; n < size; n++){
 		for(int c = 0; c < 3; c++){
-			MyPos[n*3+c] *= lambda[c];
+			shifted_scaled = (MyPos[n*3+c] - min[c])*lambda[c] + min[c];
+			//MyPos[n*3+c] *= lambda[c];
+			MyPos[n*3+c] = shifted_scaled;
 		}
 	}
 }
