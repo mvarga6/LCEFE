@@ -23,10 +23,10 @@ static bool PLANARTOP = true;
 #define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE		10
 static float SMAX =	0.0;
-static float SMIN =	-0.7;
+static float SMIN =	-1.0;
 static float SRATE_ON =	-0.2;
 static float SRATE_OFF = 0.2;
-static float IANGLE =	85.0;
+static float IANGLE =	80.0;
 
 //Elasticity constants (Lame' Coefficients)
 //  -there is a factor of two off here from
@@ -52,8 +52,8 @@ static float IANGLE =	85.0;
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-static float SQZAMP = 0.15f;		//--[ ratio of height to length ]
-static float SQZRATIO = 0.95f;	//--[ new length / old length ]
+static float SQZAMP = 0.1f;		//--[ ratio of height to length ]
+static float SQZRATIO = 0.925f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
