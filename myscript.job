@@ -20,6 +20,8 @@ if [ ! -z ${smin+x} ]; then List[$i]="-b $smin"; ((++i)); fi
 if [ ! -z ${sqh+x} ]; then List[$i]="-H $sqh"; ((++i)); fi
 if [ ! -z ${sql+x} ]; then List[$i]="-l $sql"; ((++i)); fi
 if [ ! -z ${out+x} ]; then List[$i]="-o $out"; ((++i)); fi
+if [ ! -z ${son+x} ]; then List[$i]="-r $son"; ((++i)); fi
+if [ ! -z ${soff+x} ]; then List[$i]="-f $soff"; ((++i)); fi
 if [ ! -z ${flags+x} ]; then List[$i]="$flags"; ((++i)); fi
 echo "Command line arguments received from script:"
 echo "${List[@]}"

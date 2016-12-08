@@ -67,6 +67,14 @@ void parseCommandLine(int argc, char* argv[]){
 		else if (arg == "-T" || arg == "--homeotop"){
 			PLANARTOP = false;
 		}
+		else if (arg == "-r" || arg == "--onrate"){
+			if (i + 1 < argc) SRATE_ON = std::strtof(argv[1 + i++], NULL);
+			else printf("\nOption '-r,--onrate' requires one parameter.");
+		}
+		else if (arg == "-f" || arg == "--offrate"){
+			if(i + 1 < argc) SRATE_OFF = std::strtof(argv[1 + i++], NULL);
+			else printf("\nOption '-f,--offrate' requires one parameter.");
+		}
 		else printf("\nUnknown option: %s", arg.c_str());
 	}
 }
@@ -83,4 +91,6 @@ void printOptions(){
 	printf("\n  -l, --sqzdlength ....... Length of mesh after x-squeeze.");
 	printf("\n  -H, --sqzdheight ....... Height of mesh after x-squeeze.");
 	printf("\n  -o, --output ........... VTK output of simulation.\n\n");
+	printf("\n  -r, --onrate ........... Set dS/dt when illuminated.\n\n");
+	printf("\n  -f, --offrate .......... Set dS/dt when in shadow.\n\n");
 }
