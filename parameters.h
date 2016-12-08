@@ -38,7 +38,7 @@ static float IANGLE =	85.0;
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*2.5	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*1.5	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
