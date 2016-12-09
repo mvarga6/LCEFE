@@ -9,7 +9,8 @@
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
-#define MESHFILE "Mesh/thinfilm3.msh"
+//#define MESHFILE "Mesh/thinfilm3.msh"
+#define MESHFILE "Mesh/thin.msh"
 //#define VTKNAME "VTKOUT//meshD_%d.vtk"
 std::string OUTPUT = "VTKOUT/mesh";
 
@@ -38,7 +39,7 @@ static float IANGLE =	80.0;
 
 
 //Q:elasticity coupling constant
-#define alpha      570000.0*2.5	 //--[ g / cm * s^2 ]
+#define alpha      570000.0*2.0	 //--[ g / cm * s^2 ]
 
 
 //Density of elastomer material
