@@ -9,8 +9,8 @@
 
 //meshfile
 //#define MESHFILE "Mesh/beam400_50_50_n1566_e6037_f2022.dat"
-//#define MESHFILE "Mesh/thinfilm3.msh"
-#define MESHFILE "Mesh/thin2.msh"
+#define MESHFILE "Mesh/thinfilm3.msh"
+//#define MESHFILE "Mesh/thin2.msh"
 //#define VTKNAME "VTKOUT//meshD_%d.vtk"
 std::string OUTPUT = "VTKOUT/mesh";
 
