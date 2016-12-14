@@ -54,7 +54,7 @@ static float IANGLE =	80.0;
 //Pre-bend parameters
 //"squeezes mesh in x direction
 static float SQZAMP = 0.1f;		//--[ ratio of height to length ]
-static float SQZRATIO = 0.925f;	//--[ new length / old length ]
+static float SQZRATIO = 0.95f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays
