@@ -12,5 +12,9 @@ case "$USER" in
 	*)	 CCFLAGS=" " ;;
 esac
 
-time nvcc $CCFLAGS extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu -lcurand -o "$NAME";
+TARGETS="extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu";
+FLAGS="-lcurand -Wno-deprecated-gpu-targets";
+
+time nvcc $TARGETS $FLAGS -o "$NAME";
+#time nvcc $CCFLAGS extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu -lcurand -o "$NAME";
 #time nvcc -ccbin /usr/bin/g++-4.9 extlib/gmsh_io/gmsh_io.cpp genrand.cpp gpuinfo.cu -lcurand -o "$NAME";
