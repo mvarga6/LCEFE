@@ -6,29 +6,31 @@
 #include "getQ.h"
 
 
-__global__ void force_kernel(	float *A
-								,int pitchA
-								,float *dF
-								,int pitchdF
-								,int *TetNodeRankG
-								,int Ntets
-								,float *v
-								,int pitchv
-								,float *pe
-								,float *TetVol
-								,int *ThPhi
-								,int *S //order parameter
-								,int *L //illumination parameter
-								,int *TetToNode
-								,int pitchTetToNode
-								,float t
-								){
+/*__global__ void force_kernel(	float *A*/
+/*								,int pitchA*/
+/*								,float *dF*/
+/*								,int pitchdF*/
+/*								,int *TetNodeRankG*/
+/*								,int Ntets*/
+/*								,float *v*/
+/*								,int pitchv*/
+/*								,float *pe*/
+/*								,float *TetVol*/
+/*								,int *ThPhi*/
+/*								,int *S //order parameter*/
+/*								,int *L //illumination parameter*/
+/*								,int *TetToNode*/
+/*								,int pitchTetToNode*/
+/*								,float t*/
+/*								){*/
+__global__ void force_kernel(DevDataBlock data, float t)
+{
 
 
-	int Ashift = pitchA/sizeof(float);
-	int dFshift = pitchdF/sizeof(float);
-	int vshift = pitchv/sizeof(float);
-	int TTNshift = pitchTetToNode/sizeof(int);
+	int Ashift = data.Apitch/sizeof(float);
+	int dFshift = data.dFpitch/sizeof(float);
+	int vshift = data.vpitch/sizeof(float);
+	int TTNshift = data.TetToNodepitch/sizeof(int);
 	float Ainv[16];
 	float r[12];
 	float r0[12];
@@ -43,35 +45,35 @@ __global__ void force_kernel(	float *A
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
 
-	if(tid<Ntets){ //if thread executed has a tetrahedra
+	if(tid < data.Ntets){ //if thread executed has a tetrahedra
 
 
 		//========================================
 		//read in all the data that will not change 
 		//though entire simulation
 		//========================================
-		myVol = TetVol[tid];   //simple enough here
+		myVol = data.TetVol[tid];   //simple enough here
 
 		get_initial_data(Ainv
 						,r0
 						,node_num
 						,Ashift
-						,A
-						,v
+						,data.A
+						,data.v
 						,vshift
 						,vlocal
-						,TetNodeRankG
+						,data.TetNodeRank
 						,TetNodeRank
-						,TetToNode
+						,data.TetToNode
 						,TTNshift
-						,Ntets);
+						,data.Ntets);
 
 		//========================================
 		//read in data that will be changing
 		//IOswitch sets which to read from to
 		//allow use of texture memory
 		//========================================
-		get_variable_data(r,node_num);
+		get_variable_data(r, node_num);
 
 		//========================================
 		//Calculate illumination on this tetrahedra
@@ -87,20 +89,20 @@ __global__ void force_kernel(	float *A
 		// Send S and L to Q calculation and update
 		// S for next calculation.
 		//========================================
-		getQ(ThPhi[tid],Q,t,S[tid],L[tid]); // just for debugging
+		getQ(data.ThPhi[tid], Q, t, data.S[tid], data.L[tid]); // just for debugging
 
 		//========================================
 		//calculate the force on each node due
 		//to interactions in this tetrahedra
 		//========================================
-		force_calc(Ainv,r0,r,Q,F,TetNodeRank,pe,tid,myVol);
+		force_calc(Ainv, r0, r, Q, F, TetNodeRank, data.pe, tid, myVol);
 
 		//========================================
 		//Send each force calculated to global 
 		//memroy so force can be summed in 
 		//update kernal
 		//========================================
-		sendForce(dF,dFshift,F,node_num,TetNodeRank,myVol);
+		sendForce(data.dF, dFshift, F, node_num, TetNodeRank, myVol);
 
 
 	}//end if tid<Ntets
