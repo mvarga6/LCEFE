@@ -35,8 +35,8 @@ void run_dynamics(DevDataBlock *dev
 	cudaDeviceProp dev_prop;
 	HANDLE_ERROR(cudaGetDeviceProperties(&dev_prop,0));
 	int Threads_Per_Block = TPB;
-	int BlocksTet = (dev->Ntets + Threads_Per_Block) / Threads_Per_Block;
-	int BlocksNode = (dev->Nnodes + Threads_Per_Block) / Threads_Per_Block;
+	int BlocksTet = (Ntets + Threads_Per_Block) / Threads_Per_Block;
+	int BlocksNode = (Nnodes + Threads_Per_Block) / Threads_Per_Block;
 
 	printf("execute dynamnics kernel using:\n%d blocks\n%d threads per bock\n",BlocksTet,Threads_Per_Block);
 
@@ -44,7 +44,7 @@ void run_dynamics(DevDataBlock *dev
 	size_t height16 = 16;
 
 	float *Acheck;
-	Acheck = (float*)malloc(dev->Ntets * 16 * sizeof(float));
+	Acheck = (float*)malloc(Ntets * 16 * sizeof(float));
 
 	//================================================================
 	// create start and stop events to measure performance
@@ -92,19 +92,7 @@ void run_dynamics(DevDataBlock *dev
 		HANDLE_ERROR(cudaEventRecord(startU,0));
 
 		//sum forces and update positions	
-		updateKernel<<<BlocksNode,Threads_Per_Block>>>( dev->dF
-							, dev->dFpitch
-							, dev->F
-							, dev->Fpitch
-							, dev->Nnodes
-							, dev->nodeRank
-							, dev->v
-							, dev->vpitch
-							, dev->r
-							, dev->rpitch
-							, dev->m
-							, clamps[0], clamps[1]
-							, tableZ);
+		updateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev, clamps[0], clamps[1], tableZ);
 
 		//sync threads before updating
 		cudaThreadSynchronize();

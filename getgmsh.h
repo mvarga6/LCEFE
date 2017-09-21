@@ -18,10 +18,10 @@ using namespace std;
 
 
 void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
-	int indx;
+	//int indx;
 	bool ierror;
 	ifstream input;
-	int k;
+	//int k;
 	int length;
 	int level;
 	const double r8_big = 1.0E+30;
@@ -34,9 +34,9 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 	double y, y_max, y_min;
 	double z, z_max, z_min;
 	int node_num = 0;
-	int node_dim = 0;
-	int element_num = 0;
-	int element_dim = 0;
+	//int node_dim = 0;
+	//int element_num = 0;
+	//int element_dim = 0;
 
 	x_max = -r8_big;
 	x_min = +r8_big;
@@ -63,13 +63,13 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 			if(text.compare(nodesStart) == 0) level = 1;
 		}
 		else if(level == 1){
-			node_num = s_to_i4(text, length, ierror);
+			s_to_i4(text, length, ierror); // get node_num
 			level = 2;
 		}
 		else if(level == 2){
 			if(text.compare(nodesEnd) == 0) break;
 			else{
-				indx = s_to_i4(text, length, ierror);
+				s_to_i4(text, length, ierror); // read indx
 				text.erase(0,length);
 
 				x = s_to_r8(text, length, ierror);
@@ -91,14 +91,15 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 	}
 
 	// Assume node dimensions
-
-	node_dim = 3;
+	int node_dim = 3;
 	if(z_max == z_min){
 		node_dim = 2;
 		if(y_max == y_min){
 			node_dim = 1;
 		}
 	}
+	
+	printf("\nNodes are %d-dimensional", node_dim);
 
 	// Read elements (actually tets only)
 
@@ -114,13 +115,13 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 			if(text.compare(elemsStart) == 0) level = 1;
 		}
 		else if(level == 1){
-			element_num = s_to_i4(text, length, ierror);
+			s_to_i4(text, length, ierror); // get element_num
 			level = 2;
 		}
 		else if(level == 2){
 			if(text.compare(elemsEnd) == 0) break;
 			else {
-				indx = s_to_i4(text, length, ierror); //read idx
+				s_to_i4(text, length, ierror); //read indx
 				text.erase(0, length);
 
 				type = s_to_i4(text, length, ierror); //read type
@@ -150,11 +151,11 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 }
 
 void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int Nnodes){
-	int indx;
+	//int indx;
 	ifstream input;
 	int n, c, k;
 	bool ierror;
-	int length, igarb;
+	int length; //, igarb;
 	int level;
 	string text;
 	string nodesStart("$Nodes");
@@ -180,14 +181,14 @@ void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int 
 			if(text.compare(nodesStart) == 0) level = 1;
 		}
 		else if(level == 1){
-			igarb = s_to_i4(text, length, ierror);
+			s_to_i4(text, length, ierror); // read node_num
 			level = 2;
 			n = 0;
 		}
 		else if(level == 2){
 			if(text.compare(nodesEnd) == 0) break;
 			else{
-				igarb = s_to_i4(text, length, ierror);
+				s_to_i4(text, length, ierror); // read indx
 				text.erase(0,length);
 				for(c = 0; c < 3; c++){
 					x = s_to_r8(text, length, ierror);
@@ -200,7 +201,7 @@ void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int 
 	}
 
 	// Read elements (actually tets only)
-
+	
 	int type, t;
 	level = 0;
 	for( ; ; ){
@@ -211,21 +212,21 @@ void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int 
 			if(text.compare(elemsStart) == 0) level = 1;
 		}
 		else if(level == 1){
-			igarb = s_to_i4(text, length, ierror);
+			s_to_i4(text, length, ierror); // read element_num
 			level = 2;
 			t = 0;
 		}
 		else if(level == 2){
 			if(text.compare(elemsEnd) == 0) break;
 			else {
-				indx = s_to_i4(text, length, ierror); //read idx
+				s_to_i4(text, length, ierror); //read idx
 				text.erase(0, length);
 
 				type = s_to_i4(text, length, ierror); //read type
 				text.erase(0, length);
 
 				for(k = 0; k < 3; k++){ //read garbage
-					igarb = s_to_i4(text, length, ierror);
+					s_to_i4(text, length, ierror); // read indx
 					text.erase(0, length);
 				}
 
