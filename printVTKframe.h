@@ -6,42 +6,40 @@
 
 //=============================================================
 //print new vtk file for a time step
-void printVTKframe(   DevDataBlock *dev_dat
-			, HostDataBlock *host_dat
-			, int Ntets
-			, int Nnodes
+void printVTKframe(DevDataBlock *dev, HostDataBlock *host
 			, std::vector<int>* illum_list
 			, int step){
 
 	//need to pitch 1D memory correctly to send to device
+	int Nnodes = dev->Nnodes;
+	int Ntets = dev->Ntets;
 	size_t height3 = 3;
 	size_t widthNODE = Nnodes;
 
-
-	HANDLE_ERROR( cudaMemcpy2D(  host_dat->host_r
+	HANDLE_ERROR( cudaMemcpy2D(  host->r
 								, widthNODE*sizeof(float)
-								, dev_dat->dev_r
-								, dev_dat->dev_rpitch
+								, dev->r
+								, dev->rpitch
 								, widthNODE*sizeof(float)
 								, height3
 								, cudaMemcpyDeviceToHost ) );
 
 	
-	HANDLE_ERROR( cudaMemcpy2D(  host_dat->host_v
+	HANDLE_ERROR( cudaMemcpy2D(  host->v
 								, widthNODE*sizeof(float)
-								, dev_dat->dev_v
-								, dev_dat->dev_vpitch
+								, dev->v
+								, dev->vpitch
 								, widthNODE*sizeof(float)
 								, height3
 								, cudaMemcpyDeviceToHost ) );
 
-	HANDLE_ERROR( cudaMemcpy(  host_dat->host_pe
-								, dev_dat->dev_pe
+	HANDLE_ERROR( cudaMemcpy(  host->pe
+								, dev->pe
 								, Ntets*sizeof(float)
 								, cudaMemcpyDeviceToHost ) );
 
-	HANDLE_ERROR( cudaMemcpy ( host_dat->host_S
-								, dev_dat->dev_S
+	HANDLE_ERROR( cudaMemcpy ( host->S
+								, dev->S
 								, Ntets*sizeof(int)
 								, cudaMemcpyDeviceToHost ) );
 
@@ -55,18 +53,18 @@ void printVTKframe(   DevDataBlock *dev_dat
 	
 	if(step > iterPerFrame*25) {
 		calc_S_from_light(light_k, 
-				host_dat->host_r, 
-				host_dat->host_TetToNode, 
+				host->r, 
+				host->TetToNode, 
 				Ntets, 
 				Nnodes, 
-				host_dat->host_S, 
+				host->S, 
 				illum_list,
 				0.2*meshScale, 0.2*meshScale);
 	}
 
 	//.. copy new S to device
-	HANDLE_ERROR( cudaMemcpy(dev_dat->dev_S, 
-					host_dat->host_S, 
+	HANDLE_ERROR( cudaMemcpy(dev->S, 
+					host->S, 
 					Ntets*sizeof(int), 
 					cudaMemcpyHostToDevice));
 
@@ -88,62 +86,69 @@ void printVTKframe(   DevDataBlock *dev_dat
 
 
 	//write node points
-	for(int n=0;n<Nnodes;n++){
-		fprintf(out,"%f %f %f\n",host_dat->host_r[n+0*Nnodes]
-					,host_dat->host_r[n+1*Nnodes]
-					,host_dat->host_r[n+2*Nnodes]);
+	for(int n = 0; n < Nnodes; n++)
+	{
+		fprintf(out,"%f %f %f\n",host->r[n+0*Nnodes]
+					,host->r[n+1*Nnodes]
+					,host->r[n+2*Nnodes]);
 	}//n
 	fprintf(out,"\n");
 
 	//print cells
-	fprintf(out,"CELLS %d %d\n",Ntets,5*Ntets);
-	for(int nt=0;nt<Ntets;nt++){
-		fprintf(out,"4 %d %d %d %d\n",host_dat->host_TetToNode[nt+Ntets*0]
-						,host_dat->host_TetToNode[nt+Ntets*1]
-						,host_dat->host_TetToNode[nt+Ntets*2]
-						,host_dat->host_TetToNode[nt+Ntets*3]);
+	fprintf(out,"CELLS %d %d\n", Ntets, 5*Ntets);
+	for(int nt = 0; nt < Ntets; nt++)
+	{
+		fprintf(out,"4 %d %d %d %d\n",host->TetToNode[nt+Ntets*0]
+						,host->TetToNode[nt+Ntets*1]
+						,host->TetToNode[nt+Ntets*2]
+						,host->TetToNode[nt+Ntets*3]);
 	}//nt
 	fprintf(out,"\n");
 
 
-	fprintf(out,"CELL_TYPES %d\n",Ntets);
-	for(int nt=0;nt<Ntets;nt++){
+	fprintf(out,"CELL_TYPES %d\n", Ntets);
+	for(int nt = 0; nt < Ntets; nt++)
+	{
 		fprintf(out,"10\n");
 	}
 	fprintf(out,"\n");
 
-	fprintf(out,"CELL_DATA %d\n",Ntets);
+	fprintf(out,"CELL_DATA %d\n", Ntets);
 	fprintf(out,"SCALARS potentialEnergy FLOAT 1\n");
 	fprintf(out,"LOOKUP_TABLE default\n");
-	float tetpe,peTOTAL = 0.0;
-	for(int nt=0;nt<Ntets;nt++){
-		tetpe=host_dat->host_pe[nt];
-		peTOTAL+=tetpe;
+	float tetpe, peTOTAL = 0.0;
+	for(int nt = 0; nt < Ntets; nt++)
+	{
+		tetpe = host->pe[nt];
+		peTOTAL += tetpe;
 		//fprintf(out,"%f\n",tetpe+10.0);
-		fprintf(out, "%f\n", float(host_dat->host_S[nt])/float(SRES)); // print S for debugging
+		fprintf(out, "%f\n", float(host->S[nt]) / float(SRES)); // print S for debugging
 		//fprintf(out, "%f\n", ); // print S for debugging
 	}//nt
 	//delete [] sloc;
 
 	//peTOTAL = peTOTAL*10000000.0;
 
-
-
 	fprintf(out,"\n");
-
 	fclose(out);		//close output file
 
-	float tetke,keTOTAL = 0.0,vx,vy,vz;
-	for(int nt=0;nt<Nnodes;nt++){
-		vx = host_dat->host_v[nt+0*Nnodes];
-		vy = host_dat->host_v[nt+1*Nnodes];
-		vz = host_dat->host_v[nt+2*Nnodes];
-		tetke=0.5*host_dat->host_m[nt]*(vx*vx+vy*vy+vz*vz);
-		keTOTAL+=tetke;
+	float tetke, keTOTAL = 0.0, vx, vy, vz;
+	for(int nt = 0; nt < Nnodes; nt++)
+	{
+		vx = host->v[nt+0*Nnodes];
+		vy = host->v[nt+1*Nnodes];
+		vz = host->v[nt+2*Nnodes];
+		tetke = 0.5 * host->m[nt] * (vx*vx + vy*vy + vz*vz);
+		keTOTAL += tetke;
 	}//nt
+	
 	keTOTAL = keTOTAL;
-	float totalVolume = host_dat->host_totalVolume*10.0;
-	printf("\npE = %f J/cm^3  kE = %f J/cm^3  pE+kE = %f J/cm^3\n",peTOTAL/totalVolume,keTOTAL/totalVolume,(peTOTAL+keTOTAL)/totalVolume);
+	float totalVolume = host->totalVolume*10.0;
+	printf("\npE = %f J/cm^3  kE = %f J/cm^3  pE+kE = %f J/cm^3\n", 
+		peTOTAL / totalVolume,
+		keTOTAL / totalVolume,
+		(peTOTAL + keTOTAL) / totalVolume);
+		
 	/*printf("\nCheck for blowup: %f %f %f\n\n",host_dat->host_r[200+0*Nnodes]
 								,host_dat->host_r[200+1*Nnodes]
 								,host_dat->host_r[200+2*Nnodes]);*/
