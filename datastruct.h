@@ -2,6 +2,7 @@
 #define __DATASTRUCT_H__
 
 struct DevDataBlock {
+	int Ntets, Nnodes;
 	float *dev_A;
 	int *dev_TetToNode;
 	float *dev_r0;
@@ -33,6 +34,7 @@ struct DevDataBlock {
 };
 
 struct HostDataBlock {
+	int Ntets, Nnodes;
 	float *host_A;
 	int *host_TetToNode;
 	float *host_r0;
