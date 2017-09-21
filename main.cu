@@ -75,22 +75,25 @@ int main(int argc, char *argv[])
 	//now ready to prepare for dyanmics
 	//delcare data stuctures for data on device
 	//and host
-	DevDataBlock dev_dat;
-	HostDataBlock host_dat;
+	DevDataBlock dev;
+	HostDataBlock host;
+	std::vector<int> surfTets;
 
 	//Pack data to send to device
-	std::vector<int> surfTets;
-	packdata(Node,Tet,&host_dat,Ntets,Nnodes, &surfTets);
+	packdata(Node, Tet, &host, Ntets, Nnodes, &surfTets);
 
 	//send data to device
-	data_to_device(&dev_dat,&host_dat,Ntets,Nnodes);
+	data_to_device(&dev, &host);
 
 
 	//Print Simulation Parameters and Such
 	printf("\n\n Prepared for dynamics with:\n  \
 				steps/frame	  =	  %d\n    \
 				Volume        =   %f cm^3\n  \
-				Mass          =   %f kg\n\n",iterPerFrame,host_dat.host_totalVolume,host_dat.host_totalVolume*materialDensity);
+				Mass          =   %f kg\n\n",
+				iterPerFrame,
+				host.totalVolume,
+				host.totalVolume * materialDensity);
 
 
 
@@ -129,7 +132,7 @@ int main(int argc, char *argv[])
 	//run dynamics
 	//=================================================================
 
-	run_dynamics(&dev_dat,&host_dat,Ntets,Nnodes,Syncin,Syncout,g_mutex, &surfTets);
+	run_dynamics(&dev, &host, Syncin, Syncout, g_mutex, &surfTets);
 
 	//check for CUDA erros
 	any_errors();
@@ -139,7 +142,7 @@ int main(int argc, char *argv[])
 	HANDLE_ERROR( cudaFree( Syncin ) );
 	HANDLE_ERROR(cudaFree( Syncout ) );
 	HANDLE_ERROR(cudaFree( g_mutex ) );
-	exit_program(&dev_dat);
+	exit_program(&dev);
 
 	//*/
 
