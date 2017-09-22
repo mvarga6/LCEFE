@@ -269,7 +269,7 @@ ParameterType ParametersReader::GetParameterType(string& key, bool &flagType)
 	{
 		return Unknown;
 	}
-
+	
 	if (key == "input" || key == "params" || key == "parameters") return ParametersFile;
 	if (key == "alpha" || key == "alph" || key == "a") return Alpha;
 	if (key == "nsteps" || key == "time" || key == "n") return Nsteps;
@@ -324,83 +324,4 @@ bool ParametersReader::CleanKey(string &key)
 	
 	return true;
 }
-
-//		if (arg == "-h" || arg == "--help")
-//		{
-//			//printOptions();
-//			exit(0);
-//		}
-//		else if (arg == "-p" || arg == "--phi")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["phi"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-a" || arg == "--alpha")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["alpha"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-t" || arg == "--smax")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["smax"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-b" || arg == "--smin")
-//		{
-//			if (i + 1 < argc)
-//			{
-//				pairs["smin"] = string(argv[1 + i++]);
-//			} 
-//		}
-//		else if (arg == "-l" || arg == "--sqzdlength")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["prebend"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-H" || arg == "--sqzdheight")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["prebendHeight"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-o" || arg == "--output")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["meshFile"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-P" || arg == "--planartop")
-//		{
-//			pairs["planartop"] = "true"
-//		}
-//		else if (arg == "-T" || arg == "--homeotop")
-//		{
-//			pairs["planartop"] = "false"
-//		}
-//		else if (arg == "-r" || arg == "--onrate")
-//		{
-//			if (i + 1 < argc) 
-//			{
-//				pairs["onRate"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else if (arg == "-f" || arg == "--offrate")
-//		{
-//			if(i + 1 < argc) 
-//			{
-//				pairs["offRate"] = string(argv[1 + i++]);
-//			}
-//		}
-//		else printf("\nUnknown option: %s", arg.c_str());
-//	}
 
