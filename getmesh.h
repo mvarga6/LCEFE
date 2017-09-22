@@ -156,34 +156,37 @@ bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 //of the nodes so we can arrange the tetrahedra in a smart
 //order to optimize memmory calls in the GPU
 
-void get_tet_pos(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
+void get_tet_pos(NodeArray &Nodes, TetArray &Tets)
+{
+	int Ntets = Tets.size;
 	int n0,n1,n2,n3;
 	float xave,yave,zave;
-	for (int i=0;i<Ntets;i++){
-		n0 = i_Tet.get_nab(i,0);
-		n1 = i_Tet.get_nab(i,1);
-		n2 = i_Tet.get_nab(i,2);
-		n3 = i_Tet.get_nab(i,3);
+	for (int i = 0; i < Ntets; i++)
+	{
+		n0 = Tets.get_nab(i,0);
+		n1 = Tets.get_nab(i,1);
+		n2 = Tets.get_nab(i,2);
+		n3 = Tets.get_nab(i,3);
 
-		xave = (i_Node.get_pos(n0,0) \
-			   +i_Node.get_pos(n1,0) \
-			   +i_Node.get_pos(n2,0) \
-			   +i_Node.get_pos(n3,0))/4.0;
+		xave = (Nodes.get_pos(n0,0) \
+			   +Nodes.get_pos(n1,0) \
+			   +Nodes.get_pos(n2,0) \
+			   +Nodes.get_pos(n3,0))/4.0;
 
-		yave = (i_Node.get_pos(n0,1) \
-			   +i_Node.get_pos(n1,1) \
-			   +i_Node.get_pos(n2,1) \
-			   +i_Node.get_pos(n3,1))/4.0;
+		yave = (Nodes.get_pos(n0,1) \
+			   +Nodes.get_pos(n1,1) \
+			   +Nodes.get_pos(n2,1) \
+			   +Nodes.get_pos(n3,1))/4.0;
 
-		zave = (i_Node.get_pos(n0,2) \
-			   +i_Node.get_pos(n1,2) \
-			   +i_Node.get_pos(n2,2) \
-			   +i_Node.get_pos(n3,2))/4.0;
+		zave = (Nodes.get_pos(n0,2) \
+			   +Nodes.get_pos(n1,2) \
+			   +Nodes.get_pos(n2,2) \
+			   +Nodes.get_pos(n3,2))/4.0;
 
-		i_Tet.set_pos(i,0,xave);
-		i_Tet.set_pos(i,1,yave);
-		i_Tet.set_pos(i,2,zave);
-		i_Tet.set_pos(i,3,xave*xave+yave*yave+zave*zave);
+		Tets.set_pos(i,0,xave);
+		Tets.set_pos(i,1,yave);
+		Tets.set_pos(i,2,zave);
+		Tets.set_pos(i,3,xave*xave+yave*yave+zave*zave);
 	}
 }
 
@@ -195,25 +198,28 @@ void get_tet_pos(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
 //re order tetrahedra so that tetrahedra which are close in number are also close
 //in space so memory on GPU can be textured and accessed quicker
 //use MC to minimize neighbors which are not close in memory
-void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
+void gorder_tet(NodeArray &Nodes, TetArray &Tets){
 
 	srand(98237);    //seed random number generator
 	mt_init();       //initialize random number generator
 	purge();         //free up memory in random number generator
 
-	
-	float dr1,dr2;
-	int go=1;
+	int Ntets = Tets.size;	
+	float dr1, dr2;
+	bool go = true;
 	int count = 0;
-	while(go==1){
+	while(go)
+	{
 		count++;
-		go=0;
-		for(int n1=0;n1<Ntets-1;n1++){
-			dr1 = i_Tet.get_pos(n1,3);
-			dr2 = i_Tet.get_pos(n1+1,3);
-				if (dr2<dr1){
-					go=1;
-					i_Tet.switch_tets(n1,n1+1);
+		go = false;
+		for(int n1 = 0; n1 < Ntets-1; n1++)
+		{
+			dr1 = Tets.get_pos(n1,3);
+			dr2 = Tets.get_pos(n1+1,3);
+				if (dr2 < dr1)
+				{
+					go = true;
+					Tets.switch_tets(n1,n1+1);
 				}
 		}//n1
 	}//go==1
@@ -221,38 +227,41 @@ void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
 	float olddist,newdist;
 	int n1,n2;
 	float KbT = 300.0;
-     count = 0;
+    count = 0;
 	int tot = 0;
 
-
 	//simple reordering scheme bassed only on spacial locallity
-	while(KbT>0.1){
+	while(KbT > 0.1){
 		tot++;
 		count++;
 		n1 = int(floor(genrand()*float(Ntets)));
 		n2 = int(floor(genrand()*float(Ntets)));
 		
-			olddist = i_Tet.dist(n1,n1+1) \
-					+ i_Tet.dist(n1,n1-1) \
-					+ i_Tet.dist(n2,n2+1) \
-					+ i_Tet.dist(n2,n2-1);
+			olddist = Tets.dist(n1,n1+1) \
+					+ Tets.dist(n1,n1-1) \
+					+ Tets.dist(n2,n2+1) \
+					+ Tets.dist(n2,n2-1);
 
-			newdist = i_Tet.dist(n2,n1+1) \
-					+ i_Tet.dist(n2,n1-1) \
-					+ i_Tet.dist(n1,n2+1) \
-					+ i_Tet.dist(n1,n2-1);
+			newdist = Tets.dist(n2,n1+1) \
+					+ Tets.dist(n2,n1-1) \
+					+ Tets.dist(n1,n2+1) \
+					+ Tets.dist(n1,n2-1);
 
-			if(newdist<olddist){
-				i_Tet.switch_tets(n1,n2);
+			if (newdist < olddist)
+			{
+				Tets.switch_tets(n1,n2);
 				count = 0;
-			}else if(genrand()<exp(-(newdist-olddist)/(KbT))){
-				i_Tet.switch_tets(n1,n2);
+			}
+			else if (genrand() < exp(-(newdist-olddist)/(KbT)))
+			{
+				Tets.switch_tets(n1,n2);
 				count = 0;
 			}
 		
 
 		KbT = KbT*0.99999; //KbT*0.9999999;
-		if((tot%1000)==0){
+		if ((tot % 1000) == 0)
+		{
 			//printf("KbT = %f count = %d\n",KbT,count);
 		}
 	}
@@ -260,23 +269,24 @@ void gorder_tet(NodeArray &i_Node,TetArray &i_Tet,int Ntets){
 
 	//}//count
 	printf("phase 3 reordering complete\n");
-
 	printf("tetrahedra re-orderd in %d iterations\n",tot);
-	
 }
 
 
 //re-order nodes so that ones in tetrahedra next to each other are close
 //also renumber the nodes and tetrahedra nab lists 
-void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
+void finish_order(NodeArray &Nodes, TetArray &Tets){
+
+	int Ntets = Tets.size;
+	int Nnodes = Nodes.size;
 
 	int nrank;
 	//set all new node numbers negative so we can 
 	//see when one is replaced and not replace it again
 	//this should account for all the redundancies
 	//in the tet nab lists
-	for(int i=0;i<Nnodes;i++){
-		i_Node.set_newnum(i,-100);
+	for(int i = 0; i < Nnodes; i++){
+		Nodes.set_newnum(i,-100);
 	}
 	printf("init complete\n");
 	
@@ -288,28 +298,31 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//tetrahedra also close in memory
 	int newi = 0;
 	int i;
-	for(int t = 0;t<Ntets;t++){
-		for (int tn=0;tn<4;tn++){
-			i = i_Tet.get_nab(t,tn);
+	for(int t = 0; t < Ntets; t++){
+		for (int tn = 0; tn < 4; tn++){
+			i = Tets.get_nab(t, tn);
 			//printf("i = %d for t= %d and tn = %d\n",i,t,tn);
-			if(i_Node.get_newnum(i)<0){
-				i_Node.set_newnum(i,newi);
+			if(Nodes.get_newnum(i) < 0)
+			{
+				Nodes.set_newnum(i, newi);
 				newi++;
 			}
 		}
 	}
-	printf("Renumber complete newi = %d Nnodes=%d\n",newi,Nnodes);
+	printf("Renumber complete newi = %d Nnodes=%d\n", newi, Nnodes);
 
 	
 	//now reassign each tetrahedra to neighbors
 	//in the new arrangement of nodes
-	for(int t = 0;t<Ntets;t++){
-		for (int tn=0;tn<4;tn++){
-			i = i_Tet.get_nab(t,tn);
-			nrank = i_Node.get_totalRank(i);
-			i_Tet.set_nabsRank(t,tn,nrank);
-			i_Node.add_totalRank(i,1);
-			i_Tet.set_nabs(t,tn,i_Node.get_newnum(i));
+	for(int t = 0;t < Ntets; t++)
+	{
+		for (int tn = 0; tn < 4; tn++)
+		{
+			i = Tets.get_nab(t, tn);
+			nrank = Nodes.get_totalRank(i);
+			Tets.set_nabsRank(t, tn, nrank);
+			Nodes.add_totalRank(i, 1);
+			Tets.set_nabs(t, tn, Nodes.get_newnum(i));
 		}
 	}
 	printf("Reassign tets complete\n");
@@ -319,40 +332,46 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//nodes which have lower real val
 	//not the most efficient sort but it will work
 	
-	int go=1;
-	while(go==1){
-		go=0;
-		for(int i=0;i<Nnodes-1;i++){
-			if(i_Node.get_newnum(i)>i_Node.get_newnum(i+1)){
-				i_Node.switch_nodes(i,i+1);
-				go=1;
+	bool go = true;
+	while(go)
+	{
+		go = true;
+		for(int i = 0; i < Nnodes-1; i++){
+			if (Nodes.get_newnum(i) > Nodes.get_newnum(i+1))
+			{
+				Nodes.switch_nodes(i,i+1);
+				go = true;;
 			}
-			if(i_Node.get_newnum(i)<0){printf("nodes not properly reassigned node %d\n",i);}
+			if (Nodes.get_newnum(i) < 0)
+			{
+				printf("nodes not properly reassigned node %d\n",i);
+			}
 		}
 	}
 	printf("Reordering of data complete complete\n");
 
 	float tempVol;
 	int n0,n1,n2,n3;
-	for(int t=0;t<Ntets;t++){
-		n0 = i_Tet.get_nab(t,0);
-		n1 = i_Tet.get_nab(t,1);
-		n2 = i_Tet.get_nab(t,2);
-		n3 = i_Tet.get_nab(t,3);
-		tempVol = tetVolume( i_Node.get_pos(n0,0)
-							,i_Node.get_pos(n0,1)
-							,i_Node.get_pos(n0,2)
-							,i_Node.get_pos(n1,0)
-							,i_Node.get_pos(n1,1)
-							,i_Node.get_pos(n1,2)
-							,i_Node.get_pos(n2,0)
-							,i_Node.get_pos(n2,1)
-							,i_Node.get_pos(n2,2)
-							,i_Node.get_pos(n3,0)
-							,i_Node.get_pos(n3,1)
-							,i_Node.get_pos(n3,2));
+	for(int t = 0;t < Ntets; t++)
+	{
+		n0 = Tets.get_nab(t,0);
+		n1 = Tets.get_nab(t,1);
+		n2 = Tets.get_nab(t,2);
+		n3 = Tets.get_nab(t,3);
+		tempVol = tetVolume( Nodes.get_pos(n0,0)
+							,Nodes.get_pos(n0,1)
+							,Nodes.get_pos(n0,2)
+							,Nodes.get_pos(n1,0)
+							,Nodes.get_pos(n1,1)
+							,Nodes.get_pos(n1,2)
+							,Nodes.get_pos(n2,0)
+							,Nodes.get_pos(n2,1)
+							,Nodes.get_pos(n2,2)
+							,Nodes.get_pos(n3,0)
+							,Nodes.get_pos(n3,1)
+							,Nodes.get_pos(n3,2));
 
-		i_Tet.set_volume(t,tempVol);
+		Tets.set_volume(t,tempVol);
 
 	}//t
 	//calculate volume of each tetrahedra
@@ -360,11 +379,13 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 
 
 	//calculate effective volume of each node
-	for(int t = 0;t<Ntets;t++){
-		tempVol = 0.25*i_Tet.get_volume(t);
-		for (int tn=0;tn<4;tn++){
-			i = i_Tet.get_nab(t,tn);
-			i_Node.add_volume(i,tempVol);
+	for(int t = 0; t < Ntets; t++)
+	{
+		tempVol = 0.25 * Tets.get_volume(t);
+		for (int tn = 0; tn < 4; tn++)
+		{
+			i = Tets.get_nab(t,tn);
+			Nodes.add_volume(i,tempVol);
 		}
 	}
 
@@ -373,10 +394,7 @@ void finish_order(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//i_Node.normalize_volume(float(Nnodes));
 
 	//calculate total volume
-	i_Tet.calc_total_volume();
-
-
-	
+	Tets.calc_total_volume();
 }
 
 
