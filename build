@@ -11,13 +11,15 @@ fi
 
 # conditions for build envirnment (osc vs local)
 case "$USER" in
+#	mike) 	 CCFLAGS=" " ;;
 	mike) 	 CCFLAGS="-ccbin /usr/bin/g++-4.9" ;;
 	ksu0236) CCFLAGS=" " ;;
 	*)	 CCFLAGS=" " ;;
 esac
 
-TARGETS="extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu";
-FLAGS="-lcurand -Wno-deprecated-gpu-targets";
+#TARGETS="extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu";
+TARGETS="genrand.cpp clparse.cpp parameters_writer.cpp parameters_reader.cpp main.cu extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a";
+FLAGS="-lcurand -std=c++11 -Wno-deprecated-gpu-targets";
 
 time nvcc $TARGETS $FLAGS -o "builds/$NAME";
 #time nvcc $CCFLAGS extlib/gmsh_io/gmsh_io.cpp genrand.cpp main.cu -lcurand -o "$NAME";
