@@ -19,7 +19,7 @@ std::string OUTPUT = "VTKOUT/mesh";
 #define meshScale        1.0         //--[ cm / mesh unit]
 
 //parameters regarding sample illumination
-static bool PLANARTOP = true;
+//static bool PLANARTOP = true;
 #define SRES		1000	     //--resolution for float to int conversion for gpu storage
 #define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE		10
@@ -53,8 +53,8 @@ static float IANGLE =	80.0;
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-static float SQZAMP = 0.1f;		//--[ ratio of height to length ]
-static float SQZRATIO = 0.95f;	//--[ new length / old length ]
+//static float SQZAMP = 0.1f;		//--[ ratio of height to length ]
+//static float SQZRATIO = 0.95f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays

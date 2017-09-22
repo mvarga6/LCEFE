@@ -1,6 +1,9 @@
 #ifndef __SIMULATION_PARAMETERS_H__
 #define __SIMULATION_PARAMETERS_H__
 
+#include "cuda.h"
+#include "cuda_runtime.h"
+
 #include <string>
 
 enum ParameterType : int
@@ -34,75 +37,96 @@ enum ParameterType : int
 	ParametersFile = 26
 };
 
-class SimulationParameters
+struct MaterialConstants
 {
-public:
-	
+	float Cxxxx;
+	float Cxxyy;
+	float Cxyxy;
+	float Alpha;
+	float Density;
+};
+
+struct DynamicsParameters
+{
+	int Nsteps;
+	float Dt;
+	float Damp;
+};
+
+struct GpuParameters
+{
+	int ThreadsPerBlock;
+};
+
+struct OutputParameters
+{
+	std::string Base;
+	int FrameRate;
+};
+
+struct MeshParameters
+{
 	std::string File;
+	int NodeRankMax;
+	float Scale;
+};
 
-	struct MaterialConstants
-	{
-		float Cxxxx;
-		float Cxxyy;
-		float Cxyxy;
-		float Alpha;
-		float Density;
-	} Material;
+struct InitialState
+{
+	bool PlanarSideUp;
+	float SqueezeAmplitude;
+	float SqueezeRatio;
+};
 
-	struct DynamicsParameters
-	{
-		int Nsteps;
-		float Dt;
-		float Damp;
-	} Dynamics;
+struct LiquidCrystalParameters
+{
+	float SInital;
+	float Smax;
+	float Smin;
+	float SRateOn;
+	float SRateOff;
+};
 
-	struct GpuParameters
-	{
-		int ThreadsPerBlock;
-	} Gpu;
+struct UVIllumination
+{
+	float IncidentAngle;
+	int IterPerIllumRecalc;
+};
 
-	struct OutputParameters
-	{
-		std::string Base;
-		int FrameRate;
-	} Output;
+struct ActuationParameters
+{
+ 	// Order parameter dynamics
+ 	LiquidCrystalParameters OrderParameter;
+
+	// Parameters of UV illumination
+	UVIllumination Optics;
+};
+
+struct SimulationParameters
+{
+	// Name of the file with parameters 
+	std::string File;
 	
-	struct MeshParameters
-	{
-		std::string File;
-		int NodeRankMax;
-		float Scale;
-	} Mesh;
+	// all constants for LCE material
+	MaterialConstants Material;
 	
-	// parameters for the initial
-	// setup of the LCE mesh
-	struct InitialState
-	{
-		bool PlanarSideUp;
-		float SqueezeAmplitude;
-		float SqueezeRatio;
-	} Initalize;
+	// parameters for running dynamics
+	DynamicsParameters Dynamics;
 	
-	struct ActuationParameters
-	{
-	 	// Order parameter dynamics
-	 	struct OrderParameter
-		{
-			float SInital;
-			float Smax;
-			float Smin;
-			float SRateOn;
-			float SRateOff;
-		} OrderParameter;
+	// parameters for GPU operation
+	GpuParameters Gpu;
 	
-		// Parameters of UV illumination
-		struct UVIllumination
-		{
-			float IncidentAngle;
-			int IterPerIllumRecalc;
-		} Optics;
-			
-	} Actuation;
+	// parameters for simulation output
+	OutputParameters Output;
+	
+	// parmeters for the mesh
+	MeshParameters Mesh;
+	
+	// parameters for initialization
+	InitialState Initalize;
+	
+	// parameters LCE actuation
+	ActuationParameters Actuation;
 };
 
 #endif
