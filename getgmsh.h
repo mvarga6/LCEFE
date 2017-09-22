@@ -63,7 +63,7 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 			if(text.compare(nodesStart) == 0) level = 1;
 		}
 		else if(level == 1){
-			s_to_i4(text, length, ierror); // get node_num
+			node_num = s_to_i4(text, length, ierror); // get node_num
 			level = 2;
 		}
 		else if(level == 2){

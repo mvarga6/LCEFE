@@ -19,12 +19,35 @@
 
 
 #include "mainhead.h"
+//#include "simulation_parameters.h"
+#include "parameters_reader.h"
+#include "parameters_writer.h"
 
 
 int main(int argc, char *argv[])
 {
+	// Read simulation parameters
+	SimulationParameters parameters;
+	ParametersReader *reader = new ParametersReader();
+	ParseResult result;
+	
+	// from cmdline
+	result = reader->ReadFromCmdline(argc, argv, parameters);
+	
+	// from file if given
+	if (!parameters.File.empty())
+	{
+		result = reader->ReadFromFile("params.json", parameters);
+	}
+	
+	
+	ParametersWriter *writer = new ConsoleWriter();
+	writer->Write(parameters);
+	
+	return 1;
+
 	//Get commandline arguments
-	parseCommandLine(argc, argv);
+	parseCommandLine(argc, argv, &parameters);	
 
 	//Get Device properties
 	cudaDeviceProp prop;

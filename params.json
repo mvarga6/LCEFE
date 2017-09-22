@@ -1,0 +1,15 @@
+nsteps: 2000000
+dt: 0.00002
+framerate: 5000
+meshfile: "thinfilm3.msh"
+meshScale: 1.0
+outputBase: "mikesOutput"
+cxxxx: 29400000
+cxxyy: 28000000
+cxyxy: 570000
+alpha: 1710000
+damp: 0.9999
+homeotop: true
+threadsperblock: 128
+
+
