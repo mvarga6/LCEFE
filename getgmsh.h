@@ -155,7 +155,7 @@ MeshDimensions get_gmsh_dim(string fileName)
 	dims.Ntets = tet_num;
 	printf("\n%d nodes\n%d tets\n", node_num, tet_num);
 	input.close();
-	return;
+	return dims;
 }
 
 void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
