@@ -3,7 +3,7 @@
 
 void printorder(TetArray &Tets, std::string outputBase)
 {
-	std::string fileName = outputBase + "_" + "meshorder.xyzv";
+	std::string fileName = outputBase + "_meshorder.xyzv";
 
 	printf("\nWriting Tets order to %s\n", fileName.c_str());
 	int Ntets = Tets.size;

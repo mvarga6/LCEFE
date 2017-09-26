@@ -4,7 +4,7 @@
 #include "mainhead.h"
 #include "parameters.h"
 #include "UserDefined.h"
-
+#include "constant_cuda_defs.h"
 
 //=============================================================
 //calculate forces on all 4 nodes in tetrahedra
@@ -17,7 +17,10 @@ __device__ void force_calc(float *Ainv,float *r0,float *r,float *Q,float (&F)[12
 	float b[4] = {0.0};
 	float c[4] = {0.0};
 	float localPe = 0.0;
-	
+	const float cxxxx = Parameters.Cxxxx;
+	const float cxxyy = Parameters.Cxxyy;
+	const float cxyxy = Parameters.Cxyxy;
+	const float alpha = Parameters.Alpha;
 
 	//clacluate displacements from original position and zero out forces
 	for(int n=0;n<4;n++){

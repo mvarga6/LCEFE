@@ -23,6 +23,7 @@
 #include "parameters_reader.h"
 #include "parameters_writer.h"
 
+#include "constant_cuda_defs.h"
 
 int main(int argc, char *argv[])
 {
@@ -68,8 +69,8 @@ int main(int argc, char *argv[])
 	//get_mesh(Node,Tet,Ntets,Nnodes);
 	get_gmsh(parameters.Mesh.File, Nodes, Tets, parameters.Mesh.Scale);
 	
-	const float flatten_Z[3] = {1.0f, 1.0f, 0.75f};
-	Nodes.deform(flatten_Z);
+	//const float flatten_Z[3] = {1.0f, 1.0f, 0.75f};
+	//Nodes.deform(flatten_Z);
 	//Node.eulerRotation(0, PI/2.0, 0);
 
 	//get positions of tetrahedra
@@ -106,16 +107,16 @@ int main(int argc, char *argv[])
 	packdata(Nodes, Tets, &host, &surfTets, &parameters);
 	
 	//send data to device
-	data_to_device(&dev, &host);
+	data_to_device(&dev, &host, &parameters);
 
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\n  \
 				steps/frame	  =	  %d\n    \
 				Volume        =   %f cm^3\n  \
 				Mass          =   %f kg\n\n",
-				iterPerFrame,
+				parameters.Output.FrameRate,
 				host.totalVolume,
-				host.totalVolume * materialDensity);
+				host.totalVolume * parameters.Material.Density);
 
 
 	//=================================================================
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
 	//run dynamics
 	//=================================================================
 
-	run_dynamics(&dev, &host, Syncin, Syncout, g_mutex, &surfTets, &vtkWriter);
+	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, &vtkWriter);
 
 	//check for CUDA erros
 	any_errors();

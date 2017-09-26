@@ -6,9 +6,11 @@
 
 //=============================================================
 //print new vtk file for a time step
-void printVTKframe(DevDataBlock *dev, HostDataBlock *host
-			, std::vector<int>* illum_list
-			, int step){
+void printVTKframe(DevDataBlock *dev
+			,HostDataBlock *host
+			,std::string outputBase
+			,std::vector<int>* illum_list
+			,int step){
 
 	//need to pitch 1D memory correctly to send to device
 	int Nnodes = dev->Nnodes;
@@ -38,39 +40,41 @@ void printVTKframe(DevDataBlock *dev, HostDataBlock *host
 								, Ntets*sizeof(float)
 								, cudaMemcpyDeviceToHost ) );
 
-	HANDLE_ERROR( cudaMemcpy ( host->S
-								, dev->S
-								, Ntets*sizeof(int)
-								, cudaMemcpyDeviceToHost ) );
+/*	HANDLE_ERROR( cudaMemcpy ( host->S*/
+/*								, dev->S*/
+/*								, Ntets*sizeof(int)*/
+/*								, cudaMemcpyDeviceToHost ) );*/
 
 	//.. optics calculation for setting S
 	//int * sloc = new int[Ntets]; // each tet has an S
 	//for(int i = 0; i < Ntets; i++)
 		//sloc[i] = -S0*SRES; // set all S = 1
 
-	float light_k[3] = {sin(IANGLE*DEG2RAD), 0, -cos(IANGLE*DEG2RAD)};
+	//float light_k[3] = {sin(IANGLE*DEG2RAD), 0, -cos(IANGLE*DEG2RAD)};
 	//float light_k[3] = {1, 0, 0};
 	
-	if(step > iterPerFrame*25) {
-		calc_S_from_light(light_k, 
-				host->r, 
-				host->TetToNode, 
-				Ntets, 
-				Nnodes, 
-				host->S, 
-				illum_list,
-				0.2*meshScale, 0.2*meshScale);
-	}
+/*	if(step > iterPerFrame*25) {*/
+/*		calc_S_from_light(light_k, */
+/*				host->r, */
+/*				host->TetToNode, */
+/*				Ntets, */
+/*				Nnodes, */
+/*				host->S, */
+/*				illum_list,*/
+/*				0.2*meshScale, 0.2*meshScale);*/
+/*	}*/
 
-	//.. copy new S to device
-	HANDLE_ERROR( cudaMemcpy(dev->S, 
-					host->S, 
-					Ntets*sizeof(int), 
-					cudaMemcpyHostToDevice));
+/*	//.. copy new S to device*/
+/*	HANDLE_ERROR( cudaMemcpy(dev->S, */
+/*					host->S, */
+/*					Ntets*sizeof(int), */
+/*					cudaMemcpyHostToDevice));*/
+
+	std::string meshFile(outputBase + "_mesh");
 
 	char fout[128];
 //	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
-	sprintf(fout,"%s_%d.vtk",OUTPUT.c_str(),step);
+	sprintf(fout,"%s_%d.vtk", meshFile.c_str(), step);
 //	sprintf(fout,VTKNAME,step);
 	FILE*out;
 	out = fopen(fout,"w");

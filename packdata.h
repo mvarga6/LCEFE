@@ -1,9 +1,11 @@
 #ifndef __PACKDATA_H__
 #define __PACKDATA_H__
-#include "parameters.h"
-#include "simulation_parameters.h"
+
 #include <math.h>
 #include <vector>
+#include "parameters.h"
+#include "simulation_parameters.h"
+#include "genrand.h"
 
 //this function takes all the data about the simulatin and 
 //packs it in a way that will make it easy to copy to GPU
@@ -57,7 +59,7 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 		}
 
 		//.. condition to consider on surface (within one mesh unit of top surface)
-		if (rz > (dat->max[2] - meshScale)) surf_Tets->push_back(t);
+		//if (rz > (dat->max[2] - meshScale)) surf_Tets->push_back(t);
 	}
 
 
@@ -87,8 +89,9 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 		{
 			dat->r[nod+Nnodes*sweep] = Nodes.get_pos(nod,sweep);
 			dat->r0[nod+Nnodes*sweep] = Nodes.get_pos(nod,sweep);
-			dat->v[nod+Nnodes*sweep] = 0.0;
-			dat->F[nod+Nnodes*sweep] = 0.0;
+			//dat->v[nod+Nnodes*sweep] = 0.0;
+			dat->v[nod+Nnodes*sweep] = 10.f*(genrand() - 0.5f);
+			dat->F[nod+Nnodes*sweep] = 100.f*(genrand() - 0.5f);
 		}//sweep
 
     		//add force to end of beam
@@ -104,28 +107,28 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 
 
 	//.. transformation of initial state (leaves reference state intact)
-	float x, z, minx=1000, maxx=0, minz=1000, maxz=0;
-	const float sqzRatio = params->Initalize.SqueezeRatio;
-	const float sqzAmp = params->Initalize.SqueezeAmplitude;
-	for(int n = 0; n < Nnodes; n++)
-	{
-		x = dat->r[n + Nnodes*0];
-		z = dat->r[n + Nnodes*2];
-		z += (sqzAmp * L) * sin(PI * (x - dat->min[0]) / L);
-		x *= sqzRatio;
-		dat->r[n + Nnodes*0] = x;
-		dat->r[n + Nnodes*2] = z;
-		if(x > maxx) maxx = x;
-		else if(x < minx) minx = x;
-		if(z > maxz) maxz = z;
-		else if(z < minz) minz = z;
-	}
-	dat->max[0] = maxx;
-	dat->max[2] = maxz;
-	dat->min[0] = minx;
-	dat->min[2] = minz;
+/*	float x, z, minx=1000, maxx=0, minz=1000, maxz=0;*/
+/*	const float sqzRatio = params->Initalize.SqueezeRatio;*/
+/*	const float sqzAmp = params->Initalize.SqueezeAmplitude;*/
+/*	for(int n = 0; n < Nnodes; n++)*/
+/*	{*/
+/*		x = dat->r[n + Nnodes*0];*/
+/*		z = dat->r[n + Nnodes*2];*/
+/*		z += (sqzAmp * L) * sin(PI * (x - dat->min[0]) / L);*/
+/*		x *= sqzRatio;*/
+/*		dat->r[n + Nnodes*0] = x;*/
+/*		dat->r[n + Nnodes*2] = z;*/
+/*		if(x > maxx) maxx = x;*/
+/*		else if(x < minx) minx = x;*/
+/*		if(z > maxz) maxz = z;*/
+/*		else if(z < minz) minz = z;*/
+/*	}*/
+/*	dat->max[0] = maxx;*/
+/*	dat->max[2] = maxz;*/
+/*	dat->min[0] = minx;*/
+/*	dat->min[2] = minz;*/
 
-	printf("Data packed to go to device\n");
+/*	printf("Data packed to go to device\n");*/
 }
 
 

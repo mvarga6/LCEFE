@@ -38,8 +38,8 @@ __global__ void updateKernel(DevDataBlock data, float xclamp1, float xclamp2, fl
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
-	if (tid < data.Nnodes)
-	{  //if a node is here
+	if (tid < data.Nnodes) //if a node is here
+	{  
 		myNode = tid;
 		myNodeRank = data.nodeRank[myNode];
 		localMass = data.m[myNode];

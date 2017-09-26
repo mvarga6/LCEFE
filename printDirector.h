@@ -4,14 +4,15 @@
 void printDirector(float *THETA
 				 , float *PHI
 				 , int inZ
-				 , int label){
+				 , int label
+				 , std::string outputBase){
 
 //print to file to test
 float nx,ny,nz,th,ph;
 
 char fout[128];
 //sprintf(fout,"Output//director%d.xyzv",label);
-sprintf(fout,"%s_director%d.xyzv",OUTPUT.c_str(),label);
+sprintf(fout,"%s_director%d.xyzv", outputBase.c_str(),label);
 FILE* locOut;
 locOut = fopen(fout,"w");
 fprintf(locOut,"%d\n",inX*inY*inZ);

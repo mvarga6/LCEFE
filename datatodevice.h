@@ -2,8 +2,10 @@
 #define __DATATODEVICE_H__
 
 #include "mainhead.h"
+#include "simulation_parameters.h"
+#include "constant_cuda_defs.h"
 
-void data_to_device(DevDataBlock *dev, HostDataBlock *host){
+void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters *params){
 
 
 	//need to pitch 1D memory correctly to send to device
@@ -18,6 +20,7 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host){
 	
 	dev->Nnodes = Nnodes;
 	dev->Ntets = Ntets;
+
 
 	//set offset to be 0
 	size_t offset = 0;
@@ -135,6 +138,26 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host){
 								, widthNODE*sizeof(float)
                                 , height3
 								, cudaMemcpyHostToDevice ) );
+
+	// put parameters into __constant__ memory
+	PackedParameters _tmp;
+	_tmp.Alpha = params->Material.Alpha;
+	_tmp.Cxxxx = params->Material.Cxxxx;
+	_tmp.Cxxyy = params->Material.Cxxyy;
+	_tmp.Cxyxy = params->Material.Cxyxy;
+	_tmp.Density = params->Material.Density;
+	_tmp.Dt = params->Dynamics.Dt;
+	_tmp.Damp = params->Dynamics.Damp;
+	_tmp.Scale = params->Mesh.Scale;
+	_tmp.SInitial = params->Actuation.OrderParameter.SInitial;
+	_tmp.Smax = params->Actuation.OrderParameter.Smax;
+	_tmp.Smin = params->Actuation.OrderParameter.Smin;
+	_tmp.SRateOn = params->Actuation.OrderParameter.SRateOn;
+	_tmp.SRateOff = params->Actuation.OrderParameter.SRateOff;
+	_tmp.IncidentAngle = params->Actuation.Optics.IncidentAngle;
+	
+	HANDLE_ERROR( cudaMemcpyToSymbol(Parameters, &_tmp, sizeof(PackedParameters)) );
+
 
 	//================================================
 	//bind linear pitched memory to 2D texture
