@@ -104,8 +104,6 @@ int main(int argc, char *argv[])
 
 	//Pack data to send to device
 	packdata(Nodes, Tets, &host, &surfTets, &parameters);
-
-	printf("\no Data packed for GPU.");
 	
 	//send data to device
 	data_to_device(&dev, &host);
