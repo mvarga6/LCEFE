@@ -199,7 +199,7 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 		case HomeoSideUp: 	p.Initalize.PlanarSideUp = false; break;
 		case Amplitude: 	p.Initalize.SqueezeAmplitude = ::atof(v.c_str()); break;
 		case Ratio: 		p.Initalize.SqueezeRatio = ::atof(v.c_str()); break;
-		case SInitial: 		p.Actuation.OrderParameter.SInital = ::atof(v.c_str()); break;
+		case SInitial: 		p.Actuation.OrderParameter.SInitial = ::atof(v.c_str()); break;
 		case Smax: 			p.Actuation.OrderParameter.Smax = ::atof(v.c_str()); break;
 		case Smin: 			p.Actuation.OrderParameter.Smin = ::atof(v.c_str()); break;
 		case SRateOn: 		p.Actuation.OrderParameter.SRateOn = ::atof(v.c_str()); break;

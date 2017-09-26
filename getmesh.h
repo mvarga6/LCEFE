@@ -42,7 +42,8 @@ bool get_mesh_dim(int &Ntets, int &Nnodes){
 	float f0,f1,f2;
 	int Ttot;
 	FILE* meshin;
-    meshin = fopen(MESHFILE,"r");
+	//meshin = fopen(MESHFILE,"r");
+    meshin = fopen("mesh.msh","r");
 
 	if (meshin == NULL){
 		return false;
@@ -103,7 +104,8 @@ bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 
 	//open file to read mesh data from
 	FILE* meshin;
-    meshin = fopen(MESHFILE,"r");
+    //meshin = fopen(MESHFILE,"r");
+	meshin = fopen("mesh.msh","r");
 
 	if (meshin == NULL){
 		return false;
@@ -112,7 +114,7 @@ bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	//read total number of nodes and tetrahedras
 	fscanf(meshin,"%d %d\n",&dummy,&Ttot);
 
-
+	const float meshScale = 1.0f;
 
 	//scan in node positions
 	for(int i=0;i<Nnodes;i++){

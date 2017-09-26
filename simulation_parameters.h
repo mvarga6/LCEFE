@@ -39,6 +39,9 @@ enum ParameterType : int
 
 struct MaterialConstants
 {
+	__host__
+	MaterialConstants() {};
+	
 	float Cxxxx;
 	float Cxxyy;
 	float Cxyxy;
@@ -48,6 +51,9 @@ struct MaterialConstants
 
 struct DynamicsParameters
 {
+	__host__
+	DynamicsParameters(){};
+
 	int Nsteps;
 	float Dt;
 	float Damp;
@@ -55,17 +61,26 @@ struct DynamicsParameters
 
 struct GpuParameters
 {
+	__host__
+	GpuParameters() {};
+	
 	int ThreadsPerBlock;
 };
 
 struct OutputParameters
 {
+	__host__
+	OutputParameters() {};	
+	
 	std::string Base;
 	int FrameRate;
 };
 
 struct MeshParameters
 {
+	__host__
+	MeshParameters() {};	
+	
 	std::string File;
 	int NodeRankMax;
 	float Scale;
@@ -73,6 +88,9 @@ struct MeshParameters
 
 struct InitialState
 {
+	__host__
+	InitialState() {};
+
 	bool PlanarSideUp;
 	float SqueezeAmplitude;
 	float SqueezeRatio;
@@ -80,7 +98,10 @@ struct InitialState
 
 struct LiquidCrystalParameters
 {
-	float SInital;
+	__host__
+	LiquidCrystalParameters() {};
+	
+	float SInitial;
 	float Smax;
 	float Smin;
 	float SRateOn;
@@ -89,12 +110,18 @@ struct LiquidCrystalParameters
 
 struct UVIllumination
 {
+	__host__
+	UVIllumination() {};
+
 	float IncidentAngle;
 	int IterPerIllumRecalc;
 };
 
 struct ActuationParameters
 {
+	__host__
+	ActuationParameters() {};
+
  	// Order parameter dynamics
  	LiquidCrystalParameters OrderParameter;
 
@@ -104,6 +131,9 @@ struct ActuationParameters
 
 struct SimulationParameters
 {
+	__host__
+	SimulationParameters() {};
+
 	// Name of the file with parameters 
 	std::string File;
 	
@@ -127,6 +157,17 @@ struct SimulationParameters
 	
 	// parameters LCE actuation
 	ActuationParameters Actuation;
+};
+
+struct PackedParameters
+{
+	float Alpha;
+	float Cxxxx, Cxxyy, Cxyxy;
+	float Density;
+	float Dt, Damp;
+	float Scale;
+	float SInitial, Smin, Smax, SRateOn, SRateOff;
+	float IncidentAngle;
 };
 
 #endif

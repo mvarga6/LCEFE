@@ -12,7 +12,8 @@
 
 //This funciton handles all dynamics which will be run
 void run_dynamics(DevDataBlock *dev
-				, HostDataBlock *host
+				,HostDataBlock *host
+				,SimulationParameters *params
 				,int *Syncin
 				,int *Syncout
 				,int *g_mutex
@@ -22,8 +23,11 @@ void run_dynamics(DevDataBlock *dev
 	//==============================================================
 	//file to write energies to
 	//===============================================================
+
+	std::string energyFile(params->Output.Base + "_EvsT.dat");	
+	
 	char fout[128];
-	sprintf(fout, "%s_EvsT.dat", OUTPUT.c_str());
+	sprintf(fout, "%s", energyFile.c_str());
 	FILE*Eout;
 //	Eout = fopen("Output//EvsT.dat","w");
 	Eout = fopen(fout,"w");
@@ -32,15 +36,20 @@ void run_dynamics(DevDataBlock *dev
 	int Nnodes = dev->Nnodes;
 
 	// bind data to vtk writer
-	vtkWriter->BindPoints(host->r, Nnodes, DataFormat::LinearizedByDimension, 3);
-	vtkWriter->BindCells(host->TetToNode, Ntets, DataFormat::LinearizedByDimension, CellType::Tetrahedral);
+	//vtkWriter->BindPoints(host->r, Nnodes, DataFormat::LinearizedByDimension, 3);
+	//vtkWriter->BindCells(host->TetToNode, Ntets, DataFormat::LinearizedByDimension, CellType::Tetrahedral);
+
+	const float dt = params->Dynamics.Dt;
+	const float meshScale = params->Mesh.Scale;
+	const int Threads_Per_Block = params->Gpu.ThreadsPerBlock;
+	const int iterPerFrame = params->Output.FrameRate;
+	const int nSteps = params->Dynamics.Nsteps;
 
 	//=================================================================
 	//claclulate number of blocks to be executed
 	//=================================================================
 	cudaDeviceProp dev_prop;
 	HANDLE_ERROR(cudaGetDeviceProperties(&dev_prop,0));
-	int Threads_Per_Block = TPB;
 	int BlocksTet = (Ntets + Threads_Per_Block) / Threads_Per_Block;
 	int BlocksNode = (Nnodes + Threads_Per_Block) / Threads_Per_Block;
 
@@ -71,7 +80,7 @@ void run_dynamics(DevDataBlock *dev
 	// Begin Dynsmics
 	//================================================================
 
-	for(int iKern = 0; iKern < NSTEPS; iKern++)
+	for(int iKern = 0; iKern < nSteps; iKern++)
 	{
 
   		//timer for force calculation
@@ -124,11 +133,12 @@ void run_dynamics(DevDataBlock *dev
 			printf("\nIteration rate:  %f  iteartion/s \n kernel %d of %d\n"
 								,1000.0/(elapsedTimeU+elapsedTimeF)
 								,iKern+1
-								,NSTEPS);
+								,nSteps);
 
 			//print frame
 			printVTKframe(dev
 				,host
+				,params->Output.Base
 				,surf_tets
 				,iKern+1);
 				
@@ -163,8 +173,10 @@ void run_dynamics(DevDataBlock *dev
 
 	fclose(Eout);
 
+	std::string timingFile(params->Output.Base + "_timing.dat");
+
 	char fout2[128];
-	sprintf(fout2, "%s_timing.dat", OUTPUT.c_str());
+	sprintf(fout2, "%s", timingFile.c_str());
   	FILE*pout;
 //  	pout = fopen("Performance//timing.dat","w");
   	pout = fopen(fout2,"w");
@@ -175,7 +187,7 @@ void run_dynamics(DevDataBlock *dev
   	fclose(pout);
 
 
-	printf("Adev = %f Ahost = %f\n", Acheck[20+(3+2*4)], host->A[20+(3+2*4)]);
+	//printf("Adev = %f Ahost = %f\n", Acheck[20+(3+2*4)], host->A[20+(3+2*4)]);
 
 	//===================================================================
 
