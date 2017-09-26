@@ -3,3 +3,5 @@
 *.o
 *.so
 *.dll
+*.dat
+builds/*
