@@ -7,6 +7,7 @@
 #include "updateKernel.h"
 #include "getEnergy.h"
 
+#include "output_writer.h"
 
 
 //This funciton handles all dynamics which will be run
@@ -15,8 +16,9 @@ void run_dynamics(DevDataBlock *dev
 				,int *Syncin
 				,int *Syncout
 				,int *g_mutex
-				,std::vector<int>* surf_tets){
-
+				,std::vector<int>* surf_tets
+				,VtkWriter *vtkWriter)
+{
 	//==============================================================
 	//file to write energies to
 	//===============================================================
@@ -28,6 +30,10 @@ void run_dynamics(DevDataBlock *dev
 	float pE, kE;
 	int Ntets = dev->Ntets;
 	int Nnodes = dev->Nnodes;
+
+	// bind data to vtk writer
+	vtkWriter->BindPoints(host->r, Nnodes, DataFormat::LinearizedByDimension, 3);
+	vtkWriter->BindCells(host->TetToNode, Ntets, DataFormat::LinearizedByDimension, CellType::Tetrahedral);
 
 	//=================================================================
 	//claclulate number of blocks to be executed
@@ -125,6 +131,8 @@ void run_dynamics(DevDataBlock *dev
 				,host
 				,surf_tets
 				,iKern+1);
+				
+			//vtkWriter->Write(iKern+1);
 
 			printf("time = %f seconds\n", float(iKern)*dt);
 

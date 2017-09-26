@@ -1,6 +1,10 @@
 #ifndef __DATASTRUCT_H__
 #define __DATASTRUCT_H__
 
+#include "cuda.h"
+#include "cuda_runtime.h"
+#include "stdio.h"
+
 struct DevDataBlock {
 	int Ntets, Nnodes;
 	float *A;
