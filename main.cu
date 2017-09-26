@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	// from file if given
 	if (!parameters.File.empty())
 	{
-		result = reader->ReadFromFile("params.json", parameters);
+		result = reader->ReadFromFile(parameters.File, parameters);
 	}
 	
 	
@@ -90,10 +90,10 @@ int main(int argc, char *argv[])
 	init_As(Nodes, Tets);
 
 	//print spacefilling curve to represent adjacensy between tetrahedra
-	printorder(Tets, Tets.size);
+	printorder(Tets, parameters.Output.Base);
 
 	//pritn director
-	Tets.printDirector();
+	Tets.printDirector(parameters.Output.Base);
 
 	//now ready to prepare for dyanmics
 	//delcare data stuctures for data on device
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
 	//Pack data to send to device
 	packdata(Nodes, Tets, &host, &surfTets, &parameters);
-
+	
 	//send data to device
 	data_to_device(&dev, &host);
 
@@ -141,11 +141,13 @@ int main(int argc, char *argv[])
 	 HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
      HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 	 
+	 VtkWriter vtkWriter(parameters.Output.Base);
+	 
 	//=================================================================
 	//run dynamics
 	//=================================================================
 
-	run_dynamics(&dev, &host, Syncin, Syncout, g_mutex, &surfTets);
+	run_dynamics(&dev, &host, Syncin, Syncout, g_mutex, &surfTets, &vtkWriter);
 
 	//check for CUDA erros
 	any_errors();

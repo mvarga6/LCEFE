@@ -314,7 +314,7 @@ public:
 	int get_iS(int i);
 	float max(int cord);
 	float min(int cord);
-  	void printDirector();
+  	void printDirector(std::string);
 };
 
 TetArray::TetArray(int N){
@@ -437,11 +437,12 @@ int TetArray::get_iS(int i){
 	return this->S[i]; //returns int w/o converting back to float range
 }
 
-void TetArray::printDirector(){
+void TetArray::printDirector(std::string outputBase)
+{
   float th, ph;
   char fout[128];
-  sprintf(fout, "%s_dir.vtk", OUTPUT.c_str());
-  FILE*out;
+  sprintf(fout, "%s_dir.vtk", outputBase.c_str());
+  FILE * out;
 //  out = fopen("Output//dir.vtk","w");
   out = fopen(fout,"w");
   fprintf(out,"# vtk DataFile Version 3.1\n");
@@ -452,21 +453,24 @@ void TetArray::printDirector(){
   fprintf(out,"POINTS %d FLOAT\n",size);
   
   //loop over tetrahedras to get positons
-  for(int i=0;i<size;i++){
+  for (int i = 0; i < size; i++)
+  {
     fprintf(out,"%f %f %f\n",TetPos[i*4],TetPos[i*4+1],TetPos[i*4+2]);
   }//i
   fprintf(out,"\n");
 
   //cells
   fprintf(out,"CELLS %d %d\n",size,size*2);
-  for(int i=0;i<size;i++){
+  for(int i = 0; i < size; i++)
+  {
     fprintf(out,"1 %d\n",i);
   }//i
   fprintf(out,"\n");
   
   //cell types
   fprintf(out,"CELL_TYPES %d\n",size);
-  for(int i=0;i<size;i++){
+  for(int i = 0; i < size; i++)
+  {
     fprintf(out,"1\n");
   }//i
   fprintf(out,"\n");
@@ -474,7 +478,8 @@ void TetArray::printDirector(){
   //vector data
   fprintf(out,"POINT_DATA %d\n",size);
   fprintf(out,"VECTORS director FLOAT\n");
-  for(int i=0;i<size;i++){
+  for(int i = 0; i < size; i++)
+  {
     th = ThPhi[i*2];
     ph = ThPhi[i*2+1];
     fprintf(out,"%f %f %f\n",sin(th)*cos(ph),sin(th)*sin(ph),cos(th));
