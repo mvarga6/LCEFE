@@ -16,8 +16,13 @@
 
 using namespace std;
 
+struct MeshDimensions
+{
+	int Ntets, Nnodes;
+};
 
-void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
+MeshDimensions get_gmsh_dim(string fileName)
+{
 	//int indx;
 	bool ierror;
 	ifstream input;
@@ -143,14 +148,20 @@ void get_gmsh_dim(string fileName, int &Ntets, int &Nnodes){
 		}
 	}
 
-	Ntets = tet_num;
-	Nnodes = node_num;
-	printf("\n%d nodes\n%d tets\n",Nnodes,Ntets);
+	//Ntets = tet_num;
+	//Nnodes = node_num;
+	MeshDimensions dims;
+	dims.Nnodes = node_num;
+	dims.Ntets = tet_num;
+	printf("\n%d nodes\n%d tets\n", node_num, tet_num);
 	input.close();
 	return;
 }
 
-void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int Nnodes){
+void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
+	
+	int Nnodes = nodes.size;
+	int Ntets = tets.size;
 	//int indx;
 	ifstream input;
 	int n, c, k;
@@ -193,7 +204,7 @@ void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, int Ntets, int 
 				for(c = 0; c < 3; c++){
 					x = s_to_r8(text, length, ierror);
 					text.erase(0, length);
-					nodes.set_pos(n, c, x*meshScale);
+					nodes.set_pos(n, c, x * MeshScale);
 				}
 				n++; //next node
 			}

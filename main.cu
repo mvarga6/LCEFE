@@ -44,10 +44,10 @@ int main(int argc, char *argv[])
 	ParametersWriter *writer = new ConsoleWriter();
 	writer->Write(parameters);
 	
-	return 1;
+	//return 1;
 
 	//Get commandline arguments
-	parseCommandLine(argc, argv, &parameters);	
+	//parseCommandLine(argc, argv, &parameters);	
 
 	//Get Device properties
 	cudaDeviceProp prop;
@@ -55,45 +55,45 @@ int main(int argc, char *argv[])
 	printf( "Code executing on %s\n\n", prop.name );
 	//displayGPUinfo(prop);
 
-	int Ntets,Nnodes;
+	//int Ntets,Nnodes;
 	//get dimensions of the mesh
 	//get_mesh_dim(Ntets, Nnodes);
-	get_gmsh_dim(std::string(MESHFILE), Ntets, Nnodes);
+	MeshDimensions meshDim = get_gmsh_dim(parameters.Mesh.File);
 
 	//create objects of TetArray and NodeArray class with correct size
-	TetArray Tet = TetArray(Ntets);
-	NodeArray Node = NodeArray(Nnodes);
+	TetArray Tets = TetArray(meshDim.Ntets);
+	NodeArray Nodes = NodeArray(meshDim.Nnodes);
 
 	//read the mesh into Node and Tet objects
 	//get_mesh(Node,Tet,Ntets,Nnodes);
-	get_gmsh(std::string(MESHFILE), Node, Tet, Ntets, Nnodes);
+	get_gmsh(parameters.Mesh.File, Nodes, Tets, parameters.Mesh.Scale);
 	
 	const float flatten_Z[3] = {1.0f, 1.0f, 0.75f};
-	Node.deform(flatten_Z);
+	Nodes.deform(flatten_Z);
 	//Node.eulerRotation(0, PI/2.0, 0);
 
 	//get positions of tetrahedra
-	get_tet_pos(Node, Tet, Ntets);
+	get_tet_pos(Nodes, Tets);
 
 	//set director n for each tetrahedra
-	set_n(Tet, Ntets);
+	set_n(Tets, &parameters);
 
 	// comment out GPU calculations while Debugging director sim
 
 	//reorder tetrahedra 
-	gorder_tet(Node, Tet, Ntets);
+	gorder_tet(Nodes, Tets);
 
 	//re-order nodes and reassing tetrahedra component lists
-	finish_order(Node, Tet, Ntets, Nnodes);
+	finish_order(Nodes, Tets);
 
 	//find initial A's and invert them  store all in Tet object
-	init_As(Node, Tet, Ntets);
+	init_As(Nodes, Tets);
 
 	//print spacefilling curve to represent adjacensy between tetrahedra
-	printorder(Tet, Ntets);
+	printorder(Tets, Tets.size);
 
 	//pritn director
-	Tet.printDirector();
+	Tets.printDirector();
 
 	//now ready to prepare for dyanmics
 	//delcare data stuctures for data on device
@@ -103,14 +103,13 @@ int main(int argc, char *argv[])
 	std::vector<int> surfTets;
 
 	//Pack data to send to device
-	packdata(Node, Tet, &host, Ntets, Nnodes, &surfTets);
+	packdata(Nodes, Tets, &host, &surfTets, &parameters);
 
 	//send data to device
 	data_to_device(&dev, &host);
 
-
 	//Print Simulation Parameters and Such
-	printf("\n\n Prepared for dynamics with:\n  \
+	printf("\n\nPrepared for dynamics with:\n  \
 				steps/frame	  =	  %d\n    \
 				Volume        =   %f cm^3\n  \
 				Mass          =   %f kg\n\n",
@@ -119,36 +118,27 @@ int main(int argc, char *argv[])
 				host.totalVolume * materialDensity);
 
 
-
-
 	//=================================================================
 	//initillize GPU syncronization arrays
 	//will store syncronization information
 	//=================================================================
-	int Threads_Per_Block = TPB;
-	int Blocks = (Ntets+Threads_Per_Block)/Threads_Per_Block;
-	int *Syncin,*Syncout,*g_mutex;
+	int Threads_Per_Block = parameters.Gpu.ThreadsPerBlock;
+	int Blocks = (Tets.size + Threads_Per_Block) / Threads_Per_Block;
+	int *Syncin,*Syncout,*g_mutex, *SyncZeros;
 	//allocate memory on device for Syncin and Syncoutd
-
 	
-	HANDLE_ERROR( cudaMalloc( (void**)&Syncin
-								,Blocks*sizeof(int) ) );
-	HANDLE_ERROR( cudaMalloc( (void**)&Syncout
-								,Blocks*sizeof(int) ) );
-
-	int* SyncZeros;
+	HANDLE_ERROR( cudaMalloc( (void**)&Syncin, Blocks*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**)&Syncout, Blocks*sizeof(int) ) );
 	SyncZeros = (int*)malloc(Blocks*sizeof(int));
-	for (int i=0;i<Blocks;i++){
+	
+	for (int i = 0; i < Blocks; i++)
+	{
 		SyncZeros[i]=0;
 	}
 	
-	HANDLE_ERROR( cudaMemcpy(Syncin
-							,SyncZeros
-							,Blocks*sizeof(int)
-							,cudaMemcpyHostToDevice ) );
+	HANDLE_ERROR( cudaMemcpy(Syncin, SyncZeros, Blocks*sizeof(int), cudaMemcpyHostToDevice ) );
 	//allocate global mutex and set =0 
-	 HANDLE_ERROR( cudaMalloc( (void**)&g_mutex,
-                              sizeof(int) ) );
+	 HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
      HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 	 
 	//=================================================================
