@@ -6,9 +6,10 @@ all: ext main.cu clparse.cpp genrand.cpp parameters_reader.cpp parameters_writer
 	./build
 	
 clean:
+	cd VTKOUT && rm *.vtk || true && rm *.xyzv || true && rm *.dat || true
+	cd builds && rm * || true
 	cd extlib/jsmn && $(MAKE) clean
 	cd extlib/gmsh_io && $(MAKE) clean
-	cd builds && rm *
 	
 #clean vtk: 
 #	rm VTKOUT/*

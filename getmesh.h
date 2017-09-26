@@ -335,12 +335,12 @@ void finish_order(NodeArray &Nodes, TetArray &Tets){
 	bool go = true;
 	while(go)
 	{
-		go = true;
+		go = false;
 		for(int i = 0; i < Nnodes-1; i++){
 			if (Nodes.get_newnum(i) > Nodes.get_newnum(i+1))
 			{
 				Nodes.switch_nodes(i,i+1);
-				go = true;;
+				go = true;
 			}
 			if (Nodes.get_newnum(i) < 0)
 			{
