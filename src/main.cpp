@@ -52,6 +52,8 @@ int main(int argc, char *argv[])
 	ParametersWriter *writer = new ConsoleWriter();
 	writer->Write(parameters);
 	
+	VtkWriter vtkWriter(parameters.Output.Base);
+	
 	//return 1;
 
 	//Get commandline arguments
@@ -108,13 +110,15 @@ int main(int argc, char *argv[])
 	//and host
 	DevDataBlock dev;
 	HostDataBlock host;
+	DataManager dataManager(&host, &dev);
+	
 	std::vector<int> surfTets;
 
 	//Pack data to send to device
 	packdata(Nodes, Tets, &host, &surfTets, &parameters);
 	
 	//send data to device
-	data_to_device(&dev, &host, &parameters);
+	data_to_device(&dev, &host, &parameters, &dataManager);
 
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
@@ -146,8 +150,7 @@ int main(int argc, char *argv[])
 	HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
 	HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 	 
-	VtkWriter vtkWriter(parameters.Output.Base);
-	DataManager dataManager(&host, &dev);
+	
 	 
 	//=================================================================
 	//run dynamics

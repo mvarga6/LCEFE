@@ -5,7 +5,7 @@
 #include "simulation_parameters.h"
 #include "constant_cuda_defs.h"
 
-void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters *params){
+void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters *params, DataManager *manager){
 
 
 	//need to pitch 1D memory correctly to send to device
@@ -64,80 +64,84 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->ThPhi, Ntets*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
+	
+	
+	DataProcedure *pushAll = new PushAllToGpu();
+	manager->Execute(pushAll);
 
 	//copy data to device
 	//This will copy each 1D array as if it 
 	//is a pitched linear array which can be accessed like
 	//a 2-D array
 
-	HANDLE_ERROR( cudaMemcpy(dev->TetNodeRank
-								,host->TetNodeRank
-								,Ntets*4*sizeof(int)
-								,cudaMemcpyHostToDevice) );
-	HANDLE_ERROR( cudaMemcpy(dev->ThPhi
-								,host->ThPhi
-								,Ntets*sizeof(int)
-								,cudaMemcpyHostToDevice) );
-	HANDLE_ERROR( cudaMemcpy(dev->nodeRank
-								,host->nodeRank
-								,Nnodes*sizeof(int)
-								,cudaMemcpyHostToDevice) );
-	HANDLE_ERROR( cudaMemcpy(dev->m
-								,host->m
-								,Nnodes*sizeof(float)
-								,cudaMemcpyHostToDevice) );
-	HANDLE_ERROR( cudaMemcpy(dev->TetVol
-								,host->TetVol
-								,Ntets*sizeof(float)
-								,cudaMemcpyHostToDevice) );
+/*	HANDLE_ERROR( cudaMemcpy(dev->TetNodeRank*/
+/*								,host->TetNodeRank*/
+/*								,Ntets*4*sizeof(int)*/
+/*								,cudaMemcpyHostToDevice) );*/
+/*	HANDLE_ERROR( cudaMemcpy(dev->ThPhi*/
+/*								,host->ThPhi*/
+/*								,Ntets*sizeof(int)*/
+/*								,cudaMemcpyHostToDevice) );*/
+/*	HANDLE_ERROR( cudaMemcpy(dev->nodeRank*/
+/*								,host->nodeRank*/
+/*								,Nnodes*sizeof(int)*/
+/*								,cudaMemcpyHostToDevice) );*/
+/*	HANDLE_ERROR( cudaMemcpy(dev->m*/
+/*								,host->m*/
+/*								,Nnodes*sizeof(float)*/
+/*								,cudaMemcpyHostToDevice) );*/
+/*	HANDLE_ERROR( cudaMemcpy(dev->TetVol*/
+/*								,host->TetVol*/
+/*								,Ntets*sizeof(float)*/
+/*								,cudaMemcpyHostToDevice) );*/
 
-	HANDLE_ERROR( cudaMemcpy(dev->S
-								,host->S
-								,Ntets*sizeof(int)
-								,cudaMemcpyHostToDevice) );
-	HANDLE_ERROR( cudaMemset( dev->L, 0, Ntets*sizeof(int) ) );
-	HANDLE_ERROR( cudaMemcpy2D( dev->A
-								, dev->Apitch
-								, host->A
-								, widthTETS*sizeof(float)
-								, widthTETS*sizeof(float)
-                                , height16
-								, cudaMemcpyHostToDevice ) );
-	HANDLE_ERROR( cudaMemcpy2D( dev->TetToNode
-								, dev->TetToNodepitch
-								, host->TetToNode
-								, widthTETS*sizeof(int)
-								, widthTETS*sizeof(int)
-								, height4
-								, cudaMemcpyHostToDevice ) );
-	HANDLE_ERROR( cudaMemcpy2D( dev->r0
-								, dev->r0pitch
-								, host->r0
-								, widthNODE*sizeof(float)
-								, widthNODE*sizeof(float)
-								, height3
-								, cudaMemcpyHostToDevice ) );
-	HANDLE_ERROR( cudaMemcpy2D( dev->r
-								, dev->rpitch
-								, host->r
-								, widthNODE*sizeof(float)
-								, widthNODE*sizeof(float)
-								, height3
-								, cudaMemcpyHostToDevice ) );
-	HANDLE_ERROR( cudaMemcpy2D( dev->v
-								, dev->vpitch
-								, host->v
-                                , widthNODE*sizeof(float)
-								, widthNODE*sizeof(float)
-                                , height3
-								, cudaMemcpyHostToDevice ) );
-	HANDLE_ERROR( cudaMemcpy2D( dev->F
-								, dev->Fpitch
-								, host->F
-                                , widthNODE*sizeof(float)
-								, widthNODE*sizeof(float)
-                                , height3
-								, cudaMemcpyHostToDevice ) );
+/*	HANDLE_ERROR( cudaMemcpy(dev->S*/
+/*								,host->S*/
+/*								,Ntets*sizeof(int)*/
+/*								,cudaMemcpyHostToDevice) );*/
+/*	HANDLE_ERROR( cudaMemset( dev->L, 0, Ntets*sizeof(int) ) );*/
+/*	HANDLE_ERROR( cudaMemcpy2D( dev->A*/
+/*								, dev->Apitch*/
+/*								, host->A*/
+/*								, widthTETS*sizeof(float)*/
+/*								, widthTETS*sizeof(float)*/
+/*                                , height16*/
+/*								, cudaMemcpyHostToDevice ) );*/
+/*	HANDLE_ERROR( cudaMemcpy2D( dev->TetToNode*/
+/*								, dev->TetToNodepitch*/
+/*								, host->TetToNode*/
+/*								, widthTETS*sizeof(int)*/
+/*								, widthTETS*sizeof(int)*/
+/*								, height4*/
+/*								, cudaMemcpyHostToDevice ) );*/
+/*	HANDLE_ERROR( cudaMemcpy2D( dev->r0*/
+/*								, dev->r0pitch*/
+/*								, host->r0*/
+/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(float)*/
+/*								, height3*/
+/*								, cudaMemcpyHostToDevice ) );*/
+/*	HANDLE_ERROR( cudaMemcpy2D( dev->r*/
+/*								, dev->rpitch*/
+/*								, host->r*/
+/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(float)*/
+/*								, height3*/
+/*								, cudaMemcpyHostToDevice ) );*/
+/*	HANDLE_ERROR( cudaMemcpy2D( dev->v*/
+/*								, dev->vpitch*/
+/*								, host->v*/
+/*                                , widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(float)*/
+/*                                , height3*/
+/*								, cudaMemcpyHostToDevice ) );*/
+/*	HANDLE_ERROR( cudaMemcpy2D( dev->F*/
+/*								, dev->Fpitch*/
+/*								, host->F*/
+/*                                , widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(float)*/
+/*                                , height3*/
+/*								, cudaMemcpyHostToDevice ) );*/
 
 	// put parameters into __constant__ memory
 	PackedParameters _tmp;
@@ -164,23 +168,23 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 	//================================================
 
 
-	HANDLE_ERROR( cudaBindTexture2D( &offset 
-									,texRef_r0
-									, dev->r0
-									, texRef_r0.channelDesc
-									, widthNODE
-									, height3
-									, dev->r0pitch) );
-	texRef_r0.normalized = false;
-	//texRef_r0.filterMode = cudaFilterModeLinear;
-	HANDLE_ERROR( cudaBindTexture2D( &offset 
-									, texRef_r
-									, dev->r
-									, texRef_r.channelDesc
-									, widthNODE
-									, height3
-									, dev->rpitch) );
-	texRef_r.normalized = false;
+/*	HANDLE_ERROR( cudaBindTexture2D( &offset */
+/*									,texRef_r0*/
+/*									, dev->r0*/
+/*									, texRef_r0.channelDesc*/
+/*									, widthNODE*/
+/*									, height3*/
+/*									, dev->r0pitch) );*/
+/*	texRef_r0.normalized = false;*/
+/*	//texRef_r0.filterMode = cudaFilterModeLinear;*/
+/*	HANDLE_ERROR( cudaBindTexture2D( &offset */
+/*									, texRef_r*/
+/*									, dev->r*/
+/*									, texRef_r.channelDesc*/
+/*									, widthNODE*/
+/*									, height3*/
+/*									, dev->rpitch) );*/
+/*	texRef_r.normalized = false;*/
 	//texRef_rA.filterMode = cudaFilterModeLinear;
 	printf("\ndata sent to device\n");
 

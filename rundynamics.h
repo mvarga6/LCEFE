@@ -137,8 +137,8 @@ void run_dynamics(DevDataBlock *dev
 		{
 			printf("\n==============================================");
 			printf("\nKernel: %d of %d", iKern + 1, nSteps);
-			printf("\ntime: %f seconds", float(iKern)*dt);
-			printf("\nIteration rate: %f iteartion/s", 1000.0 / (elapsedTimeU + elapsedTimeF));
+			printf("\nTime: %f seconds", float(iKern)*dt);
+			printf("\nSpeed: %f iteartion/s", 1000.0 / (elapsedTimeU + elapsedTimeF));
 			
 		
 			// execute procedure using 
