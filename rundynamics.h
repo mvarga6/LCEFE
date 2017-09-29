@@ -62,11 +62,11 @@ void run_dynamics(DevDataBlock *dev
 
 	printf("execute dynamnics kernel using:\n%d blocks\n%d threads per bock\n",BlocksTet,Threads_Per_Block);
 
-	size_t widthTETS = Ntets;
-	size_t height16 = 16;
+	//size_t widthTETS = Ntets;
+	//size_t height16 = 16;
 
-	float *Acheck;
-	Acheck = (float*)malloc(Ntets * 16 * sizeof(float));
+	//float *Acheck;
+	float *Acheck = (float*)malloc(Ntets * 16 * sizeof(float));
 
 	//================================================================
 	// create start and stop events to measure performance

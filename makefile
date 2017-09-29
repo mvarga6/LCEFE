@@ -1,7 +1,7 @@
 
 #OBJECTS = clparse.o genrand.o physics_model.o output_writer.o parameters_reader.o parameters_writer.o main.o 
 EXTLIB = extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a
-FLAGS = -lcurand -std=c++11 -Wno-deprecated-gpu-targets
+FLAGS = -lcurand -ccbin=g++ -std=c++11 -Wno-deprecated-gpu-targets
 
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
