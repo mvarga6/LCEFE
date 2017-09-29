@@ -23,7 +23,7 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 
 
 	//set offset to be 0
-	size_t offset = 0;
+	//size_t offset = 0;
 
 	//used pitch linear memory on device for fast access
 	//allocate memory on device for pitched linear memory

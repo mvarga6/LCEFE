@@ -4,7 +4,7 @@
 #include "sendForce.h"
 #include "read_dev_data.h"
 #include "getQ.h"
-
+#include "device_helpers.h"
 
 /*__global__ void force_kernel(	float *A*/
 /*								,int pitchA*/
@@ -36,7 +36,7 @@ __global__ void force_kernel(DevDataBlock data, float t)
 	float r0[12];
 	float F[12]={0.0};
 	float vlocal[12];
-	int node_num[4];
+	int NodeNum[4];
 	int TetNodeRank[4];
 	float Q[9] = {0.0};
 	float myVol;
@@ -44,8 +44,9 @@ __global__ void force_kernel(DevDataBlock data, float t)
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
-
-	if(tid < data.Ntets){ //if thread executed has a tetrahedra
+	//if thread executed has a tetrahedra
+	if(tid < data.Ntets)
+	{ 
 
 
 		//========================================
@@ -54,26 +55,40 @@ __global__ void force_kernel(DevDataBlock data, float t)
 		//========================================
 		myVol = data.TetVol[tid];   //simple enough here
 
-		get_initial_data(Ainv
-						,r0
-						,node_num
-						,Ashift
-						,data.A
-						,data.v
-						,vshift
-						,vlocal
-						,data.TetNodeRank
-						,TetNodeRank
-						,data.TetToNode
-						,TTNshift
-						,data.Ntets);
+/*		get_initial_data(Ainv*/
+/*						,r0*/
+/*						,node_num*/
+/*						,Ashift*/
+/*						,data.A*/
+/*						,data.v*/
+/*						,vshift*/
+/*						,vlocal*/
+/*						,data.TetNodeRank*/
+/*						,TetNodeRank*/
+/*						,data.TetToNode*/
+/*						,TTNshift*/
+/*						,data.Ntets);*/
 
 		//========================================
 		//read in data that will be changing
 		//IOswitch sets which to read from to
 		//allow use of texture memory
 		//========================================
-		get_variable_data(r, node_num);
+		//get_variable_data(r, node_num);
+
+
+		//========================================
+		//Read all the data needed for force calc
+		//========================================
+		DeviceHelpers::ReadGlobalToLocal(
+			NodeNum, TetNodeRank,
+			Ainv, r0, r, vlocal,
+			data.A, Ashift,
+			data.v, vshift,
+			data.TetNodeRank,
+			data.TetToNode, TTNshift,
+			data.Ntets
+		);
 
 		//========================================
 		//Calculate illumination on this tetrahedra
@@ -102,7 +117,8 @@ __global__ void force_kernel(DevDataBlock data, float t)
 		//memroy so force can be summed in 
 		//update kernal
 		//========================================
-		sendForce(data.dF, dFshift, F, node_num, TetNodeRank, myVol);
+		//sendForce(data.dF, dFshift, F, node_num, TetNodeRank, myVol);
+		DeviceHelpers::SendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
 
 
 	}//end if tid<Ntets
