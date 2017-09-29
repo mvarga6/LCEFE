@@ -181,6 +181,16 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 									, height3
 									, dev->rpitch) );
 	texRef_r.normalized = false;
+	
+	HANDLE_ERROR( cudaBindTexture2D( &offset 
+									, texRef_dF
+									, dev->dF
+									, texRef_dF.channelDesc
+									, widthNODE
+									, heightMR
+									, dev->dFpitch) );
+	texRef_dF.normalized = false;
+	
 	//texRef_rA.filterMode = cudaFilterModeLinear;
 	printf("\ndata sent to device\n");
 

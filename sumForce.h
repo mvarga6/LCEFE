@@ -35,14 +35,18 @@ if(ry>197.0){
 	for( int cord=0;cord<3;cord++ ){
 
 		//sum forces from each tet this node belongs to 
-		for(int r=0;r<myNodeRank;r++){Fnew[cord]+=dF[dFshift*(cord+3*r)+myNode];}
+		for(int r = 0; r < myNodeRank; r++)
+		{
+			Fnew[cord]+=dF[dFshift*(cord+3*r)+myNode];
+			//Fnew[cord] += tex2D(texRef_dF, myNode, cord + 3*r);			
+		}
 		
 
 		//read in old forces
 		Fold[cord] = F[Fshift*cord+myNode];
 
 		//set old forces to new forces
-		F[Fshift*cord+myNode]=Fnew[cord];
+		F[Fshift*cord+myNode] = Fnew[cord];
 
 		//read in old velocities
 		vold[cord] = v[vshift*cord+myNode];

@@ -10,7 +10,7 @@
 //texture refference deffinitions
 texture<float, 2, cudaReadModeElementType> texRef_r0;
 texture<float, 2, cudaReadModeElementType> texRef_r;
-
+texture<float, 2, cudaReadModeElementType> texRef_dF;
 
 
 #endif //__TEXDEF_H__
