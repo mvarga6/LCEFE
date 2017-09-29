@@ -5,7 +5,8 @@
 #include "cuda_runtime.h"
 #include "stdio.h"
 
-struct DevDataBlock {
+struct DevDataBlock 
+{
 	int Ntets, Nnodes;
 	float *A;
 	int *TetToNode;
@@ -33,11 +34,12 @@ struct DevDataBlock {
 	size_t dFpitch;
 
 
-	cudaEvent_t     start, stop;
-    	float           totalTime;
+	//cudaEvent_t     start, stop;
+    //	float           totalTime;
 };
 
-struct HostDataBlock {
+struct HostDataBlock 
+{
 	int Ntets, Nnodes;
 	float *A;
 	int *TetToNode;
