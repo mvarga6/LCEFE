@@ -17,8 +17,8 @@ public:
 	/*
 		Calculate the mechanical potential energy using strain
 	*/
-	__host__ __device__
-	static void CalculateElasticPotential(float &localPe, const float eps[9], const float &cxxxx, const float &cxxyy, const float &cxyxy);
+	__device__
+	static void CalculateElasticPotential(float &local_Pe, const float eps[9], const float &cxxxx, const float &cxxyy, const float &cxyxy);
 	
 	/*
 		Calculate energy from liquid crystal order

@@ -15,30 +15,30 @@ void printVTKframe(DevDataBlock *dev
 	//need to pitch 1D memory correctly to send to device
 	int Nnodes = dev->Nnodes;
 	int Ntets = dev->Ntets;
-	size_t height3 = 3;
-	size_t widthNODE = Nnodes;
+	//size_t height3 = 3;
+	//size_t widthNODE = Nnodes;
 
-	HANDLE_ERROR( cudaMemcpy2D(  host->r
-								, widthNODE*sizeof(float)
-								, dev->r
-								, dev->rpitch
-								, widthNODE*sizeof(float)
-								, height3
-								, cudaMemcpyDeviceToHost ) );
+/*	HANDLE_ERROR( cudaMemcpy2D(  host->r*/
+/*								, widthNODE*sizeof(float)*/
+/*								, dev->r*/
+/*								, dev->rpitch*/
+/*								, widthNODE*sizeof(float)*/
+/*								, height3*/
+/*								, cudaMemcpyDeviceToHost ) );*/
 
-	
-	HANDLE_ERROR( cudaMemcpy2D(  host->v
-								, widthNODE*sizeof(float)
-								, dev->v
-								, dev->vpitch
-								, widthNODE*sizeof(float)
-								, height3
-								, cudaMemcpyDeviceToHost ) );
+/*	*/
+/*	HANDLE_ERROR( cudaMemcpy2D(  host->v*/
+/*								, widthNODE*sizeof(float)*/
+/*								, dev->v*/
+/*								, dev->vpitch*/
+/*								, widthNODE*sizeof(float)*/
+/*								, height3*/
+/*								, cudaMemcpyDeviceToHost ) );*/
 
-	HANDLE_ERROR( cudaMemcpy(  host->pe
-								, dev->pe
-								, Ntets*sizeof(float)
-								, cudaMemcpyDeviceToHost ) );
+/*	HANDLE_ERROR( cudaMemcpy(  host->pe*/
+/*								, dev->pe*/
+/*								, Ntets*sizeof(float)*/
+/*								, cudaMemcpyDeviceToHost ) );*/
 
 /*	HANDLE_ERROR( cudaMemcpy ( host->S*/
 /*								, dev->S*/
@@ -148,7 +148,7 @@ void printVTKframe(DevDataBlock *dev
 	
 	keTOTAL = keTOTAL;
 	float totalVolume = host->totalVolume*10.0;
-	printf("\npE = %f J/cm^3  kE = %f J/cm^3  pE+kE = %f J/cm^3\n", 
+	printf("\npE = %f J/cm^3\nkE = %f J/cm^3\npE+kE = %f J/cm^3\n", 
 		peTOTAL / totalVolume,
 		keTOTAL / totalVolume,
 		(peTOTAL + keTOTAL) / totalVolume);

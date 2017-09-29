@@ -160,8 +160,8 @@ MeshDimensions get_gmsh_dim(string fileName)
 
 void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
 	
-	int Nnodes = nodes.size;
-	int Ntets = tets.size;
+	//int Nnodes = nodes.size;
+	//int Ntets = tets.size;
 	//int indx;
 	ifstream input;
 	int n, c, k;

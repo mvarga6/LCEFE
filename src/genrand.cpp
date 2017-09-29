@@ -44,9 +44,9 @@ unsigned long randmt() {
 double genrand()
 {
 unsigned long b=randmt();
-(double)b;
+//(double)b;
 double a;
-a=b*0.000000000232830644;
+a=(double)b*0.000000000232830644;
 return a;
 }
 void purge()
@@ -63,7 +63,7 @@ for (int j = 0; j < 2500; j++)
 
 double randgauss(double sigma, double mean)
 {
-float x1, x2, w, y1, y2, gauss;
+float x1, x2, w, y2, gauss; //y1, 
  
          do {
                  x1 = 2.0 * genrand() - 1.0;
@@ -72,7 +72,7 @@ float x1, x2, w, y1, y2, gauss;
          } while ( w >= 1.0 );
 
          w = sqrt( (-2.0 * log( w ) ) / w );
-         y1 = x1 * w;
+         //y1 = x1 * w;
          y2 = x2 * w;
 		gauss = y2*sigma + mean;
 return gauss;

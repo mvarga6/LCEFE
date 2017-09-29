@@ -22,18 +22,18 @@ void Physics::CalculateEpsilon(
 }
 
 
-__host__ __device__
+__device__
 void CalculateElasticPotential(
-	float &localPe, 
+	float &local_Pe, 
 	const float eps[9], 
 	const float &cxxxx, 
 	const float &cxxyy, 
 	const float &cxyxy)
 {
-	localPe = 0.0f;
-	localPe += cxxxx*(eps[3*0+0]*eps[3*0+0]+eps[3*1+1]*eps[3*1+1]+eps[3*2+2]*eps[3*2+2]);
-	localPe += 2.0*cxxyy*(eps[3*0+0]*eps[3*1+1]+eps[3*1+1]*eps[3*2+2]+eps[3*0+0]*eps[3*2+2]);
-	localPe += 4.0*cxyxy*(eps[3*0+1]*eps[3*0+1]+eps[3*1+2]*eps[3*1+2]+eps[3*2+0]*eps[3*2+0]);
+	local_Pe = 0.0f;
+	local_Pe += cxxxx*(eps[3*0+0]*eps[3*0+0]+eps[3*1+1]*eps[3*1+1]+eps[3*2+2]*eps[3*2+2]);
+	local_Pe += 2.0*cxxyy*(eps[3*0+0]*eps[3*1+1]+eps[3*1+1]*eps[3*2+2]+eps[3*0+0]*eps[3*2+2]);
+	local_Pe += 4.0*cxyxy*(eps[3*0+1]*eps[3*0+1]+eps[3*1+2]*eps[3*1+2]+eps[3*2+0]*eps[3*2+0]);
 }
 
 
