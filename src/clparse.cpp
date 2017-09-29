@@ -80,12 +80,12 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		}
 		else if (arg == "-P" || arg == "--planartop")
 		{
-			bool PLANARTOP = true;
+			//bool PLANARTOP = true;
 			params->Initalize.PlanarSideUp = true;
 		}
 		else if (arg == "-T" || arg == "--homeotop")
 		{
-			bool PLANARTOP = false;
+			//bool PLANARTOP = false;
 			params->Initalize.PlanarSideUp = false;
 		}
 		else if (arg == "-r" || arg == "--onrate")

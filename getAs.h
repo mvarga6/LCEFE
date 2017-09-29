@@ -8,7 +8,7 @@
 void init_As(NodeArray &Nodes, TetArray &Tets)
 {
 	int Ntets = Tets.size;
-	int Nnodes = Nodes.size;
+	//int Nnodes = Nodes.size;
 	float tempAin[16],tempAout[16];
 	int ip;
 

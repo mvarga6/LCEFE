@@ -37,14 +37,14 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 	dat->S 			 = (int*)malloc(Ntets*sizeof(int));
 
 	//.. untransformed max's and min's
-	float L;//, w, h;
+	//float L;//, w, h;
 	for(int c = 0; c < 3; c++)
 	{
 		dat->min[c] = Nodes.min_point(c);
 		dat->max[c] = Nodes.max_point(c);
 	}
 	
-	L = dat->max[0] - dat->min[0];
+	//L = dat->max[0] - dat->min[0];
 //	w = dat->max[1] - dat->min[1];
 //	h = dat->max[2] - dat->min[2];
 

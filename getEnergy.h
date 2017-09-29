@@ -10,21 +10,21 @@ void getEnergy(DevDataBlock *dev, HostDataBlock *host, float &pE, float &kE){
 	//need to pitch 1D memory correctly to send to device
 	int Nnodes = dev->Nnodes;
 	int Ntets = dev->Ntets;
-	size_t height3 = 3;
-	size_t widthNODE = Nnodes;
+	//size_t height3 = 3;
+	//size_t widthNODE = Nnodes;
 
-	HANDLE_ERROR( cudaMemcpy2D(  host->v
-								, widthNODE*sizeof(float)
-								, dev->v
-								, dev->vpitch
-								, widthNODE*sizeof(float)
-								, height3
-								, cudaMemcpyDeviceToHost ) );
+/*	HANDLE_ERROR( cudaMemcpy2D(  host->v*/
+/*								, widthNODE*sizeof(float)*/
+/*								, dev->v*/
+/*								, dev->vpitch*/
+/*								, widthNODE*sizeof(float)*/
+/*								, height3*/
+/*								, cudaMemcpyDeviceToHost ) );*/
 
-	HANDLE_ERROR( cudaMemcpy(  host->pe
-								, dev->pe
-								, Ntets * sizeof(float)
-								, cudaMemcpyDeviceToHost ) );
+/*	HANDLE_ERROR( cudaMemcpy(  host->pe*/
+/*								, dev->pe*/
+/*								, Ntets * sizeof(float)*/
+/*								, cudaMemcpyDeviceToHost ) );*/
 
 	float peTOTAL = 0.0;
 	for(int nt = 0; nt < Ntets; nt++)

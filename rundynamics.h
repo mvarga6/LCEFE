@@ -8,6 +8,7 @@
 #include "getEnergy.h"
 
 #include "output_writer.h"
+#include "data_manager.h"
 
 
 //This funciton handles all dynamics which will be run
@@ -18,8 +19,14 @@ void run_dynamics(DevDataBlock *dev
 				,int *Syncout
 				,int *g_mutex
 				,std::vector<int>* surf_tets
-				,VtkWriter *vtkWriter)
+				,VtkWriter *vtkWriter
+				,DataManager *dataManager)
 {
+	//======================================
+	// Create data procedures needed
+	//======================================
+	DataProcedure *getPrintData = new GetPrintData();
+
 	//==============================================================
 	//file to write energies to
 	//===============================================================
@@ -128,13 +135,15 @@ void run_dynamics(DevDataBlock *dev
 		//pull data to host then print to files
 		if((iKern) % iterPerFrame == 0)
 		{
-
-			//print calculation speed
-			printf("\nIteration rate:  %f  iteartion/s \n kernel %d of %d\n"
-								,1000.0/(elapsedTimeU+elapsedTimeF)
-								,iKern+1
-								,nSteps);
-
+			printf("\n==============================================");
+			printf("\nKernel: %d of %d", iKern + 1, nSteps);
+			printf("\ntime: %f seconds", float(iKern)*dt);
+			printf("\nIteration rate: %f iteartion/s", 1000.0 / (elapsedTimeU + elapsedTimeF));
+			
+		
+			// execute procedure using 
+			dataManager->Execute(getPrintData);
+		
 			//print frame
 			printVTKframe(dev
 				,host
@@ -144,7 +153,7 @@ void run_dynamics(DevDataBlock *dev
 				
 			//vtkWriter->Write(iKern+1);
 
-			printf("time = %f seconds\n", float(iKern)*dt);
+			
 
 
 			//print energy
@@ -158,17 +167,17 @@ void run_dynamics(DevDataBlock *dev
 
 		}//if((iKern+1)%iterPerFrame==0)
 
-		HANDLE_ERROR(cudaMemcpy2D( Acheck
-				, widthTETS * sizeof(float)
-				, dev->A
-				, dev->Apitch
-				, widthTETS * sizeof(float)
-                , height16
-				, cudaMemcpyDeviceToHost ) );
+/*		HANDLE_ERROR(cudaMemcpy2D( Acheck*/
+/*				, widthTETS * sizeof(float)*/
+/*				, dev->A*/
+/*				, dev->Apitch*/
+/*				, widthTETS * sizeof(float)*/
+/*                , height16*/
+/*				, cudaMemcpyDeviceToHost ) );*/
 
 		//reset global mutex
-		HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
-
+		//HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+		
 	}//iKern
 
 	fclose(Eout);

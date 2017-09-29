@@ -22,7 +22,7 @@
 //#include "simulation_parameters.h"
 #include "parameters_reader.h"
 #include "parameters_writer.h"
-
+#include "data_manager.h"
 #include "constant_cuda_defs.h"
 
 int main(int argc, char *argv[])
@@ -34,14 +34,21 @@ int main(int argc, char *argv[])
 	
 	// from cmdline
 	result = reader->ReadFromCmdline(argc, argv, parameters);
-	
+	if (result != SUCCESS)
+	{
+		return (int)result;
+	}
+		
 	// from file if given
 	if (!parameters.File.empty())
 	{
 		result = reader->ReadFromFile(parameters.File, parameters);
+		if (result != SUCCESS)
+		{
+			return (int)result;
+		}
 	}
-	
-	
+		
 	ParametersWriter *writer = new ConsoleWriter();
 	writer->Write(parameters);
 	
@@ -110,10 +117,7 @@ int main(int argc, char *argv[])
 	data_to_device(&dev, &host, &parameters);
 
 	//Print Simulation Parameters and Such
-	printf("\n\nPrepared for dynamics with:\n  \
-				steps/frame	  =	  %d\n    \
-				Volume        =   %f cm^3\n  \
-				Mass          =   %f kg\n\n",
+	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
 				parameters.Output.FrameRate,
 				host.totalVolume,
 				host.totalVolume * parameters.Material.Density);
@@ -139,16 +143,16 @@ int main(int argc, char *argv[])
 	
 	HANDLE_ERROR( cudaMemcpy(Syncin, SyncZeros, Blocks*sizeof(int), cudaMemcpyHostToDevice ) );
 	//allocate global mutex and set =0 
-	 HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
-     HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
+	HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 	 
-	 VtkWriter vtkWriter(parameters.Output.Base);
+	VtkWriter vtkWriter(parameters.Output.Base);
+	DataManager dataManager(&host, &dev);
 	 
 	//=================================================================
 	//run dynamics
 	//=================================================================
-
-	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, &vtkWriter);
+	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, &vtkWriter, &dataManager);
 
 	//check for CUDA erros
 	any_errors();
