@@ -9,6 +9,7 @@
 
 #include "output_writer.h"
 #include "data_manager.h"
+#include "performance_recorder.h"
 
 
 //This funciton handles all dynamics which will be run
@@ -20,7 +21,8 @@ void run_dynamics(DevDataBlock *dev
 				,int *g_mutex
 				,std::vector<int>* surf_tets
 				,VtkWriter *vtkWriter
-				,DataManager *dataManager)
+				,DataManager *dataManager
+				,PerformanceRecorder *recorder)
 {
 	//======================================
 	// Create data procedures needed
@@ -71,10 +73,11 @@ void run_dynamics(DevDataBlock *dev
 	//================================================================
 	// create start and stop events to measure performance
 	//================================================================
-	cudaEvent_t startF, stopF, startU, stopU; 
-	float elapsedTimeF,elapsedTimeU;
-	float etF = 0.0, etU = 0.0;
- 	float countF = 0.0, countU = 0.0;
+	//cudaEvent_t startF, stopF, startU, stopU; 
+	//cudaEvent_t frameStart, frameEnd;
+	//float elapsedTimeF = 0, elapsedTimeU = 0;
+	//float etF = 0.0, etU = 0.0;
+ 	//float countF = 0.0, countU = 0.0;
 
 	//================================================================
 	// initiallize experimental setup contraints
@@ -87,31 +90,38 @@ void run_dynamics(DevDataBlock *dev
 	// Begin Dynsmics
 	//================================================================
 
+	//HANDLE_ERROR(cudaEventCreate(&frameStart));
+	//HANDLE_ERROR(cudaEventCreate(&frameEnd));
+	//HANDLE_ERROR(cudaEventRecord(frameStart));
+	
+	
+	recorder->Create("time-loop")->Start();
+
 	for(int iKern = 0; iKern < nSteps; iKern++)
 	{
 
   		//timer for force calculation
-		HANDLE_ERROR(cudaEventCreate(&startF));
-		HANDLE_ERROR(cudaEventCreate(&stopF));
-		HANDLE_ERROR(cudaEventRecord(startF,0));
+		//HANDLE_ERROR(cudaEventCreate(&startF));
+		//HANDLE_ERROR(cudaEventCreate(&stopF));
+		//HANDLE_ERROR(cudaEventRecord(startF,0));
 
 		//calculate force and send force components to be summed
 		force_kernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*float(iKern));
 
 		//sync threads before updating
-		cudaThreadSynchronize();
+		//cudaThreadSynchronize();
 
 		//end timer for force kernel
-		HANDLE_ERROR(cudaEventRecord(stopF, 0));
-		HANDLE_ERROR(cudaEventSynchronize(stopF));
-		HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeF, startF, stopF));
-		HANDLE_ERROR(cudaEventDestroy( startF ));
-		HANDLE_ERROR(cudaEventDestroy( stopF ));
+		//HANDLE_ERROR(cudaEventRecord(stopF, 0));
+		//HANDLE_ERROR(cudaEventSynchronize(stopF));
+		//HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeF, startF, stopF));
+		//HANDLE_ERROR(cudaEventDestroy( startF ));
+		//HANDLE_ERROR(cudaEventDestroy( stopF ));
 
 	  	//start timer for update routine	
-	  	HANDLE_ERROR(cudaEventCreate(&startU));
-		HANDLE_ERROR(cudaEventCreate(&stopU));
-		HANDLE_ERROR(cudaEventRecord(startU,0));
+	  	//HANDLE_ERROR(cudaEventCreate(&startU));
+		//HANDLE_ERROR(cudaEventCreate(&stopU));
+		//HANDLE_ERROR(cudaEventRecord(startU,0));
 
 		//sum forces and update positions	
 		updateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev, clamps[0], clamps[1], tableZ);
@@ -120,26 +130,38 @@ void run_dynamics(DevDataBlock *dev
 		cudaThreadSynchronize();
 
 		//end timer for force kernel
-		HANDLE_ERROR(cudaEventRecord(stopU, 0));
-		HANDLE_ERROR(cudaEventSynchronize(stopU));
-		HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeU, startU, stopU));
-		HANDLE_ERROR( cudaEventDestroy( startU ));
-		HANDLE_ERROR( cudaEventDestroy( stopU ));
+		//HANDLE_ERROR(cudaEventRecord(stopU, 0));
+		//HANDLE_ERROR(cudaEventSynchronize(stopU));
+		//HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeU, startU, stopU));
+		//HANDLE_ERROR( cudaEventDestroy( startU ));
+		//HANDLE_ERROR( cudaEventDestroy( stopU ));
 
   		//update timer data
-  		etF += elapsedTimeF;
-  		etU += elapsedTimeU;
-  		countF += 1.0;
-  		countU += 1.0;
+  		//etF += elapsedTimeF;
+  		//etU += elapsedTimeU;
+  		//countF += 1.0;
+  		//countU += 1.0;
+  		
+  		recorder->Mark("time-loop");
 
 		//pull data to host then print to files
 		if((iKern) % iterPerFrame == 0)
 		{
+			//float frameElapsed = 0;
+			//HANDLE_ERROR(cudaEventRecord(frameEnd));
+			//HANDLE_ERROR(cudaEventSynchronize(frameEnd));
+			//HANDLE_ERROR(cudaEventElapsedTime(&frameElapsed, frameStart, frameEnd));
+			
+		
 			printf("\n==============================================");
 			printf("\nKernel: %d of %d", iKern + 1, nSteps);
 			printf("\nTime: %f seconds", float(iKern)*dt);
-			printf("\nSpeed: %f iteartion/s", 1000.0 / (elapsedTimeU + elapsedTimeF));
+			recorder->Log("time-loop");
+			//printf("\nSpeed: %f iteration/s", 1000.0 / (elapsedTimeU + elapsedTimeF));
+			//printf("\nSpeed: %f iteration/s", ((float)params->Output.FrameRate) / (frameElapsed*0.001f));
+		
 			
+			//HANDLE_ERROR(cudaEventRecord(frameStart));
 		
 			// execute procedure using 
 			dataManager->Execute(getPrintData);
@@ -176,24 +198,24 @@ void run_dynamics(DevDataBlock *dev
 /*				, cudaMemcpyDeviceToHost ) );*/
 
 		//reset global mutex
-		//HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+		HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 		
 	}//iKern
 
 	fclose(Eout);
 
-	std::string timingFile(params->Output.Base + "_timing.dat");
+/*	std::string timingFile(params->Output.Base + "_timing.dat");*/
 
-	char fout2[128];
-	sprintf(fout2, "%s", timingFile.c_str());
-  	FILE*pout;
-//  	pout = fopen("Performance//timing.dat","w");
-  	pout = fopen(fout2,"w");
-  	fprintf(pout,"nodes = %d\n", dev->Nnodes);
-  	fprintf(pout,"elements = %d\n", dev->Ntets);
-  	fprintf(pout,"forcecalc time (ms) = %f\n", etF / countF);	
-  	fprintf(pout,"update time (ms) = %f\n", etU / countU);
-  	fclose(pout);
+/*	char fout2[128];*/
+/*	sprintf(fout2, "%s", timingFile.c_str());*/
+/*  	FILE*pout;*/
+/*//  	pout = fopen("Performance//timing.dat","w");*/
+/*  	pout = fopen(fout2,"w");*/
+/*  	fprintf(pout,"nodes = %d\n", dev->Nnodes);*/
+/*  	fprintf(pout,"elements = %d\n", dev->Ntets);*/
+/*  	fprintf(pout,"forcecalc time (ms) = %f\n", etF / countF);	*/
+/*  	fprintf(pout,"update time (ms) = %f\n", etU / countU);*/
+/*  	fclose(pout);*/
 
 
 	//printf("Adev = %f Ahost = %f\n", Acheck[20+(3+2*4)], host->A[20+(3+2*4)]);

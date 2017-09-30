@@ -57,7 +57,7 @@ __global__ void force_kernel(DevDataBlock data, float t)
 
 /*		get_initial_data(Ainv*/
 /*						,r0*/
-/*						,node_num*/
+/*						,NodeNum*/
 /*						,Ashift*/
 /*						,data.A*/
 /*						,data.v*/
@@ -74,7 +74,7 @@ __global__ void force_kernel(DevDataBlock data, float t)
 		//IOswitch sets which to read from to
 		//allow use of texture memory
 		//========================================
-		//get_variable_data(r, node_num);
+		//get_variable_data(r, NodeNum);
 
 
 		//========================================
@@ -117,7 +117,7 @@ __global__ void force_kernel(DevDataBlock data, float t)
 		//memroy so force can be summed in 
 		//update kernal
 		//========================================
-		//sendForce(data.dF, dFshift, F, node_num, TetNodeRank, myVol);
+		//sendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
 		DeviceHelpers::SendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
 
 

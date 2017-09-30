@@ -24,6 +24,7 @@
 #include "parameters_writer.h"
 #include "data_manager.h"
 #include "constant_cuda_defs.h"
+#include "performance_recorder.h"
 
 int main(int argc, char *argv[])
 {
@@ -49,16 +50,18 @@ int main(int argc, char *argv[])
 		}
 	}
 		
-	ParametersWriter *writer = new ConsoleWriter();
+	// to write the parameters to console
+	ParametersWriter * writer = new ConsoleWriter();
 	writer->Write(parameters);
 	
-	VtkWriter vtkWriter(parameters.Output.Base);
+	// for printing to output files
+	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
 	
-	//return 1;
-
-	//Get commandline arguments
-	//parseCommandLine(argc, argv, &parameters);	
-
+	// for timing data
+	PerformanceRecorder * recorder = new PerformanceRecorder();;
+	
+	recorder->Create("init")->Start();
+	
 	//Get Device properties
 	cudaDeviceProp prop;
 	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
@@ -110,7 +113,7 @@ int main(int argc, char *argv[])
 	//and host
 	DevDataBlock dev;
 	HostDataBlock host;
-	DataManager dataManager(&host, &dev);
+	DataManager * dataManager = new DataManager(&host, &dev);
 	
 	std::vector<int> surfTets;
 
@@ -118,7 +121,7 @@ int main(int argc, char *argv[])
 	packdata(Nodes, Tets, &host, &surfTets, &parameters);
 	
 	//send data to device
-	data_to_device(&dev, &host, &parameters, &dataManager);
+	data_to_device(&dev, &host, &parameters, dataManager);
 
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
@@ -150,19 +153,20 @@ int main(int argc, char *argv[])
 	HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
 	HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 	 
-	
+	recorder->Stop("init");
+	recorder->Log("init");
 	 
 	//=================================================================
 	//run dynamics
 	//=================================================================
-	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, &vtkWriter, &dataManager);
+	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, vtkWriter, dataManager, recorder);
 
 	//check for CUDA erros
 	any_errors();
 
 	//exit program
 
-	HANDLE_ERROR( cudaFree( Syncin ) );
+	HANDLE_ERROR(cudaFree( Syncin ) );
 	HANDLE_ERROR(cudaFree( Syncout ) );
 	HANDLE_ERROR(cudaFree( g_mutex ) );
 	exit_program(&dev);
