@@ -68,7 +68,7 @@ void run_dynamics(DevDataBlock *dev
 	//size_t height16 = 16;
 
 	//float *Acheck;
-	float *Acheck = (float*)malloc(Ntets * 16 * sizeof(float));
+	//float *Acheck = (float*)malloc(Ntets * 16 * sizeof(float));
 
 	//================================================================
 	// create start and stop events to measure performance

@@ -5,7 +5,7 @@
 
 //calculate current A matrix and then invert it
 //inverted A and original A stored in Tet object
-void init_As(NodeArray &Nodes, TetArray &Tets)
+static void init_As(NodeArray &Nodes, TetArray &Tets)
 {
 	int Ntets = Tets.size;
 	//int Nnodes = Nodes.size;

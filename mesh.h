@@ -25,9 +25,11 @@ public:
 	Mesh(SimulationParameters *);
 	
 	bool Load();
-	void SetDirector(DirectorField *);
 	void Apply(MeshOptimizer *);
-	void Update();
+	
+	void SetDirector(DirectorField *);
+	bool CalculateVolumes();
+	bool CalculateAinv();
 };
 
 #endif
