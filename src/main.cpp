@@ -70,14 +70,14 @@ int main(int argc, char *argv[])
 			return (int)result;
 		}
 	}
-		
-	// for timing data
-	PerformanceRecorder * recorder = new PerformanceRecorder();;
-	recorder->Create("init")->Start();
 	
 	// to write the parameters to console
 	ParametersWriter * writer = new ConsoleWriter();
 	writer->Write(parameters);
+		
+	// for timing data
+	PerformanceRecorder * recorder = new PerformanceRecorder();;
+	recorder->Create("init")->Start();
 	
 	// for printing to output files
 	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
@@ -142,11 +142,17 @@ int main(int argc, char *argv[])
 	mesh->Apply(mcReorder);
 	mesh->Apply(reIndex);
 
+	if (!(mesh->CalculateVolumes() && mesh->CalculateAinv()))
+	{
+		// failed to calculate necessary things on mesh
+		exit(11);
+	}
+
 	//find initial A's and invert them  store all in Tet object
-	init_As(*mesh->Nodes, *mesh->Tets);
+	//init_As(*mesh->Nodes, *mesh->Tets);
 
 	//print spacefilling curve to represent adjacensy between tetrahedra
-	printorder(*mesh->Tets, parameters.Output.Base);
+	//printorder(*mesh->Tets, parameters.Output.Base);
 
 	//pritn director
 	mesh->Tets->printDirector(parameters.Output.Base);
