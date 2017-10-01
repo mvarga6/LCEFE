@@ -29,6 +29,7 @@
 #include "mesh_optimizer.h"
 #include "director_field.h"
 #include "mesh.h"
+#include "functions.hpp"
 
 // these will go away into their own service class
 #include "getAs.h"
@@ -114,6 +115,13 @@ int main(int argc, char *argv[])
 	
 	// Get the director field (default for now)
 	DirectorField * director = new UniformField(0.0f, 0.0f);
+	
+	//UnivariableFunction *theta_of_x = new Linear({1.0f});
+	//UnivariableFunction *phi_of_y = new Sinusoinal(/* some simulation length */);	
+	//ScalerField3D * theta = new MultiplicativeField3D(theta_of_x);
+	//ScalerField3D * phi = new AdditiveField3D(NULL, phi_of_y);	
+	//DirectorField * director = new CartesianDirectorField(theta, phi);
+	
 	mesh->SetDirector(director);
 
 

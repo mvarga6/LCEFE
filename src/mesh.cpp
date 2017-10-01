@@ -116,7 +116,7 @@ void Mesh::Apply(MeshOptimizer *optimizer)
 
 
 
-void Mesh::UpdateProperties()
+void Mesh::Update()
 {
 	
 }
