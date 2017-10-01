@@ -1,6 +1,11 @@
 #ifndef __EXIT_PROGRAM_H__
 #define __EXIT_PROGRAM_H__
 
+#include "datastruct.h"
+#include "errorhandle.h"
+
+#include "cuda.h"
+#include "cuda_runtime.h"
 
 void exit_program(DevDataBlock *dev)
 {

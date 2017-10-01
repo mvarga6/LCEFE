@@ -21,7 +21,7 @@ struct MeshDimensions
 	int Ntets, Nnodes;
 };
 
-MeshDimensions get_gmsh_dim(string fileName)
+static MeshDimensions get_gmsh_dim(string fileName)
 {
 	//int indx;
 	bool ierror;
@@ -158,7 +158,7 @@ MeshDimensions get_gmsh_dim(string fileName)
 	return dims;
 }
 
-void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
+static void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
 	
 	//int Nnodes = nodes.size;
 	//int Ntets = tets.size;

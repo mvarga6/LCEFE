@@ -2,13 +2,13 @@
 #define __GETMESH_H__
 
 #include "genrand.h"
-#include "mainhead.h"
+//#include "mainhead.h"
 #include <math.h>
 
 //====================================================
 // calculate the volume of a tetrahedra
 //====================================================
-float tetVolume(float x1, float y1, float z1
+static float tetVolume(float x1, float y1, float z1
 			   ,float x2, float y2, float z2
 			   ,float x3, float y3, float z3
 			   ,float x4, float y4, float z4){
@@ -37,7 +37,7 @@ return abs(vol0);
 
 
 //read the mesh from mesh.dat
-bool get_mesh_dim(int &Ntets, int &Nnodes){
+static bool get_mesh_dim(int &Ntets, int &Nnodes){
 	int d1A,d2,d3,d4,d5,d1B;
 	float f0,f1,f2;
 	int Ttot;
@@ -97,7 +97,7 @@ bool get_mesh_dim(int &Ntets, int &Nnodes){
 	return true;
 }
 
-bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
+static bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 	int dummy,Ttot;
 	float rx,ry,rz;
 	int n0,n1,n2,n3;
@@ -158,7 +158,7 @@ bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 //of the nodes so we can arrange the tetrahedra in a smart
 //order to optimize memmory calls in the GPU
 
-void get_tet_pos(NodeArray &Nodes, TetArray &Tets)
+static void get_tet_pos(NodeArray &Nodes, TetArray &Tets)
 {
 	int Ntets = Tets.size;
 	int n0,n1,n2,n3;
@@ -200,7 +200,7 @@ void get_tet_pos(NodeArray &Nodes, TetArray &Tets)
 //re order tetrahedra so that tetrahedra which are close in number are also close
 //in space so memory on GPU can be textured and accessed quicker
 //use MC to minimize neighbors which are not close in memory
-void gorder_tet(NodeArray &Nodes, TetArray &Tets){
+static void gorder_tet(NodeArray &Nodes, TetArray &Tets){
 
 	srand(98237);    //seed random number generator
 	mt_init();       //initialize random number generator
@@ -277,7 +277,7 @@ void gorder_tet(NodeArray &Nodes, TetArray &Tets){
 
 //re-order nodes so that ones in tetrahedra next to each other are close
 //also renumber the nodes and tetrahedra nab lists 
-void finish_order(NodeArray &Nodes, TetArray &Tets){
+static void finish_order(NodeArray &Nodes, TetArray &Tets){
 
 	int Ntets = Tets.size;
 	int Nnodes = Nodes.size;
