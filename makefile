@@ -1,34 +1,35 @@
+BUILDNAME = gafe6
 
-#OBJECTS = clparse.o genrand.o physics_model.o output_writer.o parameters_reader.o parameters_writer.o main.o 
+OBJDIR := obj
+SRCDIR := src
+VTKDIR := VTKOUT
+BLDDIR := builds
+WORLD := $(OBJDIR) $(VTKDIR) $(BLDDIR) 
+
 EXTLIB = extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a
 FLAGS = -lcurand -ccbin=g++ -std=c++11 -Wno-deprecated-gpu-targets
 
-CPP_FILES := $(wildcard src/*.cpp)
-OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
-
-
-
-#all: ext main.cu clparse.cpp genrand.cpp physics_model.cpp parameters_reader.cpp parameters_writer.cpp
-#	./build
+CPP_FILES := $(wildcard $(SRCDIR)/*.cpp)
+OBJ_FILES := $(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
 	
-#build: $(OBJECTS)
-all: ext $(OBJ_FILES)
-	nvcc $(FLAGS) $(OBJ_FILES) $(EXTLIB) -o builds/gafe6
+all: world ext $(OBJ_FILES)
+	nvcc $(FLAGS) $(OBJ_FILES) $(EXTLIB) -o $(BLDDIR)/$(BUILDNAME)
 	
-obj/%.o: src/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	nvcc -x cu $(FLAGS) -I. -dc $< -o $@
 	
 ext:
 	cd extlib/jsmn && $(MAKE) && $(MAKE) test
 	cd extlib/gmsh_io && $(MAKE) all
 		
+world:
+	mkdir -p $(WORLD)
+		
 clean:
-	rm -f *.o || true
-	cd VTKOUT && rm *.vtk || true && rm *.xyzv || true && rm *.dat || true
-	cd builds && rm * || true
-	rm obj/*.o || true
+	rm -r $(OBJDIR)
+	rm -f $(BLDDIR)/$(BUILDNAME)
 	cd extlib/jsmn && $(MAKE) clean
 	cd extlib/gmsh_io && $(MAKE) clean
-	
-#clean vtk: 
-#	rm VTKOUT/*
+
+clear: $(VTKDIR)
+	rm -r $(VTKDIR)/
