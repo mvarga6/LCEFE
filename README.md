@@ -1,37 +1,44 @@
-GAFE6_bechmark
-==============
+Liquid Crystal Elastomer Finite Element 
+=======================================
+GPU accelerated finite element based electrodynamics simulation.
 
-GPU based finite element based electrodynamics simulation.
+Written for research at Liquid Crystal 
+Institute @ Kent State University, Kent OH
 
----
+####Authers: 
 
-## Build/Usage Instructions -- Run ./build to create 'gafe6' and 'printgpuinfo' executables. This 
-##	requires cuda/7.5.18 and gnu/4.9.1 on the Ohio Supercomputing Center envirnoment. Use
-##
-##		module load cuda/7.5.18
-##		module load gnu/4.9.1
-##		./build
-##		./gafe6 [-option] [value] ...
-##
-##	in an interactive development shell.  Otherwise, build 'gafe6' then submit myscript.job as 
-##	PBS job.  An example of how to produce data for a whole parameter space is shown in 
-##	'angle_experiment.sh', where many jobs are submitted with different parameters.  'myscript.job'
-##	now requires at least a DATADIR option, defing where to put the output of the sim.  It would be
-##	smart to make sure to define the sim output pre-fix using OUT option.  This is examplified in
-##	'angle_experiment.sh'.
-
-##Material Parameters
-
-####All material parameters set within `parameters.h`
-
-* MESHFILE global sets the name of the file the mesh is to be read in from.
+* Andrew Konya
+* Michael Varga
 
 ---
 
-##Setting Initial Conditions
+##Building
 
-* Initial velocity and force can be set in `packdata.h` which is where data is copied into data structures which can be sent to the GPU.
-* Initial director profile can be set in `setn.h` in the function `setThPh`
+* Build using `make`
+* This compiles all object files and links to executable in builds/. 
+* The name of the build is set by $(BUILDNAME) found on the first like of `makefile` 
+
+##Runtime Parameters
+
+* The executable takes cmdline arguments to set parameters in the simulation. It also accepts a parameters file to read the values from.
+* An example parameters file `params.json` is provided. It reads standard json or the simplified json found in the example.
+* A list of available cmdline options and parameters are shown below...
+
+####Material Parameters
+
+`{name}` : `{type}` : `{description}`
+`density` : float : Sets the material density of the elastomer
+`alpha` : float : Sets the compling stength of nematic order to stress
+`cxxxx` : float : Primary elastic constant
+`cxxyy` : float : Secondary elastic constant
+`cxyxy` : float : Elastic constant
+
+####Simulation Parameters
+
+`{name}` : `{type}` : `{description}`
+`nsteps` : int : The number of timesteps to run the simulation
+`dt` : float : The length of time steps
+`framerate` : int : how often to print output files
 
 ---
 
