@@ -4,7 +4,8 @@ OBJDIR := obj
 SRCDIR := src
 VTKDIR := VTKOUT
 BLDDIR := builds
-WORLD := $(OBJDIR) $(VTKDIR) $(BLDDIR) 
+CACHE := cache
+WORLD := $(OBJDIR) $(VTKDIR) $(BLDDIR) $(CACHE)
 
 EXTLIB = extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a
 FLAGS = -lcurand -ccbin=g++ -std=c++11 -Wno-deprecated-gpu-targets
@@ -31,5 +32,7 @@ clean:
 	cd extlib/jsmn && $(MAKE) clean
 	cd extlib/gmsh_io && $(MAKE) clean
 
-clear: $(VTKDIR)
-	rm -r $(VTKDIR)/
+clear: $(VTKDIR) $(CACHE)
+	rm -f $(VTKDIR)/*
+	rm -f $(CACHE)/*
+	

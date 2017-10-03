@@ -37,6 +37,7 @@ private:
 	string JsmnTokenType(int);
 	ParameterType GetParameterType(string&, bool&);
 	bool CleanKey(string&);
+	bool StrToBool(const string&);
 };
 
 #endif

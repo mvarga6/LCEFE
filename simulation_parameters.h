@@ -33,7 +33,8 @@ enum ParameterType : int
 	SRateOff = 23,
 	IncidentAngle = 24,
 	IterPerIllumRecalc = 25,
-	ParametersFile = 26
+	ParametersFile = 26,
+	MeshCaching = 27
 };
 
 struct MaterialConstants
@@ -83,6 +84,7 @@ struct MeshParameters
 	std::string File;
 	int NodeRankMax;
 	float Scale;
+	bool CachingOn;
 };
 
 struct InitialState

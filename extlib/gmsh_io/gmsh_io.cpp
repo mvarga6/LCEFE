@@ -919,7 +919,7 @@ void gmsh_mesh2d_write ( string gmsh_filename, int m, int node_num,
 //****************************************************************************80
 
 void gmsh_mesh3d_write ( string gmsh_filename, int m, int node_num, 
-  double node_x[], int element_order, int element_num, int element_node[] )
+  float node_x[], int element_order, int element_num, int element_node[] )
 
 //****************************************************************************80
 //

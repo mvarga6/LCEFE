@@ -9,8 +9,6 @@
 
 using namespace std;
 
-
-
 class Mesh
 {
 	bool loaded;
@@ -24,12 +22,21 @@ public:
 
 	Mesh(SimulationParameters *);
 	
-	bool Load();
+	bool Load(bool*);
+	bool Cache();
 	void Apply(MeshOptimizer *);
 	
 	void SetDirector(DirectorField *);
 	bool CalculateVolumes();
 	bool CalculateAinv();
+	
+private:
+	
+	bool LoadMesh(const std::string&);
+	bool ReadCache(const std::string&);
+	bool WriteCache(const std::string&);
+	
+	std::string GetCacheKey();
 };
 
 #endif
