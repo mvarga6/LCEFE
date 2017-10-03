@@ -7,8 +7,8 @@ Institute @ Kent State University, Kent OH
 
 #### Authers: 
 
-* Andrew Konya
-* Michael Varga
+** Andrew Konya
+** Michael Varga
 
 ---
 
@@ -26,21 +26,27 @@ Institute @ Kent State University, Kent OH
 
 #### Material Parameters
 
-`{name} : {type} : {description}`
-`density : float : Sets the material density of the elastomer`
-`alpha : float : Sets the compling stength of nematic order to stress`
-`cxxxx : float : Primary elastic constant`
-`cxxyy : float : Secondary elastic constant`
-`cxyxy : float : Elastic constant`
+`{name} : {type} : {description}` 
+
+`density : float : Sets the material density of the elastomer` 
+
+`alpha : float : Sets the compling stength of nematic order to stress` 
+
+`cxxxx : float : Primary elastic constant` 
+
+`cxxyy : float : Secondary elastic constant` 
+
+`cxyxy : float : Elastic constant` 
 
 #### Simulation Parameters
 
-`{name}` : `{type}` : `{description}`
-`nsteps` : int : The number of timesteps to run the simulation
-`dt` : float : The length of time steps
-`framerate` : int : how often to print output files
+`{name} : {type} : {description}` 
 
----
+`nsteps : int : The number of timesteps to run the simulation` 
+
+`dt : float : The length of time steps` 
+
+`framerate : int : how often to print output files` 
 
 ### Files to be aware of 
 
