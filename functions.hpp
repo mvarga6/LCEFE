@@ -10,6 +10,22 @@ using namespace std;
 class UnivariableFunction { public:	virtual float operator()(float) = 0; };
 class ScalerField3D{ public: virtual float operator()(float, float, float) = 0; };
 
+
+class ConstantField3D : public ScalerField3D
+{
+	float a;
+public:
+	inline ConstantField3D(float A)
+	{
+		a = A;
+	}
+	
+	inline float operator()(float x, float y, float z)
+	{
+		return a;
+	}
+};
+
 template <int D = 1>
 class Polynomial : public UnivariableFunction
 {
