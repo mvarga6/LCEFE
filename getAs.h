@@ -38,7 +38,12 @@ static void init_As(NodeArray &Nodes, TetArray &Tets)
 				//Cacluate inverse of A matrix
 		if (!gluInvertMatrix(tempAin, tempAout))
 		{
-			printf("Matrix inversion failed; Determinant = 0\n");
+			printf("\nMatrix inversion failed; Determinant = 0");
+			printf("\nTet: %d Nodes: [%d %d %d %d]", t, 
+				Tets.get_nab(t, 0), 
+				Tets.get_nab(t, 1),
+				Tets.get_nab(t, 2),
+				Tets.get_nab(t, 3));
 		}
 		else
 		{
@@ -53,7 +58,7 @@ static void init_As(NodeArray &Nodes, TetArray &Tets)
 		}
 	}//t
 
-	printf("A's calculated, inverted and stored.\n");
+	printf("\nA's calculated, inverted and stored.");
 }
 
 #endif //__GETAS_H__

@@ -35,7 +35,7 @@ void gmsh_mesh2d_write ( string gmsh_filename, int m, int node_num, double node_
 
 int element_order, int element_num, int element_node[] );
 
-void gmsh_mesh3d_write ( string gmsh_filename, int m, int node_num, double node_x[],
+void gmsh_mesh3d_write ( string gmsh_filename, int m, int node_num, float node_x[],
 
 int element_order, int element_num, int element_node[] );
 

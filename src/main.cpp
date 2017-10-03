@@ -82,19 +82,10 @@ int main(int argc, char *argv[])
 	// for printing to output files
 	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
 	
-	// the mesh object
-	Mesh * mesh = new Mesh(&parameters);
-	
 	//int Ntets,Nnodes;
 	//get dimensions of the mesh
 	//get_mesh_dim(Ntets, Nnodes);
-	//MeshDimensions meshDim = get_gmsh_dim(parameters.Mesh.File);
-	if (!mesh->Load())
-	{
-		// log failure
-		exit(10);
-	}
-
+	
 	//create objects of TetArray and NodeArray class with correct size
 	//TetArray Tets = TetArray(meshDim.Ntets);
 	//NodeArray Nodes = NodeArray(meshDim.Nnodes);
@@ -109,16 +100,51 @@ int main(int argc, char *argv[])
 
 	//get positions of tetrahedra
 	//get_tet_pos(Nodes, Tets);
+	
+	// comment out GPU calculations while Debugging director sim
 
+	//reorder tetrahedra 
+	//gorder_tet(Nodes, Tets);
+
+	//re-order nodes and reassing tetrahedra component lists
+	//finish_order(Nodes, Tets);
+	
+	// the mesh object
+	Mesh * mesh = new Mesh(&parameters);
+	
+	
+	//MeshDimensions meshDim = get_gmsh_dim(parameters.Mesh.File);
+	bool cachedMesh;
+	if (!mesh->Load(&cachedMesh))
+	{
+		// log failure
+		exit(10);
+	}
+
+	// we cache an optimized version of the mesh
+	if (!cachedMesh)
+	{
+		// optimize the mesh
+		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition();
+		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300, 0.01f, 0.99999f);
+		MeshOptimizer * reIndex = new ReassignIndices();
+		mesh->Apply(simpleSort);
+		mesh->Apply(mcReorder);
+		mesh->Apply(reIndex);
+		
+		// save the optimized mesh
+		mesh->Cache();
+	}
+	else
+	{
+		printf("\nMesh loaded from cache!");
+	}
+	
 	//set director n for each tetrahedra
 	//set_n(Tets, &parameters);
 	
 	// Get the director field (default for now)
 	//DirectorField * director = new UniformField(0.0f, 0.0f);
-	
-	
-	// theta pi / 2 constants
-	// phi
 	
 	//UnivariableFunction *theta_of_x = new Linear({1.0f});
 	//UnivariableFunction *phi_of_y = new Sinusoinal(/* some simulation length */);	
@@ -132,23 +158,6 @@ int main(int argc, char *argv[])
 	
 	DirectorField * director = new UniformField(PI / 2, 0.0f);
 	mesh->SetDirector(director);
-
-	// comment out GPU calculations while Debugging director sim
-
-	//reorder tetrahedra 
-	//gorder_tet(Nodes, Tets);
-
-	//re-order nodes and reassing tetrahedra component lists
-	//finish_order(Nodes, Tets);
-	
-	// optimize the mesh
-	MeshOptimizer * simpleSort = new SortOnTetrahedraPosition();
-	MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300, 0.01f, 0.99999f);
-	MeshOptimizer * reIndex = new ReassignIndices();
-	
-	mesh->Apply(simpleSort);
-	mesh->Apply(mcReorder);
-	mesh->Apply(reIndex);
 
 	if (!(mesh->CalculateVolumes() && mesh->CalculateAinv()))
 	{

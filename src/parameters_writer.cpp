@@ -50,7 +50,8 @@ bool ConsoleWriter::Write(SimulationParameters& parameters)
 	
 	cout << "o Mesh" << endl;
 	cout << "\tmeshfile:  " << parameters.Mesh.File << endl;
-	cout << "\tmeshscale: " << parameters.Mesh.Scale << endl << endl;
+	cout << "\tmeshscale: " << parameters.Mesh.Scale << endl;
+	cout << "\tcaching: " << parameters.Mesh.CachingOn << endl << endl;
 	
 	return true;
 }

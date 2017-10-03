@@ -195,6 +195,7 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 		case MeshFile:		p.Mesh.File = v; break;
 		case NodeRankMax: 	p.Mesh.NodeRankMax = ::atoi(v.c_str()); break;
 		case MeshScale: 	p.Mesh.Scale = ::atof(v.c_str()); break;
+		case MeshCaching:	p.Mesh.CachingOn = StrToBool(v); break;
 		case PlanarSideUp: 	p.Initalize.PlanarSideUp = true; break;
 		case HomeoSideUp: 	p.Initalize.PlanarSideUp = false; break;
 		case Amplitude: 	p.Initalize.SqueezeAmplitude = ::atof(v.c_str()); break;
@@ -285,6 +286,7 @@ ParameterType ParametersReader::GetParameterType(string& key, bool &flagType)
 	if (key == "meshfile" || key == "mesh") return MeshFile;
 	if (key == "maxnoderank" || key == "maxrank") return NodeRankMax;
 	if (key == "meshscale" || key == "scale") return MeshScale;
+	if (key == "caching" || key == "cache") return MeshCaching;
 	if (key == "planartop") { flagType = true; return PlanarSideUp; }
 	if (key == "homeotop") { flagType = true; return HomeoSideUp; }
 	if (key == "aplitude" || key == "sqzdheight" || key == "sqzamp") return Amplitude;
@@ -323,5 +325,17 @@ bool ParametersReader::CleanKey(string &key)
 	}
 	
 	return true;
+}
+
+bool ParametersReader::StrToBool(const string& str)
+{
+	if (str == "yes" || 
+		str == "Yes" || 
+		str == "true" || 
+		str == "True")
+	{
+		return true;
+	}
+	else return false;
 }
 
