@@ -1,0 +1,3 @@
+* Make the dynamics of the order parameter changable via the parameters file.
+* Make the director field setable via parameters file.
+* Cache the optimized mesh after first optimization.
