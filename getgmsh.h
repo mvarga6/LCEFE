@@ -19,6 +19,7 @@ using namespace std;
 struct MeshDimensions
 {
 	int Ntets, Nnodes;
+	float rmin[3], rmax[3];
 };
 
 static MeshDimensions get_gmsh_dim(string fileName)
@@ -158,7 +159,15 @@ static MeshDimensions get_gmsh_dim(string fileName)
 	return dims;
 }
 
-static void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
+static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
+	
+	
+	MeshDimensions result;
+	result.Nnodes = nodes.size;
+	result.Ntets = tets.size;
+	
+	float min[3] = {999999.f, 999999.f, 999999.f};
+	float max[3] = {-999999.f, -999999.f, -999999.f};
 	
 	//int Nnodes = nodes.size;
 	//int Ntets = tets.size;
@@ -201,10 +210,15 @@ static void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float Me
 			else{
 				s_to_i4(text, length, ierror); // read indx
 				text.erase(0,length);
-				for(c = 0; c < 3; c++){
+				for(c = 0; c < 3; c++)
+				{
 					x = s_to_r8(text, length, ierror);
 					text.erase(0, length);
 					nodes.set_pos(n, c, x * MeshScale);
+					
+					// set max and mins
+					if (x > max[c]) max[c] = x;
+					if (x < min[c]) min[c] = x;
 				}
 				n++; //next node
 			}
@@ -252,9 +266,16 @@ static void get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float Me
 			}
 		}
 	}
+	
+	for(int d = 0; d < 3; d++)
+	{
+		result.rmax[d] = max[d];
+		result.rmin[d] = min[d];
+	}
+	
 	input.close();
 	printf("\nNode positions and tetrahedral neighbors assigned.");
-	return;
+	return result;
 }
 
 

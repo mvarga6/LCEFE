@@ -43,7 +43,7 @@ const float mythphi = float(myThPhi);
 //float S = float((S_in)/float(SRES));//*(t/2.0);
 
 //old calculation
-float S =- 1.0 * t / 0.2;
+float S = -1.0 * t / 0.2;
 if (S < -1.0){ S = -1.0; }
 
 //convert ThPhi into theta and phi

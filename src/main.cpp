@@ -144,19 +144,19 @@ int main(int argc, char *argv[])
 	//set_n(Tets, &parameters);
 	
 	// Get the director field (default for now)
-	//DirectorField * director = new UniformField(0.0f, 0.0f);
+	//DirectorField * director = new UniformField(PI / 2, 0.0f);
 	
 	//UnivariableFunction *theta_of_x = new Linear({1.0f});
 	//UnivariableFunction *phi_of_y = new Sinusoinal(/* some simulation length */);	
 	//ScalerField3D * theta = new MultiplicativeField3D(theta_of_x);
 	//ScalerField3D * phi = new AdditiveField3D(NULL, phi_of_y);	
 	
-	//UnivariableFunction *phi_of_z = new Linear({(PI / 6)}, PI / 4.0f);
-	//ScalerField3D * theta = new ConstantField3D(PI / 4.0f);
-	//ScalerField3D * phi = new AdditiveField3D(NULL, NULL, phi_of_z);
-	//DirectorField * director = new CartesianDirectorField(theta, phi);
+	UnivariableFunction *phi_of_z = new Linear({(PI / 6)}, PI / 4.0f);
+	ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
+	ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
+	DirectorField * director 	  = new CartesianDirectorField(theta, phi);
+		
 	
-	DirectorField * director = new UniformField(PI / 2, 0.0f);
 	mesh->SetDirector(director);
 
 	if (!(mesh->CalculateVolumes() && mesh->CalculateAinv()))

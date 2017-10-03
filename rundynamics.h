@@ -198,7 +198,7 @@ void run_dynamics(DevDataBlock *dev
 /*				, cudaMemcpyDeviceToHost ) );*/
 
 		//reset global mutex
-		HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+		//HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
 		
 	}//iKern
 
