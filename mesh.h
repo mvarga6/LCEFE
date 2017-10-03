@@ -9,6 +9,8 @@
 
 using namespace std;
 
+struct MeshDimensions;
+
 class Mesh
 {
 	bool loaded;
@@ -19,6 +21,7 @@ public:
 	TetArray *Tets;
 	NodeArray *Nodes;
 	SimulationParameters *params; // a ptr to the simulation parameters
+	MeshDimensions *dimensions;
 
 	Mesh(SimulationParameters *);
 	

@@ -186,10 +186,11 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	printf("\nLoading mesh %s", meshFile.c_str());
 
 	//get dimensions of the mesh
-	MeshDimensions meshDim;
+	dimensions = new MeshDimensions;
 	try
 	{
-		meshDim = get_gmsh_dim(meshFile);
+		(*dimensions) = get_gmsh_dim(meshFile);
+		
 	}
 	catch (const std::exception& e)
 	{
@@ -206,13 +207,13 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	}
 	
 	// allocate the containers for nodes and tets
-	this->Tets = new TetArray(meshDim.Ntets);
-	this->Nodes = new NodeArray(meshDim.Nnodes);	
+	this->Tets = new TetArray(dimensions->Ntets);
+	this->Nodes = new NodeArray(dimensions->Nnodes);	
 	
 	// read the positions of nodes and tet indices
 	try
 	{
-		get_gmsh(meshFile, *Nodes, *Tets, this->params->Mesh.Scale);
+		(*dimensions) = get_gmsh(meshFile, *Nodes, *Tets, this->params->Mesh.Scale);
 	}
 	catch (const std::exception& e)
 	{
