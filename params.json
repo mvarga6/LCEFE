@@ -1,9 +1,9 @@
 nsteps: 2000000
-dt: 0.00002
+dt: 0.00001
 framerate: 5000
-meshfile: "Mesh/thinfilm3.msh"
+meshfile: "Mesh/WareCross1.msh"
 meshScale: 1.0
-outputBase: "VTKOUT/test"
+outputBase: "VTKOUT/WareCross1"
 cxxxx: 29400000
 cxxyy: 28000000
 cxyxy: 570000
@@ -11,4 +11,4 @@ alpha: 1710000
 damp: 0.9999999
 homeotop: true
 density: 1.2
-threadsperblock: 128
+threadsperblock: 256

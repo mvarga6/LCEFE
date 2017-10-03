@@ -44,6 +44,7 @@ void Physics::CalculateLiquidCrystalEnergy(
 	const float Q[9], 
 	const float &alpha)
 {
+	// alpha has units of energy density 
 	lcEnergy = -1.0*alpha*(eps[3*0+0]*Q[3*0+0]
 				+eps[3*1+1]*Q[3*1+1]+eps[3*2+2]*Q[3*2+2]
 				+eps[3*0+1]*Q[3*0+1]+eps[3*1+0]*Q[3*1+0]
