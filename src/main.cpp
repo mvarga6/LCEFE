@@ -30,6 +30,7 @@
 #include "director_field.h"
 #include "mesh.h"
 #include "functions.hpp"
+#include "logger.h"
 
 // these will go away into their own service class
 #include "getAs.h"
@@ -137,7 +138,8 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		printf("\nMesh loaded from cache!");
+		//printf("\nMesh loaded from cache!");
+		Logger::Default->Msg("Mesh Loaded from cache!");
 	}
 	
 	//set director n for each tetrahedra
