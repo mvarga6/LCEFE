@@ -1,9 +1,9 @@
 nsteps: 2000000
 dt: 0.00001
 framerate: 5000
-meshfile: "Mesh/WareCross2.msh"
+meshfile: "Mesh/thinfilm3.msh"
 meshScale: 1.0
-outputBase: "VTKOUT/WareCross2"
+outputBase: "VTKOUT/test"
 cxxxx: 29400000
 cxxyy: 28000000
 cxyxy: 570000

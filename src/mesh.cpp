@@ -296,5 +296,13 @@ std::string Mesh::GetCacheKey()
 {
 	std::string meshFile = this->params->Mesh.File;
 	FileInfo info = FileOperations::GetFileInfo(meshFile);
-	return "cache/" + info.FileName + ".cache";
+	
+	string key = "";
+	if (!info.Path.empty())
+	{
+		key += info.Path + "/";
+	}
+	
+	key += info.FileName + ".cache";
+	return key;
 }
