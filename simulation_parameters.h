@@ -4,8 +4,9 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include <string>
+#include "logger.h"
 
-enum ParameterType : int
+enum class ParameterType : int
 {
 	Unknown = 0,
 	Cxxxx = 1,
@@ -34,7 +35,9 @@ enum ParameterType : int
 	IncidentAngle = 24,
 	IterPerIllumRecalc = 25,
 	ParametersFile = 26,
-	MeshCaching = 27
+	MeshCaching = 27,
+	LoggerType = 28,
+	LoggerLevel = 29
 };
 
 struct MaterialConstants
@@ -74,6 +77,8 @@ struct OutputParameters
 	
 	std::string Base;
 	int FrameRate;
+	LoggerType LogType;
+	LogEntryPriority LogLevel;
 };
 
 struct MeshParameters

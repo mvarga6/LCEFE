@@ -7,7 +7,7 @@
 
 using namespace std;
 
-enum ParseResult : int
+enum class ParseResult : int
 {
 	SUCCESS = 0,
 	CRITICAL_FAILURE = 1,
@@ -25,6 +25,8 @@ class ParametersReader
 public:
 	ParseResult ReadFromFile(const string&, SimulationParameters&);
 	ParseResult ReadFromCmdline(int, char* [],SimulationParameters&);
+
+	static string GetErrorMsg(ParseResult);
 
 private:
 

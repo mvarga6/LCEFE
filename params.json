@@ -13,3 +13,5 @@ homeotop: true
 density: 1.2
 threadsperblock: 200
 caching: true
+logtype: 1
+loglevel: 3

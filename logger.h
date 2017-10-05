@@ -5,18 +5,51 @@
 
 using namespace std;
 
+enum class LoggerType : int
+{
+	NONE = 0,
+	CONSOLE = 1,
+	FILE = 2
+};
+
+inline LoggerType ConvertToLoggerType(int t)
+{
+	switch(t)
+	{
+	case 0: return LoggerType::NONE;
+	case 1: return LoggerType::CONSOLE;
+	case 2: return LoggerType::FILE;
+	default: return LoggerType::CONSOLE;
+	}
+}
+
 /*
   The priority of a log item
 */
 enum class LogEntryPriority : int
 {
-	VERBOSE = 0,
-	DEBUG = 1,
+	VERBOSE = 4,
+	DEBUG = 3,
 	INFO = 2,
-	WARNING = 3,
-	CRITICAL = 4
+	WARNING = 1,
+	CRITICAL = 0
 };
 
+/*
+  Helper to safely convert from int to LogEntryPriority
+*/
+inline LogEntryPriority ConvertToLogEntryPriority(int p)
+{
+	switch(p)
+	{
+	case 0: return LogEntryPriority::CRITICAL;
+	case 1: return LogEntryPriority::WARNING;
+	case 2: return LogEntryPriority::INFO;
+	case 3: return LogEntryPriority::DEBUG;
+	case 4: return LogEntryPriority::VERBOSE;
+	default: return LogEntryPriority::INFO;
+	}
+}
 
 /*
   Abstact parent for anything that can be logged
@@ -39,7 +72,7 @@ class ErrorLog : public LogEntry
 	
 public:
 	ErrorLog(string, LogEntryPriority);
-	ErrorLog(string, exception&, LogEntryPriority);
+	ErrorLog(string, const exception&, LogEntryPriority);
 	string AsString();	
 };
 

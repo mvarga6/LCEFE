@@ -2,13 +2,15 @@
 #include "getgmsh.h"
 #include "getmesh.h"
 #include "getAs.h"
-
+#include "logger.h"
 #include "file_operations.hpp"
+#include <sstream>
 
-Mesh::Mesh(SimulationParameters *parameters)
+Mesh::Mesh(SimulationParameters *parameters, Logger * logger)
 {
 	this->loaded = false;
 	this->params = parameters;
+	this->logger = logger;
 }
 
 
@@ -21,6 +23,7 @@ bool Mesh::Load(bool *loadedFromCache)
 		if (ReadCache(key))
 		{
 			(*loadedFromCache) = true;
+			logger->Log(new ErrorLog("Mesh loaded from cached version.", LogEntryPriority::INFO));
 			return true;
 		}
 	}
@@ -29,11 +32,13 @@ bool Mesh::Load(bool *loadedFromCache)
 	if (LoadMesh(this->params->Mesh.File))
 	{
 		(*loadedFromCache) = false;
+		logger->Log(new ErrorLog("Mesh loaded.", LogEntryPriority::INFO));
 		return true;
 	}
 	
 	// could not read it from cache or 
 	// from parameters given mesh file
+	logger->Log(new ErrorLog("Mesh NOT loaded.", LogEntryPriority::WARNING));
 	return false;
 }
 
@@ -99,7 +104,7 @@ void Mesh::Apply(MeshOptimizer *optimizer)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Optimization failed.", e, LogEntryPriority::CRITICAL));
 		return;
 	}
 }
@@ -161,7 +166,7 @@ bool Mesh::CalculateVolumes()
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Failed to calculate tetrahedra volumes.", e, LogEntryPriority::CRITICAL));
 		return false;
 	}
 }
@@ -175,7 +180,7 @@ bool Mesh::CalculateAinv()
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Failed to invert tetrahedra matrices.", e, LogEntryPriority::CRITICAL));
 		return false;
 	}
 }
@@ -183,7 +188,9 @@ bool Mesh::CalculateAinv()
 
 bool Mesh::LoadMesh(const std::string &meshFile)
 {
-	printf("\nLoading mesh %s", meshFile.c_str());
+	stringstream ss;
+	ss << "Loading mesh " << meshFile << "...";
+	logger->Log(new ErrorLog(ss.str(), LogEntryPriority::DEBUG));
 
 	//get dimensions of the mesh
 	dimensions = new MeshDimensions;
@@ -194,8 +201,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	}
 	catch (const std::exception& e)
 	{
-		// print something
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Failed to read mesh dimesnions.", e, LogEntryPriority::CRITICAL));
 		return false;
 	}
 	
@@ -217,7 +223,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Failed to read mesh positions.", e, LogEntryPriority::CRITICAL));
 		return false;
 	}
 	
@@ -228,7 +234,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Failed to calculate tetrahedra positions.", e, LogEntryPriority::CRITICAL));
 		return false;
 	}
 	
@@ -242,7 +248,9 @@ bool Mesh::ReadCache(const std::string &cachedMeshFile)
 	if (!FileOperations::Exists(cachedMeshFile))
 	{
 		// theres no cache for this mesh file
-		printf("\nCached mesh %s does not exist", cachedMeshFile.c_str());
+		stringstream ss;
+		ss << "Cached mesh " << cachedMeshFile << " does not exist.";
+		logger->Log(new ErrorLog(ss.str(), LogEntryPriority::DEBUG));
 		return false;
 	}
 	
@@ -256,13 +264,18 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 	if (FileOperations::Exists(cacheFileName))
 	{
 		// already cached
-		printf("\nCached mesh %s already exists", cacheFileName.c_str());
+		stringstream ss;
+		ss << "Cached mesh " << cacheFileName << " already exists.";
+		logger->Log(new ErrorLog(ss.str(), LogEntryPriority::DEBUG));
 		return true;
 	}
 	
 	try
 	{
-		printf("\nCaching mesh %s", cacheFileName.c_str());
+		stringstream ss;
+		ss << "Creating cache for mesh " << cacheFileName << ".";
+		logger->Log(new ErrorLog(ss.str(), LogEntryPriority::INFO));
+		
 		int Nnodes = Nodes->size;
 		int Ntets = Tets->size;
 		
@@ -284,7 +297,7 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		logger->Log(new ErrorLog("Failed to write mesh cache.", e, LogEntryPriority::INFO));
 		return false;
 	}
 	

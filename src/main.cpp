@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	
 	// from cmdline
 	result = reader->ReadFromCmdline(argc, argv, parameters);
-	if (result != SUCCESS)
+	if (result != ParseResult::SUCCESS)
 	{
 		return (int)result;
 	}
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	if (!parameters.File.empty())
 	{
 		result = reader->ReadFromFile(parameters.File, parameters);
-		if (result != SUCCESS)
+		if (result != ParseResult::SUCCESS)
 		{
 			return (int)result;
 		}
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	writer->Write(parameters);
 		
 	// for timing data
-	PerformanceRecorder * recorder = new PerformanceRecorder();;
+	PerformanceRecorder * recorder = new PerformanceRecorder();
 	recorder->Create("init")->Start();
 	
 	// for printing to output files
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 	//finish_order(Nodes, Tets);
 	
 	// the mesh object
-	Mesh * mesh = new Mesh(&parameters);
+	Mesh * mesh = new Mesh(&parameters, Logger::Default);
 	
 	
 	//MeshDimensions meshDim = get_gmsh_dim(parameters.Mesh.File);
@@ -136,11 +136,13 @@ int main(int argc, char *argv[])
 		// save the optimized mesh
 		mesh->Cache();
 	}
-	else
-	{
+	//else
+	//{
 		//printf("\nMesh loaded from cache!");
-		Logger::Default->Msg("Mesh Loaded from cache!");
-	}
+		//Logger::Default->Msg("Mesh Loaded from cache!");
+	//}
+	
+	return 0;
 	
 	//set director n for each tetrahedra
 	//set_n(Tets, &parameters);

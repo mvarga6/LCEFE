@@ -7,13 +7,13 @@ using namespace std;
 /*
   ErrorLog
 */
-ErrorLog::ErrorLog(string message, LogEntryPriority priority = LogEntryPriority::INFO)
+ErrorLog::ErrorLog(string message, LogEntryPriority priority = LogEntryPriority::WARNING)
 {
 	this->priority = priority;
 	this->msg = message;
 }
 
-ErrorLog::ErrorLog(string message, exception& e, LogEntryPriority priority = LogEntryPriority::INFO)
+ErrorLog::ErrorLog(string message, const exception& e, LogEntryPriority priority = LogEntryPriority::WARNING)
 	: ErrorLog(message, priority)
 {
 	this->e = e;
@@ -41,7 +41,7 @@ ConsoleLogger::ConsoleLogger(LogEntryPriority minPriority = LogEntryPriority::IN
 
 void ConsoleLogger::Log(LogEntry *item)
 {
-	if (item->priority < min_priority)
+	if (item->priority > min_priority)
 	{
 		return;
 	}
@@ -72,7 +72,7 @@ void ConsoleLogger::Log(LogEntry *item)
 
 void ConsoleLogger::Msg(const string& message, LogEntryPriority priority)
 {
-	if (priority < min_priority)
+	if (priority > min_priority)
 	{
 		return;
 	}

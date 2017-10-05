@@ -10,6 +10,7 @@
 #include <cstring>
 #include <iostream>
 #include <algorithm>
+#include "logger.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ ParseResult ParametersReader::ReadFromFile(const string& fileName, SimulationPar
 {
 	if (fileName.empty())
 	{
-		return MESHFILE_NAME_IS_NULL;
+		return ParseResult::MESHFILE_NAME_IS_NULL;
 	}
 
 	tokenMap map = ParseFileToTokenMap(fileName);
@@ -29,12 +30,12 @@ ParseResult ParametersReader::ReadFromCmdline(int argc, char* argv[], Simulation
 {
 	if (argc < 1)
 	{
-		return ARGS_COUNT_ZERO;
+		return ParseResult::ARGS_COUNT_ZERO;
 	}
 	
 	if (argv == NULL)
 	{
-		return ARGS_MISSING;
+		return ParseResult::ARGS_MISSING;
 	}
 	
 	tokenMap map = ParseCmdlineToTokenMap(argc, argv);
@@ -42,6 +43,19 @@ ParseResult ParametersReader::ReadFromCmdline(int argc, char* argv[], Simulation
 	return this->status;
 }
 
+
+string ParametersReader::GetErrorMsg(ParseResult result)
+{
+	switch(result)
+	{
+	case ParseResult::SUCCESS: return "No Error";
+	case ParseResult::CRITICAL_FAILURE: return "Unspecified Critical Error";
+	case ParseResult::MESHFILE_NAME_IS_NULL: return "Mesh file name is not provided.  Use 'meshfile' in parameters file or cmdline flags.";
+	case ParseResult::ARGS_COUNT_ZERO: return "No Options Provided.  Requires at least 'input' for parameters file.";
+	case ParseResult::ARGS_MISSING: return "Option Missing Parameter";
+	default: return "Unknown";
+	}
+}
 
 
 ParametersReader::tokenMap ParametersReader::ParseCmdlineToTokenMap(int argc, char* argv[])
@@ -57,7 +71,7 @@ ParametersReader::tokenMap ParametersReader::ParseCmdlineToTokenMap(int argc, ch
 		
 		bool flag;
 		ParameterType type = GetParameterType(arg, flag);
-		if (type != Unknown)
+		if (type != ParameterType::Unknown)
 		{
 			// add to map
 			if(flag)
@@ -71,7 +85,7 @@ ParametersReader::tokenMap ParametersReader::ParseCmdlineToTokenMap(int argc, ch
 		}
 	}
 	
-	this->status = SUCCESS;
+	this->status = ParseResult::SUCCESS;
 	return pairs;
 }
 
@@ -85,7 +99,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	ifstream fin(fileName.c_str());
 	if (!fin.is_open())
 	{
-		this->status = CRITICAL_FAILURE;
+		this->status = ParseResult::CRITICAL_FAILURE;
 		return pairs;
 	}
 	
@@ -106,7 +120,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	// check result
 	if (!HandleParseResult(num_tokens))
 	{
-		this->status = CRITICAL_FAILURE;
+		this->status = ParseResult::CRITICAL_FAILURE;
 		return pairs;
 	}
 	
@@ -120,7 +134,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	// check result
 	if (!HandleParseResult(result))
 	{
-		this->status = CRITICAL_FAILURE;
+		this->status = ParseResult::CRITICAL_FAILURE;
 		return pairs;
 	}
 
@@ -144,7 +158,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 				// add to map for known types
 				bool flag;
 				ParameterType type = GetParameterType(key, flag);
-				if (type != Unknown)
+				if (type != ParameterType::Unknown)
 				{
 					// add to map
 					if (flag)
@@ -162,7 +176,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	
 	fin.close();
 	
-	this->status = SUCCESS;
+	this->status = ParseResult::SUCCESS;
 	return pairs;
 }
 
@@ -179,34 +193,36 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 	
 		switch(it->first)
 		{
-		case Unknown: 	break;
-		case ParametersFile: p.File = v; break;
-		case Cxxxx: 	p.Material.Cxxxx = ::atof(v.c_str()); break;
-		case Cxxyy: 	p.Material.Cxxyy = ::atof(v.c_str()); break;
-		case Cxyxy: 	p.Material.Cxyxy = ::atof(v.c_str()); break;
-		case Alpha: 	p.Material.Alpha = ::atof(v.c_str()); break;
-		case Density: 	p.Material.Density = ::atof(v.c_str()); break;
-		case Nsteps:	p.Dynamics.Nsteps = ::atoi(v.c_str()); break;
-		case Dt: 		p.Dynamics.Dt = ::atof(v.c_str()); break;
-		case Damp: 		p.Dynamics.Damp = ::atof(v.c_str()); break;
-		case ThreadsPerBlock:		p.Gpu.ThreadsPerBlock = ::atoi(v.c_str()); break;
-		case OutputBase: 	p.Output.Base = v; break;
-		case FrameRate: 	p.Output.FrameRate = ::atoi(v.c_str()); break;
-		case MeshFile:		p.Mesh.File = v; break;
-		case NodeRankMax: 	p.Mesh.NodeRankMax = ::atoi(v.c_str()); break;
-		case MeshScale: 	p.Mesh.Scale = ::atof(v.c_str()); break;
-		case MeshCaching:	p.Mesh.CachingOn = StrToBool(v); break;
-		case PlanarSideUp: 	p.Initalize.PlanarSideUp = true; break;
-		case HomeoSideUp: 	p.Initalize.PlanarSideUp = false; break;
-		case Amplitude: 	p.Initalize.SqueezeAmplitude = ::atof(v.c_str()); break;
-		case Ratio: 		p.Initalize.SqueezeRatio = ::atof(v.c_str()); break;
-		case SInitial: 		p.Actuation.OrderParameter.SInitial = ::atof(v.c_str()); break;
-		case Smax: 			p.Actuation.OrderParameter.Smax = ::atof(v.c_str()); break;
-		case Smin: 			p.Actuation.OrderParameter.Smin = ::atof(v.c_str()); break;
-		case SRateOn: 		p.Actuation.OrderParameter.SRateOn = ::atof(v.c_str()); break;
-		case SRateOff: 		p.Actuation.OrderParameter.SRateOff = ::atof(v.c_str()); break;
-		case IncidentAngle: p.Actuation.Optics.IncidentAngle = ::atof(v.c_str()); break;
-		case IterPerIllumRecalc: p.Actuation.Optics.IterPerIllumRecalc = ::atoi(v.c_str()); break;
+		case ParameterType::Unknown: 	break;
+		case ParameterType::ParametersFile: p.File = v; break;
+		case ParameterType::Cxxxx: 	p.Material.Cxxxx = ::atof(v.c_str()); break;
+		case ParameterType::Cxxyy: 	p.Material.Cxxyy = ::atof(v.c_str()); break;
+		case ParameterType::Cxyxy: 	p.Material.Cxyxy = ::atof(v.c_str()); break;
+		case ParameterType::Alpha: 	p.Material.Alpha = ::atof(v.c_str()); break;
+		case ParameterType::Density: 	p.Material.Density = ::atof(v.c_str()); break;
+		case ParameterType::Nsteps:	p.Dynamics.Nsteps = ::atoi(v.c_str()); break;
+		case ParameterType::Dt: 		p.Dynamics.Dt = ::atof(v.c_str()); break;
+		case ParameterType::Damp: 		p.Dynamics.Damp = ::atof(v.c_str()); break;
+		case ParameterType::ThreadsPerBlock:		p.Gpu.ThreadsPerBlock = ::atoi(v.c_str()); break;
+		case ParameterType::OutputBase: 	p.Output.Base = v; break;
+		case ParameterType::FrameRate: 	p.Output.FrameRate = ::atoi(v.c_str()); break;
+		case ParameterType::MeshFile:		p.Mesh.File = v; break;
+		case ParameterType::NodeRankMax: 	p.Mesh.NodeRankMax = ::atoi(v.c_str()); break;
+		case ParameterType::MeshScale: 	p.Mesh.Scale = ::atof(v.c_str()); break;
+		case ParameterType::MeshCaching:	p.Mesh.CachingOn = StrToBool(v); break;
+		case ParameterType::PlanarSideUp: 	p.Initalize.PlanarSideUp = true; break;
+		case ParameterType::HomeoSideUp: 	p.Initalize.PlanarSideUp = false; break;
+		case ParameterType::Amplitude: 	p.Initalize.SqueezeAmplitude = ::atof(v.c_str()); break;
+		case ParameterType::Ratio: 		p.Initalize.SqueezeRatio = ::atof(v.c_str()); break;
+		case ParameterType::SInitial: 		p.Actuation.OrderParameter.SInitial = ::atof(v.c_str()); break;
+		case ParameterType::Smax: 			p.Actuation.OrderParameter.Smax = ::atof(v.c_str()); break;
+		case ParameterType::Smin: 			p.Actuation.OrderParameter.Smin = ::atof(v.c_str()); break;
+		case ParameterType::SRateOn: 		p.Actuation.OrderParameter.SRateOn = ::atof(v.c_str()); break;
+		case ParameterType::SRateOff: 		p.Actuation.OrderParameter.SRateOff = ::atof(v.c_str()); break;
+		case ParameterType::IncidentAngle: p.Actuation.Optics.IncidentAngle = ::atof(v.c_str()); break;
+		case ParameterType::IterPerIllumRecalc: p.Actuation.Optics.IterPerIllumRecalc = ::atoi(v.c_str()); break;
+		case ParameterType::LoggerType: 	p.Output.LogType = ConvertToLoggerType(::atoi(v.c_str())); break;
+		case ParameterType::LoggerLevel:	p.Output.LogLevel = ConvertToLogEntryPriority(::atoi(v.c_str())); break;
 		default: break;
 		}
 	} 
@@ -268,37 +284,39 @@ ParameterType ParametersReader::GetParameterType(string& key, bool &flagType)
 
 	if (!CleanKey(key))
 	{
-		return Unknown;
+		return ParameterType::Unknown;
 	}
 	
-	if (key == "input" || key == "params" || key == "parameters") return ParametersFile;
-	if (key == "alpha" || key == "alph" || key == "a") return Alpha;
-	if (key == "nsteps" || key == "time" || key == "n") return Nsteps;
-	if (key == "dt") return Dt;
-	if (key == "iterperframe" || key == "framerate") return FrameRate;
-	if (key == "cxxxx") return Cxxxx;
-	if (key == "cxxyy") return Cxxyy;
-	if (key == "cxyxy") return Cxyxy;
-	if (key == "density" || key == "rho") return Density;
-	if (key == "damp" || key == "nu") return Damp;
-	if (key == "tpb" || key == "threadsperblock") return ThreadsPerBlock;
-	if (key == "outputbase" || key == "output" || key == "o") return OutputBase;
-	if (key == "meshfile" || key == "mesh") return MeshFile;
-	if (key == "maxnoderank" || key == "maxrank") return NodeRankMax;
-	if (key == "meshscale" || key == "scale") return MeshScale;
-	if (key == "caching" || key == "cache") return MeshCaching;
-	if (key == "planartop") { flagType = true; return PlanarSideUp; }
-	if (key == "homeotop") { flagType = true; return HomeoSideUp; }
-	if (key == "aplitude" || key == "sqzdheight" || key == "sqzamp") return Amplitude;
-	if (key == "ratio" || key == "sqzdlenght" || key == "length" || key == "l") return Ratio;
-	if (key == "smax" || key == "u") return Smax;
-	if (key == "smin" || key == "d") return Smin;
-	if (key == "sinit" || key == "s0" || key == "s") return SInitial;
-	if (key == "sonrate" || key == "onrate" || key == "son") return SRateOn;
-	if (key == "soffrate" || key == "offrate" || key == "soff") return SRateOff;
-	if (key == "phi" || key == "p" || key == "incidentangle") return IncidentAngle;
-	if (key == "iterperillum" || key == "illumrate") return IterPerIllumRecalc;
-	return Unknown;
+	if (key == "input" || key == "params" || key == "parameters") return ParameterType::ParametersFile;
+	if (key == "alpha" || key == "alph" || key == "a") return ParameterType::Alpha;
+	if (key == "nsteps" || key == "time" || key == "n") return ParameterType::Nsteps;
+	if (key == "dt") return ParameterType::Dt;
+	if (key == "iterperframe" || key == "framerate") return ParameterType::FrameRate;
+	if (key == "cxxxx") return ParameterType::Cxxxx;
+	if (key == "cxxyy") return ParameterType::Cxxyy;
+	if (key == "cxyxy") return ParameterType::Cxyxy;
+	if (key == "density" || key == "rho") return ParameterType::Density;
+	if (key == "damp" || key == "nu") return ParameterType::Damp;
+	if (key == "tpb" || key == "threadsperblock") return ParameterType::ThreadsPerBlock;
+	if (key == "outputbase" || key == "output" || key == "o") return ParameterType::OutputBase;
+	if (key == "meshfile" || key == "mesh") return ParameterType::MeshFile;
+	if (key == "maxnoderank" || key == "maxrank") return ParameterType::NodeRankMax;
+	if (key == "meshscale" || key == "scale") return ParameterType::MeshScale;
+	if (key == "caching" || key == "cache") return ParameterType::MeshCaching;
+	if (key == "planartop") { flagType = true; return ParameterType::PlanarSideUp; }
+	if (key == "homeotop") { flagType = true; return ParameterType::HomeoSideUp; }
+	if (key == "aplitude" || key == "sqzdheight" || key == "sqzamp") return ParameterType::Amplitude;
+	if (key == "ratio" || key == "sqzdlenght" || key == "length" || key == "l") return ParameterType::Ratio;
+	if (key == "smax" || key == "u") return ParameterType::Smax;
+	if (key == "smin" || key == "d") return ParameterType::Smin;
+	if (key == "sinit" || key == "s0" || key == "s") return ParameterType::SInitial;
+	if (key == "sonrate" || key == "onrate" || key == "son") return ParameterType::SRateOn;
+	if (key == "soffrate" || key == "offrate" || key == "soff") return ParameterType::SRateOff;
+	if (key == "phi" || key == "p" || key == "incidentangle") return ParameterType::IncidentAngle;
+	if (key == "iterperillum" || key == "illumrate") return ParameterType::IterPerIllumRecalc;
+	if (key == "logtype" || key == "logger" || key == "logging") return ParameterType::LoggerType;
+	if (key == "loglevel" || key == "level") return ParameterType::LoggerLevel;
+	return ParameterType::Unknown;
 }
 
 bool ParametersReader::CleanKey(string &key)
