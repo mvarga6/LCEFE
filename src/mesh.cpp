@@ -23,7 +23,7 @@ bool Mesh::Load(bool *loadedFromCache)
 		if (ReadCache(key))
 		{
 			(*loadedFromCache) = true;
-			logger->Log(new ErrorLog("Mesh loaded from cached version.", LogEntryPriority::INFO));
+			logger->Msg("Mesh loaded from cached version.", LogEntryPriority::INFO);
 			return true;
 		}
 	}
@@ -32,7 +32,7 @@ bool Mesh::Load(bool *loadedFromCache)
 	if (LoadMesh(this->params->Mesh.File))
 	{
 		(*loadedFromCache) = false;
-		logger->Log(new ErrorLog("Mesh loaded.", LogEntryPriority::INFO));
+		logger->Msg("Mesh loaded.", LogEntryPriority::INFO);
 		return true;
 	}
 	
@@ -190,7 +190,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 {
 	stringstream ss;
 	ss << "Loading mesh " << meshFile << "...";
-	logger->Log(new ErrorLog(ss.str(), LogEntryPriority::DEBUG));
+	logger->Msg(ss.str(), LogEntryPriority::INFO);
 
 	//get dimensions of the mesh
 	dimensions = new MeshDimensions;
@@ -250,7 +250,7 @@ bool Mesh::ReadCache(const std::string &cachedMeshFile)
 		// theres no cache for this mesh file
 		stringstream ss;
 		ss << "Cached mesh " << cachedMeshFile << " does not exist.";
-		logger->Log(new ErrorLog(ss.str(), LogEntryPriority::DEBUG));
+		logger->Msg(ss.str(), LogEntryPriority::DEBUG);
 		return false;
 	}
 	
@@ -266,7 +266,7 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 		// already cached
 		stringstream ss;
 		ss << "Cached mesh " << cacheFileName << " already exists.";
-		logger->Log(new ErrorLog(ss.str(), LogEntryPriority::DEBUG));
+		logger->Msg(ss.str(), LogEntryPriority::DEBUG);
 		return true;
 	}
 	
@@ -274,7 +274,7 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 	{
 		stringstream ss;
 		ss << "Creating cache for mesh " << cacheFileName << ".";
-		logger->Log(new ErrorLog(ss.str(), LogEntryPriority::INFO));
+		logger->Msg(ss.str(), LogEntryPriority::INFO);
 		
 		int Nnodes = Nodes->size;
 		int Ntets = Tets->size;

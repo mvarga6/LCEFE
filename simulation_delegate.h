@@ -2,9 +2,16 @@
 #define __SIMULATION_RUNNER_H__
 
 #include "simulation_parameters.h"
-#include "logger.h"
+#include "parameters_reader.h"
+#include "parameters_writer.h"
+#include "output_writer.h"
+#include "data_manager.h"
 #include "performance_recorder.h"
+#include "director_field.h"
 #include "mesh.h"
+#include "logger.h"
+
+using namespace std;
 
 enum class ProcessInputResult : int
 {
@@ -23,10 +30,19 @@ enum class InitializeResult : int
 
 class SimulationDelegate
 {
+	// Operational stuff
 	SimulationParameters * parameters;
 	Logger 				 * logger;
 	PerformanceRecorder  * performance;
+	VtkWriter			 * vtkWriter;
+	
+	// Data
 	Mesh 				 * mesh;
+	DirectorField		 * director;
+	DevDataBlock		 * dev;
+	HostDataBlock		 * host;
+	DataManager			 * dataManager;
+	vector<int>			   surfaceTetraIds;
 	
 public:
 
