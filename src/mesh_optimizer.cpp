@@ -1,58 +1,83 @@
 #include "mesh_optimizer.h"
+#include <sstream>
 //#include "getmesh.h"
 #include "genrand.h"
+
+SortOnTetrahedraPosition::SortOnTetrahedraPosition(Logger *log)
+{
+	this->log = log;
+}
 
 OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes)
 {
 	try
 	{
+		this->log->Msg("Running SortOnTetrahedraPosition ...");
 		int Ntets = Tets->size;	
 		float dr1, dr2;
-		bool go = true;
 		int count = 0;
-		while(go)
+		int switched = 1;
+		
+		stringstream ss;
+		
+		while(switched > 0)
 		{
 			count++;
-			go = false;
+			switched = 0;
+			
+			// loop at tets
 			for(int n1 = 0; n1 < Ntets - 1; n1++)
 			{
 				dr1 = Tets->get_pos(n1,3);
 				dr2 = Tets->get_pos(n1+1,3);
-					if (dr2 < dr1)
-					{
-						go = true;
-						Tets->switch_tets(n1,n1+1);
-					}
+				if (dr2 < dr1)
+				{
+					switched++;
+					Tets->switch_tets(n1,n1+1);
+				}
 			}//n1
+			
+			ss.str(std::string());
+			ss << "iteration = " << count << " reordered = " << switched;
+			this->log->StaticMsg(ss.str());
 		}//go==1
 		
+		this->log->Msg("Completed!");
 		return OptimizationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// print something
+		this->log->Msg("SortOnTetrahedraPosition threw exception -- quiting");
 		return OptimizationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
 
-MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(const float kBTStart, const float kBTEnd, const float annealFactor)
+MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(const float kBTStart, const float kBTEnd, const float annealFactor, Logger *log)
 {
 	this->kbt_start = kBTStart;
 	this->kbt_end = kBTEnd;
 	this->anneal_factor = annealFactor;
+	this->log = log;
 }
 
 OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, NodeArray *Nodes)
 {
 	try
 	{
+		this->log->Msg("Running MonteCarloMinimizeDistanceBetweenPairs ...");
 		int Ntets = Tets->size;	
 		float olddist, newdist;
 		int n1,n2;
 		float KbT = this->kbt_start;
 	    int count = 0;
 		int tot = 0;
+		int switched = 0;
 
+		stringstream ss;
+		ss << this->kbt_start << " < kbt < " << this->kbt_end << " annealFactor = " << this->anneal_factor;
+		this->log->Msg(ss.str());
+		
 		//simple reordering scheme bassed only on spacial locallity
 		while(KbT >= this->kbt_end)
 		{
@@ -75,29 +100,42 @@ OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, N
 				{
 					Tets->switch_tets(n1,n2);
 					count = 0;
+					switched++;
 				}
 				else if (genrand() < exp(-(newdist-olddist)/(KbT)))
 				{
 					Tets->switch_tets(n1,n2);
 					count = 0;
+					switched++;
 				}	
 
 			KbT *= this->anneal_factor; //KbT*0.9999999;
-			if ((tot % 1000) == 0)
+			if ((tot % 10) == 0)
 			{
 				//printf("KbT = %f count = %d\n",KbT,count);
+				ss.str(std::string());
+				ss << "kBT = " << KbT << "\treordered = " << switched;
+				log->StaticMsg(ss.str());
+				switched = 0;
 			}
 		}
 		
+		this->log->Msg("Completed!");
 		return OptimizationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// log something
+		this->log->Msg("MonteCarloMinimizeDistanceBetweenPairs threw exception -- quiting");
 		return OptimizationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
 
+
+ReassignIndices::ReassignIndices(Logger *log)
+{
+ this->log = log;
+}
 
 OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 {
