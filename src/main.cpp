@@ -76,6 +76,9 @@ int main(int argc, char *argv[])
 	ParametersWriter * writer = new ConsoleWriter();
 	writer->Write(parameters);
 		
+	// create a console logger
+	Logger * log = new ConsoleLogger();
+	
 	// for timing data
 	PerformanceRecorder * recorder = new PerformanceRecorder();;
 	recorder->Create("init")->Start();
@@ -126,9 +129,10 @@ int main(int argc, char *argv[])
 	if (!cachedMesh)
 	{
 		// optimize the mesh
-		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition();
-		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300, 0.01f, 0.99999f);
-		MeshOptimizer * reIndex = new ReassignIndices();
+		log->Msg("Beging to optimize mesh");
+		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition(log);
+		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.999999f, log);
+		MeshOptimizer * reIndex = new ReassignIndices(log);
 		mesh->Apply(simpleSort);
 		mesh->Apply(mcReorder);
 		mesh->Apply(reIndex);
@@ -139,7 +143,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		//printf("\nMesh loaded from cache!");
-		Logger::Default->Msg("Mesh Loaded from cache!");
+		log->Msg("Mesh Loaded from cache!");
 	}
 	
 	//set director n for each tetrahedra

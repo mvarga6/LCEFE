@@ -52,7 +52,7 @@ class Logger
 public:
 	virtual void Log(LogEntry*) = 0;
 	virtual void Msg(const string& message, LogEntryPriority priority = LogEntryPriority::INFO) = 0;
-	
+	virtual void StaticMsg(const string& message) = 0;
 	static Logger * Default;
 };
 
@@ -63,9 +63,10 @@ class ConsoleLogger : public Logger
 {
 	LogEntryPriority min_priority;
 public:
-	ConsoleLogger(LogEntryPriority);
+	ConsoleLogger(LogEntryPriority priority = LogEntryPriority::INFO);
 	void Log(LogEntry*);
 	void Msg(const string& message, LogEntryPriority priority = LogEntryPriority::INFO);
+	void StaticMsg(const string& message);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define __MESH_OPTIMIZER_H__
 
 #include "classstruct.h"
+#include "logger.h"
 
 enum class OptimizationResult : int
 {
@@ -27,7 +28,9 @@ public:
 */
 class SortOnTetrahedraPosition : public MeshOptimizer
 {
+	Logger *log;
 public:
+	SortOnTetrahedraPosition(Logger *log);
 	OptimizationResult Run(TetArray*, NodeArray*);
 };
 
@@ -38,8 +41,9 @@ public:
 class MonteCarloMinimizeDistanceBetweenPairs : public MeshOptimizer
 {
 	float kbt_start, kbt_end, anneal_factor;
+	Logger *log;
 public:
-	MonteCarloMinimizeDistanceBetweenPairs(const float kBTStart, const float kBTEnd, const float annealFactor);
+	MonteCarloMinimizeDistanceBetweenPairs(const float kBTStart, const float kBTEnd, const float annealFactor, Logger *log);
 	OptimizationResult Run(TetArray*, NodeArray*);
 };
 
@@ -49,7 +53,9 @@ public:
 */
 class ReassignIndices : public MeshOptimizer
 {
+	Logger *log;
 public:
+	ReassignIndices(Logger *log);
 	OptimizationResult Run(TetArray*, NodeArray*);
 };
 

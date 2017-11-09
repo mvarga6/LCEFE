@@ -89,9 +89,9 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 		{
 			dat->r[nod+Nnodes*sweep] = Nodes.get_pos(nod,sweep);
 			dat->r0[nod+Nnodes*sweep] = Nodes.get_pos(nod,sweep);
-			//dat->v[nod+Nnodes*sweep] = 0.0;
-			dat->v[nod+Nnodes*sweep] = 10.f*(genrand() - 0.5f);
-			dat->F[nod+Nnodes*sweep] = 100.f*(genrand() - 0.5f);
+			dat->v[nod+Nnodes*sweep] = 0.0;
+			dat->v[nod+Nnodes*sweep] = 0.0; //10.f*(genrand() - 0.5f);
+			dat->F[nod+Nnodes*sweep] = 0.0; //100.f*(genrand() - 0.5f);
 		}//sweep
 
     		//add force to end of beam

@@ -33,9 +33,9 @@ Logger * Logger::Default = new ConsoleLogger(LogEntryPriority::VERBOSE);
 /*
   ConsoleLogger
 */
-ConsoleLogger::ConsoleLogger(LogEntryPriority minPriority = LogEntryPriority::INFO)
+ConsoleLogger::ConsoleLogger(LogEntryPriority priority)
 {
-	this->min_priority = minPriority;
+	this->min_priority = priority;
 }
 
 
@@ -99,5 +99,10 @@ void ConsoleLogger::Msg(const string& message, LogEntryPriority priority)
 		cout << endl << "[*** CRITICAL ***] " << message << endl << endl;
 		break;
 	}
+}
+
+void ConsoleLogger::StaticMsg(const string& message)
+{
+	cout << "\r" << "[ INFO ] " << message << "\t";
 }
 

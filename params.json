@@ -1,9 +1,9 @@
 nsteps: 2000000
 dt: 0.00001
 framerate: 5000
-meshfile: "Mesh/thinfilm3.msh"
+meshfile: "Mesh/SphericalShell3.msh"
 meshScale: 1.0
-outputBase: "VTKOUT/test"
+outputBase: "VTKOUT/SS3_Test"
 cxxxx: 29400000
 cxxyy: 28000000
 cxyxy: 570000
