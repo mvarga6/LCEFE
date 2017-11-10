@@ -4,6 +4,7 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include <string>
+#include "defines.h"
 
 enum ParameterType : int
 {
@@ -42,11 +43,11 @@ struct MaterialConstants
 	__host__
 	MaterialConstants() {};
 	
-	float Cxxxx;
-	float Cxxyy;
-	float Cxyxy;
-	float Alpha;
-	float Density;
+	real Cxxxx;
+	real Cxxyy;
+	real Cxyxy;
+	real Alpha;
+	real Density;
 };
 
 struct DynamicsParameters
@@ -55,8 +56,8 @@ struct DynamicsParameters
 	DynamicsParameters(){};
 
 	int Nsteps;
-	float Dt;
-	float Damp;
+	real Dt;
+	real Damp;
 };
 
 struct GpuParameters
@@ -83,7 +84,7 @@ struct MeshParameters
 	
 	std::string File;
 	int NodeRankMax;
-	float Scale;
+	real Scale;
 	bool CachingOn;
 };
 
@@ -93,8 +94,8 @@ struct InitialState
 	InitialState() {};
 
 	bool PlanarSideUp;
-	float SqueezeAmplitude;
-	float SqueezeRatio;
+	real SqueezeAmplitude;
+	real SqueezeRatio;
 };
 
 struct LiquidCrystalParameters
@@ -102,11 +103,11 @@ struct LiquidCrystalParameters
 	__host__
 	LiquidCrystalParameters() {};
 	
-	float SInitial;
-	float Smax;
-	float Smin;
-	float SRateOn;
-	float SRateOff;
+	real SInitial;
+	real Smax;
+	real Smin;
+	real SRateOn;
+	real SRateOff;
 };
 
 struct UVIllumination
@@ -114,7 +115,7 @@ struct UVIllumination
 	__host__
 	UVIllumination() {};
 
-	float IncidentAngle;
+	real IncidentAngle;
 	int IterPerIllumRecalc;
 };
 
@@ -162,13 +163,13 @@ struct SimulationParameters
 
 struct PackedParameters
 {
-	float Alpha;
-	float Cxxxx, Cxxyy, Cxyxy;
-	float Density;
-	float Dt, Damp;
-	float Scale;
-	float SInitial, Smin, Smax, SRateOn, SRateOff;
-	float IncidentAngle;
+	real Alpha;
+	real Cxxxx, Cxxyy, Cxyxy;
+	real Density;
+	real Dt, Damp;
+	real Scale;
+	real SInitial, Smin, Smax, SRateOn, SRateOff;
+	real IncidentAngle;
 };
 
 #endif

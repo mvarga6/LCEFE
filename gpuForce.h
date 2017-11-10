@@ -6,40 +6,40 @@
 #include "getQ.h"
 #include "device_helpers.h"
 
-/*__global__ void force_kernel(	float *A*/
+/*__global__ void force_kernel(	real *A*/
 /*								,int pitchA*/
-/*								,float *dF*/
+/*								,real *dF*/
 /*								,int pitchdF*/
 /*								,int *TetNodeRankG*/
 /*								,int Ntets*/
-/*								,float *v*/
+/*								,real *v*/
 /*								,int pitchv*/
-/*								,float *pe*/
-/*								,float *TetVol*/
+/*								,real *pe*/
+/*								,real *TetVol*/
 /*								,int *ThPhi*/
 /*								,int *S //order parameter*/
 /*								,int *L //illumination parameter*/
 /*								,int *TetToNode*/
 /*								,int pitchTetToNode*/
-/*								,float t*/
+/*								,real t*/
 /*								){*/
-__global__ void force_kernel(DevDataBlock data, float t)
+__global__ void force_kernel(DevDataBlock data, real t)
 {
 
 
-	int Ashift = data.Apitch/sizeof(float);
-	int dFshift = data.dFpitch/sizeof(float);
-	int vshift = data.vpitch/sizeof(float);
+	int Ashift = data.Apitch/sizeof(real);
+	int dFshift = data.dFpitch/sizeof(real);
+	int vshift = data.vpitch/sizeof(real);
 	int TTNshift = data.TetToNodepitch/sizeof(int);
-	float Ainv[16];
-	float r[12];
-	float r0[12];
-	float F[12]={0.0};
-	float vlocal[12];
+	real Ainv[16];
+	real r[12];
+	real r0[12];
+	real F[12]={0.0};
+	real vlocal[12];
 	int NodeNum[4];
 	int TetNodeRank[4];
-	float Q[9] = {0.0};
-	float myVol;
+	real Q[9] = {0.0};
+	real myVol;
 
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
@@ -118,8 +118,27 @@ __global__ void force_kernel(DevDataBlock data, float t)
 		//update kernal
 		//========================================
 		//sendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
-		DeviceHelpers::SendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
+		DeviceHelpers::SendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol, tid);
 
+#ifdef __DEBUG_FORCE__
+		
+		// debugging info
+		if (tid == __DEBUG_FORCE__)
+		{
+			printf("\n -- force_kernel --")
+			printf("\n\tTime = %f", t);
+			printf("\n\tMyVol = %f", myVol);
+			printf("\n\n\tF[] = ");
+			printf("\n\t1: %.3f %.3f %.3f", F[0], F[1], F[2]);
+			printf("\n\t2: %.3f %.3f %.3f", F[3], F[4], F[5]);
+			printf("\n\t3: %.3f %.3f %.3f", F[6], F[7], F[8]);
+			printf("\n\t4: %.3f %.3f %.3f", F[9], F[10], F[11]);
+			printf("\n\n\tQ[] = ");
+			printf("\n\t1: %.3f %.3f %.3f", Q[0], Q[1], Q[2]);
+			printf("\n\t2: %.3f %.3f %.3f", Q[3], Q[4], Q[5]);
+			printf("\n\t3: %.3f %.3f %.3f", Q[6], Q[7], Q[8]);
+		}
+#endif
 
 	}//end if tid<Ntets
 

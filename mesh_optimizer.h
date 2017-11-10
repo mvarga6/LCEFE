@@ -3,6 +3,7 @@
 
 #include "classstruct.h"
 #include "logger.h"
+#include "defines.h"
 
 enum class OptimizationResult : int
 {
@@ -40,10 +41,10 @@ public:
 */
 class MonteCarloMinimizeDistanceBetweenPairs : public MeshOptimizer
 {
-	float kbt_start, kbt_end, anneal_factor;
+	real kbt_start, kbt_end, anneal_factor;
 	Logger *log;
 public:
-	MonteCarloMinimizeDistanceBetweenPairs(const float kBTStart, const float kBTEnd, const float annealFactor, Logger *log);
+	MonteCarloMinimizeDistanceBetweenPairs(const real kBTStart, const real kBTEnd, const real annealFactor, Logger *log);
 	OptimizationResult Run(TetArray*, NodeArray*);
 };
 

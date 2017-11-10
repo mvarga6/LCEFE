@@ -1,6 +1,6 @@
 #include "director_field.h"
 
-UniformField::UniformField(const float theta, const float phi)
+UniformField::UniformField(const real theta, const real phi)
 {
 	this->const_director.theta = theta;
 	this->const_director.phi = phi;
@@ -8,9 +8,9 @@ UniformField::UniformField(const float theta, const float phi)
 
 
 DirectorOrientation UniformField::GetDirectorAt(
-	const float x, 
-	const float y, 
-	const float z)
+	const real x, 
+	const real y, 
+	const real z)
 {
 	// we always return the same thing no matter
 	// what x, y, z values are passed
@@ -29,9 +29,9 @@ CartesianDirectorField::CartesianDirectorField(
 
 
 DirectorOrientation CartesianDirectorField::GetDirectorAt(
-	const float x,
-	const float y,
-	const float z)
+	const real x,
+	const real y,
+	const real z)
 {
 	DirectorOrientation result;
 	result.theta = (*theta_field)(x, y, z);

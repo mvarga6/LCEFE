@@ -9,32 +9,19 @@
 // -use velocity verilet to step system forward
 // -send updated positions to global memory 
 //================================================
-/*__global__ void updateKernel(	 float *dF*/
-/*				,int pitchdF*/
-/*				,float *F*/
-/*				,int pitchF*/
-/*				,int Nnodes */
-/*				,int *NodeRank*/
-/*				,float *v*/
-/*				,int pitchv*/
-/*				,float *r*/
-/*				,int pitchr	*/
-/*				,float *mass*/
-/*				,float xclamp1, float xclamp2*/
-/*				,float ztable){  // puts sim on table*/
-__global__ void updateKernel(DevDataBlock data, float xclamp1, float xclamp2, float ztable)
+__global__ void updateKernel(DevDataBlock data)
 {	
-	int dFshift = data.dFpitch/sizeof(float);
-	int Fshift = data.Fpitch/sizeof(float);
-	int vshift = data.vpitch/sizeof(float);
-	int rshift = data.rpitch/sizeof(float);
+	int dFshift = data.dFpitch/sizeof(real);
+	int Fshift = data.Fpitch/sizeof(real);
+	int vshift = data.vpitch/sizeof(real);
+	int rshift = data.rpitch/sizeof(real);
 	int myNode;
 	int myNodeRank;
-	float Fnew[3]={0.0};
-	float Fold[3];
-	float vold[3];
-	float vnew[3];
-	float localMass;
+	real Fnew[3]={0.0};
+	real Fold[3];
+	real vold[3];
+	real vnew[3];
+	real localMass;
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -51,8 +38,7 @@ __global__ void updateKernel(DevDataBlock data, float xclamp1, float xclamp2, fl
 		update_v(vnew, vold, Fold, Fnew, data.v, vshift, myNode, localMass);
 
 		//calculate and store new positions
-		float xclamps[2] = { xclamp1, xclamp2 };
-		update_r(data.r, rshift, vnew, Fnew, myNode, localMass, xclamps, ztable);
+		update_r(data.r, rshift, vnew, Fnew, myNode, localMass);
 
 	}//tid<Nnodes
 }//updateKernel

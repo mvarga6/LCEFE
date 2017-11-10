@@ -34,7 +34,7 @@ void PerformanceMetric::Mark(bool restart = true)
 	// Update the metric
 	nevents++;
 
-	float _elapsed;
+	real _elapsed;
 	HANDLE_ERROR(cudaEventRecord(stop));
 	HANDLE_ERROR(cudaEventSynchronize(stop));		
 	HANDLE_ERROR(cudaEventElapsedTime(&_elapsed, 
@@ -42,7 +42,7 @@ void PerformanceMetric::Mark(bool restart = true)
 			
 	elapsed = _elapsed;
 	elapsed_total += elapsed;
-	elapsed_average = elapsed_total / (float)nevents;
+	elapsed_average = elapsed_total / (real)nevents;
 		
 	if (elapsed < elapsed_min)
 	{

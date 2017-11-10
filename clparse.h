@@ -4,9 +4,6 @@
 //#include "extlib/cxxopts/src/cxxopts.hpp"
 
 
-
-//#include "parameters.h"
-
 class SimulationParameters;
 
 void printOptions();

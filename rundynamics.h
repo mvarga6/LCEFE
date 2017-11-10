@@ -25,14 +25,14 @@ void run_dynamics(DevDataBlock *dev
 				,PerformanceRecorder *recorder)
 {
 	//======================================
-	// Create data procedures needed
+	// Create data procedures needed for 
+	// memory operations between GPU and CPU
 	//======================================
 	DataProcedure *getPrintData = new GetPrintData();
 
 	//==============================================================
 	//file to write energies to
 	//===============================================================
-
 	std::string energyFile(params->Output.Base + "_EvsT.dat");	
 	
 	char fout[128];
@@ -40,7 +40,7 @@ void run_dynamics(DevDataBlock *dev
 	FILE*Eout;
 //	Eout = fopen("Output//EvsT.dat","w");
 	Eout = fopen(fout,"w");
-	float pE, kE;
+	real pE, kE;
 	int Ntets = dev->Ntets;
 	int Nnodes = dev->Nnodes;
 
@@ -48,8 +48,8 @@ void run_dynamics(DevDataBlock *dev
 	//vtkWriter->BindPoints(host->r, Nnodes, DataFormat::LinearizedByDimension, 3);
 	//vtkWriter->BindCells(host->TetToNode, Ntets, DataFormat::LinearizedByDimension, CellType::Tetrahedral);
 
-	const float dt = params->Dynamics.Dt;
-	const float meshScale = params->Mesh.Scale;
+	const real dt = params->Dynamics.Dt;
+	const real meshScale = params->Mesh.Scale;
 	const int Threads_Per_Block = params->Gpu.ThreadsPerBlock;
 	const int iterPerFrame = params->Output.FrameRate;
 	const int nSteps = params->Dynamics.Nsteps;
@@ -64,102 +64,36 @@ void run_dynamics(DevDataBlock *dev
 
 	printf("execute dynamnics kernel using:\n%d blocks\n%d threads per bock\n",BlocksTet,Threads_Per_Block);
 
-	//size_t widthTETS = Ntets;
-	//size_t height16 = 16;
-
-	//float *Acheck;
-	//float *Acheck = (float*)malloc(Ntets * 16 * sizeof(float));
-
-	//================================================================
-	// create start and stop events to measure performance
-	//================================================================
-	//cudaEvent_t startF, stopF, startU, stopU; 
-	//cudaEvent_t frameStart, frameEnd;
-	//float elapsedTimeF = 0, elapsedTimeU = 0;
-	//float etF = 0.0, etU = 0.0;
- 	//float countF = 0.0, countU = 0.0;
-
 	//================================================================
 	// initiallize experimental setup contraints
 	//================================================================
-	float tableZ = host->min[2] - 0.05*meshScale;	//table position
-	float clamps[2] = {host->min[0] + 0.1f,  	//left clamp 
-			   host->max[0] - 0.1f}; 	//right clamp 
+	
 
 	//================================================================
 	// Begin Dynsmics
 	//================================================================
 
-	//HANDLE_ERROR(cudaEventCreate(&frameStart));
-	//HANDLE_ERROR(cudaEventCreate(&frameEnd));
-	//HANDLE_ERROR(cudaEventRecord(frameStart));
-	
-	
 	recorder->Create("time-loop")->Start();
 
 	for(int iKern = 0; iKern < nSteps; iKern++)
 	{
-
-  		//timer for force calculation
-		//HANDLE_ERROR(cudaEventCreate(&startF));
-		//HANDLE_ERROR(cudaEventCreate(&stopF));
-		//HANDLE_ERROR(cudaEventRecord(startF,0));
-
 		//calculate force and send force components to be summed
-		force_kernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*float(iKern));
-
-		//sync threads before updating
-		//cudaThreadSynchronize();
-
-		//end timer for force kernel
-		//HANDLE_ERROR(cudaEventRecord(stopF, 0));
-		//HANDLE_ERROR(cudaEventSynchronize(stopF));
-		//HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeF, startF, stopF));
-		//HANDLE_ERROR(cudaEventDestroy( startF ));
-		//HANDLE_ERROR(cudaEventDestroy( stopF ));
-
-	  	//start timer for update routine	
-	  	//HANDLE_ERROR(cudaEventCreate(&startU));
-		//HANDLE_ERROR(cudaEventCreate(&stopU));
-		//HANDLE_ERROR(cudaEventRecord(startU,0));
+		force_kernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*real(iKern));
 
 		//sum forces and update positions	
-		updateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev, clamps[0], clamps[1], tableZ);
+		updateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev);
 
 		//sync threads before updating
 		cudaThreadSynchronize();
-
-		//end timer for force kernel
-		//HANDLE_ERROR(cudaEventRecord(stopU, 0));
-		//HANDLE_ERROR(cudaEventSynchronize(stopU));
-		//HANDLE_ERROR(cudaEventElapsedTime(&elapsedTimeU, startU, stopU));
-		//HANDLE_ERROR( cudaEventDestroy( startU ));
-		//HANDLE_ERROR( cudaEventDestroy( stopU ));
-
-  		//update timer data
-  		//etF += elapsedTimeF;
-  		//etU += elapsedTimeU;
-  		//countF += 1.0;
-  		//countU += 1.0;
-  		
   		recorder->Mark("time-loop");
 
 		//pull data to host then print to files
 		if((iKern) % iterPerFrame == 0)
 		{
-			//float frameElapsed = 0;
-			//HANDLE_ERROR(cudaEventRecord(frameEnd));
-			//HANDLE_ERROR(cudaEventSynchronize(frameEnd));
-			//HANDLE_ERROR(cudaEventElapsedTime(&frameElapsed, frameStart, frameEnd));
-			
-		
 			printf("\n==============================================");
 			printf("\nKernel: %d of %d", iKern + 1, nSteps);
-			printf("\nTime: %f seconds", float(iKern)*dt);
+			printf("\nTime: %f seconds", real(iKern)*dt);
 			recorder->Log("time-loop");
-			//printf("\nSpeed: %f iteration/s", 1000.0 / (elapsedTimeU + elapsedTimeF));
-			//printf("\nSpeed: %f iteration/s", ((float)params->Output.FrameRate) / (frameElapsed*0.001f));
-		
 			
 			//HANDLE_ERROR(cudaEventRecord(frameStart));
 		
@@ -175,30 +109,16 @@ void run_dynamics(DevDataBlock *dev
 				
 			//vtkWriter->Write(iKern+1);
 
-			
-
-
 			//print energy
 			getEnergy(dev
 				,host
 				,pE
 				,kE);
 
-			fprintf(Eout,"%f %f %f %f\n", float(iKern)*dt, pE, kE, pE+kE);
+			fprintf(Eout,"%f %f %f %f\n", real(iKern)*dt, pE, kE, pE+kE);
 			fflush(Eout);
 
-		}//if((iKern+1)%iterPerFrame==0)
-
-/*		HANDLE_ERROR(cudaMemcpy2D( Acheck*/
-/*				, widthTETS * sizeof(float)*/
-/*				, dev->A*/
-/*				, dev->Apitch*/
-/*				, widthTETS * sizeof(float)*/
-/*                , height16*/
-/*				, cudaMemcpyDeviceToHost ) );*/
-
-		//reset global mutex
-		//HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+		}
 		
 	}//iKern
 

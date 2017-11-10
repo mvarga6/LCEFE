@@ -5,7 +5,7 @@
 
 struct DirectorOrientation
 {
-	float theta, phi;
+	real theta, phi;
 };
 
 /*
@@ -14,7 +14,7 @@ struct DirectorOrientation
 class DirectorField
 {
 public:
-	virtual DirectorOrientation GetDirectorAt(const float, const float, const float) = 0;	
+	virtual DirectorOrientation GetDirectorAt(const real, const real, const real) = 0;	
 };
 
 /*
@@ -24,8 +24,8 @@ class UniformField : public DirectorField
 {
 	DirectorOrientation const_director;
 public:
-	UniformField(const float theta, const float phi);
-	DirectorOrientation GetDirectorAt(const float x, const float y, const float z);
+	UniformField(const real theta, const real phi);
+	DirectorOrientation GetDirectorAt(const real x, const real y, const real z);
 };
 
 
@@ -40,7 +40,7 @@ class CartesianDirectorField : public DirectorField
 		
 public: 
 	CartesianDirectorField(ScalerField3D *thetaField, ScalerField3D *phiField);
-	DirectorOrientation GetDirectorAt(const float x, const float y, const float z);
+	DirectorOrientation GetDirectorAt(const real x, const real y, const real z);
 };
 
 #endif

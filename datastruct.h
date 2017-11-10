@@ -4,23 +4,24 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "stdio.h"
+#include "defines.h"
 
 struct DevDataBlock 
 {
 	int Ntets, Nnodes;
-	float *A;
+	real *A;
 	int *TetToNode;
-	float *r0;
-	float *r;
-	float *F;
-	float *dF;
-	float *v;
+	real *r0;
+	real *r;
+	real *F;
+	real *dF;
+	real *v;
 	int *nodeRank;
 	int *TetNodeRank;
-	float *dr;
-	float *m;
-	float *pe;
-	float *TetVol;
+	real *dr;
+	real *m;
+	real *pe;
+	real *TetVol;
 	int *ThPhi;
 	int *S;
 	int *L;
@@ -35,29 +36,29 @@ struct DevDataBlock
 
 
 	//cudaEvent_t     start, stop;
-    //	float           totalTime;
+    //	real           totalTime;
 };
 
 struct HostDataBlock 
 {
 	int Ntets, Nnodes;
-	float *A;
+	real *A;
 	int *TetToNode;
-	float *r0;
-	float *r;
-	float *F;
-	float *v;
+	real *r0;
+	real *r;
+	real *F;
+	real *v;
 	int *nodeRank;
 	int *TetNodeRank;
-	float *dr;
-	float *m;
-	float *pe;
-	float totalVolume;
-	float *TetVol;
+	real *dr;
+	real *m;
+	real *pe;
+	real totalVolume;
+	real *TetVol;
 	int *ThPhi;
 	int *S;
 
-	float min[3], max[3];
+	real min[3], max[3];
 };
 
 

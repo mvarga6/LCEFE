@@ -4,6 +4,8 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 
+#include "defines.h"
+
 class Physics
 {
 public:
@@ -12,37 +14,37 @@ public:
 		Calculate the epsilon matrix (Strain)
 	*/
 	__host__ __device__
-	static void CalculateEpsilon(float eps[9], float a[4], float b[4], float c[4]);
+	static void CalculateEpsilon(real eps[9], real a[4], real b[4], real c[4]);
 
 	/*
 		Calculate the mechanical potential energy using strain
 	*/
 	__device__
-	static void CalculateElasticPotential(float &local_Pe, const float eps[9], const float &cxxxx, const float &cxxyy, const float &cxyxy);
+	static void CalculateElasticPotential(real &local_Pe, const real eps[9], const real &cxxxx, const real &cxxyy, const real &cxyxy);
 	
 	/*
 		Calculate energy from liquid crystal order
 	*/
 	__host__ __device__
-	static void CalculateLiquidCrystalEnergy(float &lcEnergy, const float eps[9], const float Q[9], const float &alpha);
+	static void CalculateLiquidCrystalEnergy(real &lcEnergy, const real eps[9], const real Q[9], const real &alpha);
 	
 	/*
 		Forces from elastic energy
 	*/
 	__host__ __device__
-	static void AddElasticForces(float F[12], const float eps[9], const float Ainv[16], const float a[4], const float b[4], const float c[4], const float &cxxxx, const float &cxxyy, const float &cxyxy);
+	static void AddElasticForces(real F[12], const real eps[9], const real Ainv[16], const real a[4], const real b[4], const real c[4], const real &cxxxx, const real &cxxyy, const real &cxyxy);
 
 	/*
 		Forces from liquid crystal 
 	*/
 	__host__ __device__
-	static void AddLiquidCrystalForces(float F[12], const float Q[9], const float Ainv[16], const float a[4], const float b[2], const float c[4], const float &alpha);
+	static void AddLiquidCrystalForces(real F[12], const real Q[9], const real Ainv[16], const real a[4], const real b[2], const real c[4], const real &alpha);
 
 	/*
 		Calculate Shape Function
 	*/
 	__host__ __device__
-	static void CalculateShapeFunction(float a[4], float b[4], float c[4], const float r[12], const float r0[12], const float Ainv[16]);
+	static void CalculateShapeFunction(real a[4], real b[4], real c[4], const real r[12], const real r0[12], const real Ainv[16]);
 };
 
 #endif

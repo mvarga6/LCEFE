@@ -8,7 +8,7 @@ class TetArray{
 
 private:
 	int *TetNab;
-	float *TetPos;
+	real *TetPos;
 	int size;
 
 
@@ -17,9 +17,9 @@ public:
 	~TetArray();
 
 	void set_nabs(int i, int j,const int &newval);
-	void set_pos(int i, int j,const float &newval);
+	void set_pos(int i, int j,const real &newval);
 	int get_nab(int i, int j);
-	float get_pos(int i, int j);
+	real get_pos(int i, int j);
 	void switch_tets(int i, int j);
 
 };
@@ -27,7 +27,7 @@ public:
 TetArray::TetArray(int N){
 	size = N;
 	TetNab = new int[size*4];
-	TetPos = new float[size*3];
+	TetPos = new real[size*3];
 }
 
 TetArray::~TetArray(){
@@ -49,7 +49,7 @@ void TetArray::set_nabs(int i, int j,const int &newval){
 	}
 }
 
-void TetArray::set_pos(int i, int j,const float &newval){
+void TetArray::set_pos(int i, int j,const real &newval){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 		TetPos[i*3+j] = newval;
@@ -77,7 +77,7 @@ int TetArray::get_nab(int i, int j){
 	}
 }
 
-float TetArray::get_pos(int i, int j){
+real TetArray::get_pos(int i, int j){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 		return TetPos[i*3+j];
@@ -93,7 +93,7 @@ float TetArray::get_pos(int i, int j){
 
 //switch all elemnts of both Tet arrays for i and j
 void TetArray::switch_tets(int i, int j){
-	float buffpos;
+	real buffpos;
 	int buffnab;
 
 	if(i<size && i>=0){
@@ -125,9 +125,9 @@ class NodeArray{
 
 private:
 	int *MyTet;
-	float *MyPos;
-	float *MyA;
-	float *MyForce;
+	real *MyPos;
+	real *MyA;
+	real *MyForce;
 	int size;
 
 
@@ -135,14 +135,14 @@ public:
 	NodeArray(int l);
 	~NodeArray();
 
-	void set_pos(int i, int j,const float &newval);
+	void set_pos(int i, int j,const real &newval);
 	void set_tet(int i,const int &newval);
-	void set_A(int i, int j, int k,const float &newval);
-	void set_force(int i, int j,const float &newval);
-	float get_pos(int i, int j);
+	void set_A(int i, int j, int k,const real &newval);
+	void set_force(int i, int j,const real &newval);
+	real get_pos(int i, int j);
 	int get_tet(int i);
-	float get_A(int i, int j, int k);
-	float get_force(int i, int j);
+	real get_A(int i, int j, int k);
+	real get_force(int i, int j);
 	void switch_nodes(int i, int j);
 
 };
@@ -151,9 +151,9 @@ public:
 NodeArray::NodeArray(int l){
 	size = l;
 	MyTet = new int[size];
-	MyPos = new float[size*3];
-	MyA = new float[size*3*3];
-	MyForce = new float[size*3]; 
+	MyPos = new real[size*3];
+	MyA = new real[size*3*3];
+	MyForce = new real[size*3]; 
 }
 
 NodeArray::~NodeArray(){
@@ -167,7 +167,7 @@ NodeArray::~NodeArray(){
 	MyForce = NULL;
 }
 
-void NodeArray::set_pos(int i, int j, const float &newval){
+void NodeArray::set_pos(int i, int j, const real &newval){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 			MyPos[i*3+j] = newval;
@@ -188,7 +188,7 @@ void NodeArray::set_tet(int i, const int &newval){
 }
 
 
-void NodeArray::set_A(int i, int j, int k, const float &newval){
+void NodeArray::set_A(int i, int j, int k, const real &newval){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 			if(k<3 && k>=0){
@@ -204,7 +204,7 @@ void NodeArray::set_A(int i, int j, int k, const float &newval){
 	}
 }
 
-void NodeArray::set_force(int i, int j, const float &newval){
+void NodeArray::set_force(int i, int j, const real &newval){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 			MyForce[i*3+j] = newval;
@@ -216,7 +216,7 @@ void NodeArray::set_force(int i, int j, const float &newval){
 	}
 }
 
-float NodeArray::get_pos(int i, int j){
+real NodeArray::get_pos(int i, int j){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 			return MyPos[i*3+j];
@@ -240,7 +240,7 @@ int NodeArray::get_tet(int i){
 }
 
 
-float NodeArray::get_A(int i, int j, int k){
+real NodeArray::get_A(int i, int j, int k){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 			if(k<3 && k>=0){
@@ -259,7 +259,7 @@ float NodeArray::get_A(int i, int j, int k){
 	}
 }
 
-float NodeArray::get_force(int i, int j){
+real NodeArray::get_force(int i, int j){
 	if(i<size && i>=0){
 		if(j<3 && j>=0){
 			return MyForce[i*3+j];
@@ -275,7 +275,7 @@ float NodeArray::get_force(int i, int j){
 
 void NodeArray::switch_nodes(int i, int j){
 
-	float buffpos,bufftet,buffA,buffF; 
+	real buffpos,bufftet,buffA,buffF; 
 
 	if(i<size && i>=0){
 		if(j<size && j>=0){

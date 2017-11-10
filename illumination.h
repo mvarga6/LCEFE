@@ -7,7 +7,7 @@
 
 //.. for each surface triangle find the point of illumination
 __global__ void point_of_illumination_kernel(
-	float (&illum_vector)[3] // incident wave vector
+	real (&illum_vector)[3] // incident wave vector
 	,int &cell_illum_from	 // cell_id where light emanates from
 	){
 	

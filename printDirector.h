@@ -1,14 +1,14 @@
 #ifndef __PRINTDIRECTOR_H__
 #define __PRINTDIRECTOR_H__
 
-void printDirector(float *THETA
-				 , float *PHI
+void printDirector(real *THETA
+				 , real *PHI
 				 , int inZ
 				 , int label
 				 , std::string outputBase){
 
 //print to file to test
-float nx,ny,nz,th,ph;
+real nx,ny,nz,th,ph;
 
 char fout[128];
 //sprintf(fout,"Output//director%d.xyzv",label);

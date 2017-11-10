@@ -12,7 +12,7 @@ VtkWriter::VtkWriter(string outputBaseName)
 }
 
 
-void VtkWriter::BindPoints(float *points, int nPoints, DataFormat format, int dim)
+void VtkWriter::BindPoints(real *points, int nPoints, DataFormat format, int dim)
 {
 	this->_points = points;
 	this->npoints = nPoints;
@@ -32,7 +32,7 @@ void VtkWriter::BindCells(int *cells, int nCells, DataFormat format, CellType ty
 }
 
 
-void VtkWriter::BindCellData(float *cellsData, int nCells, DataFormat format, int dim, string cellDataName)
+void VtkWriter::BindCellData(real *cellsData, int nCells, DataFormat format, int dim, string cellDataName)
 {
 	this->_cell_data = cellsData;
 	this->ncellsdata = nCells;
@@ -97,7 +97,7 @@ void VtkWriter::WriteHeader(ofstream& out, string title)
 void VtkWriter::WritePoints(ofstream& out)
 {
 	// print title of section
-	out << "POINTS " << this->npoints << " FLOAT" << endl;
+	out << "POINTS " << this->npoints << " real" << endl;
 	
 	// print based on format
 	switch(this->points_format)
@@ -207,7 +207,7 @@ void VtkWriter::WriteCellData(ofstream& out, string title)
 {
 	// print section title
 	out << "CELL_DATA " << this->ncellsdata << endl;
-	out << "SCALARS " << title << " FLOAT " << this->cells_data_dim << endl;
+	out << "SCALARS " << title << " real " << this->cells_data_dim << endl;
 	out << "LOOKUP_TABLE default" << endl;
 	
 	

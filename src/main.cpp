@@ -24,7 +24,7 @@
 #include "parameters_writer.h"
 #include "output_writer.h"
 #include "data_manager.h"
-#include "constant_cuda_defs.h"
+//#include "constant_cuda_defs.h"
 #include "performance_recorder.h"
 #include "mesh_optimizer.h"
 #include "director_field.h"
@@ -34,6 +34,7 @@
 
 // these will go away into their own service class
 #include "getAs.h"
+#include "setn.h"
 #include "printmeshorder.h"
 #include "packdata.h"
 #include "errorhandle.h"
@@ -98,7 +99,7 @@ int main(int argc, char *argv[])
 	//get_mesh(Node,Tet,Ntets,Nnodes);
 	//get_gmsh(parameters.Mesh.File, Nodes, Tets, parameters.Mesh.Scale);
 	
-	//const float flatten_Z[3] = {1.0f, 1.0f, 0.75f};
+	//const real flatten_Z[3] = {1.0f, 1.0f, 0.75f};
 	//Nodes.deform(flatten_Z);
 	//Node.eulerRotation(0, PI/2.0, 0);
 
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
 	}
 	
 	//set director n for each tetrahedra
-	//set_n(Tets, &parameters);
+	set_n(*mesh->Tets, &parameters);
 	
 	// Get the director field (default for now)
 	//DirectorField * director = new UniformField(PI / 2, 0.0f);
@@ -157,13 +158,13 @@ int main(int argc, char *argv[])
 	//ScalerField3D * theta = new MultiplicativeField3D(theta_of_x);
 	//ScalerField3D * phi = new AdditiveField3D(NULL, phi_of_y);	
 	
-	UnivariableFunction *phi_of_z = new Linear({(PI / 6)}, PI / 4.0f);
-	ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
-	ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
-	DirectorField * director 	  = new CartesianDirectorField(theta, phi);
+	//UnivariableFunction *phi_of_z = new Linear({(PI / 6)}, PI / 4.0f);
+	//ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
+	//ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
+	//DirectorField * director 	  = new CartesianDirectorField(theta, phi);
 		
 	
-	mesh->SetDirector(director);
+	//mesh->SetDirector(director);
 
 	if (!(mesh->CalculateVolumes() && mesh->CalculateAinv()))
 	{

@@ -16,20 +16,20 @@
 //         (returned as refference)                          //
 //                                                           //
 //===========================================================//
-void getThPhi(float rx				// x position [cm] 
-			, float ry				// y position [cm]
-			, float rz				// z position [cm]
-			, float &theta			// theta [rad] (reference return)
-			, float &phi			// phi [rad] (reference return)
-			, float * THETA 		// top boundary conditions
-			, float * PHI			// bottom boundary conditions
+void getThPhi(real rx				// x position [cm] 
+			, real ry				// y position [cm]
+			, real rz				// z position [cm]
+			, real &theta			// theta [rad] (reference return)
+			, real &phi			// phi [rad] (reference return)
+			, real * THETA 		// top boundary conditions
+			, real * PHI			// bottom boundary conditions
 			, int inZ
-			, float xMAX
-			, float xMIN
-			, float yMAX
-			, float yMIN
-			, float zMAX
-			, float zMIN
+			, real xMAX
+			, real xMIN
+			, real yMAX
+			, real yMIN
+			, real zMAX
+			, real zMIN
 			 ){
 //-----------------------------------------------------------//
 //                 WRITE YOUR CODE HERE                      //
@@ -38,9 +38,9 @@ void getThPhi(float rx				// x position [cm]
 
 	int i,j,k;
 
-	i = int(float(inX)*(rx+xMIN)/(xMAX-xMIN));
-	j = int(float(inY)*(ry+yMIN)/(yMAX-yMIN));
-	k = int(float(inZ)*(rz+zMIN)/(zMAX-zMIN));
+	i = int(real(inX)*(rx+xMIN)/(xMAX-xMIN));
+	j = int(real(inY)*(ry+yMIN)/(yMAX-yMIN));
+	k = int(real(inZ)*(rz+zMIN)/(zMAX-zMIN));
 
 	theta = THETA[(i*inY+ j)*inZ+k];
 	phi = PHI[(i*inY+ j)*inZ+k];
@@ -77,9 +77,9 @@ void getThPhi(float rx				// x position [cm]
 //   Output: F[12] refference return                         //
 //                                                           //
 //===========================================================//
-__device__ void userForce(float *r                // node pos 
-			, float (&F)[12]          // node-force tensor
-			, float xmax
+__device__ void userForce(real *r                // node pos 
+			, real (&F)[12]          // node-force tensor
+			, real xmax
 						 ){
 //-----------------------------------------------------------//
 //                 WRITE YOUR CODE HERE                      //

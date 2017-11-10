@@ -20,24 +20,24 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 	dat->Nnodes = Nnodes;
 
 	//allocate memory on host
-	dat->A 			 = (float*)malloc(Ntets*16*(sizeof(float)));
+	dat->A 			 = (real*)malloc(Ntets*16*(sizeof(real)));
 	dat->TetToNode 	 = (int*)malloc(Ntets*4*(sizeof(int)));
-	dat->r0 		 = (float*)malloc(Nnodes*3*(sizeof(float)));
-	dat->r 			 = (float*)malloc(Nnodes*3*(sizeof(float)));
-	dat->F 			 = (float*)malloc(Nnodes*3*(sizeof(float)));
-	dat->v 			 = (float*)malloc(Nnodes*3*(sizeof(float)));
+	dat->r0 		 = (real*)malloc(Nnodes*3*(sizeof(real)));
+	dat->r 			 = (real*)malloc(Nnodes*3*(sizeof(real)));
+	dat->F 			 = (real*)malloc(Nnodes*3*(sizeof(real)));
+	dat->v 			 = (real*)malloc(Nnodes*3*(sizeof(real)));
 	dat->nodeRank 	 = (int*)malloc(Nnodes*sizeof(int));
-	dat->m 		 	 = (float*)malloc(Nnodes*sizeof(float));
-	dat->pe 		 = (float*)malloc(Ntets*sizeof(float));
+	dat->m 		 	 = (real*)malloc(Nnodes*sizeof(real));
+	dat->pe 		 = (real*)malloc(Ntets*sizeof(real));
 	dat->TetNodeRank = (int*)malloc(Ntets*4*sizeof(int));
-	dat->dr 		 = (float*)malloc(Nnodes*MaxNodeRank*sizeof(float));
+	dat->dr 		 = (real*)malloc(Nnodes*MaxNodeRank*sizeof(real));
 	dat->totalVolume = Tets.get_total_volume();
-	dat->TetVol 	 = (float*)malloc(Ntets*sizeof(float));
+	dat->TetVol 	 = (real*)malloc(Ntets*sizeof(real));
 	dat->ThPhi 		 = (int*)malloc(Ntets*sizeof(int));
 	dat->S 			 = (int*)malloc(Ntets*sizeof(int));
 
 	//.. untransformed max's and min's
-	//float L;//, w, h;
+	//real L;//, w, h;
 	for(int c = 0; c < 3; c++)
 	{
 		dat->min[c] = Nodes.min_point(c);
@@ -49,7 +49,7 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 //	h = dat->max[2] - dat->min[2];
 
 	//.. determine tets on the top surface of film and build list
-	float rz;
+	real rz;
 	for(int t = 0; t < Ntets; t++)
 	{ // for all tets
 		rz = 0;
@@ -107,9 +107,9 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 
 
 	//.. transformation of initial state (leaves reference state intact)
-/*	float x, z, minx=1000, maxx=0, minz=1000, maxz=0;*/
-/*	const float sqzRatio = params->Initalize.SqueezeRatio;*/
-/*	const float sqzAmp = params->Initalize.SqueezeAmplitude;*/
+/*	real x, z, minx=1000, maxx=0, minz=1000, maxz=0;*/
+/*	const real sqzRatio = params->Initalize.SqueezeRatio;*/
+/*	const real sqzAmp = params->Initalize.SqueezeAmplitude;*/
 /*	for(int n = 0; n < Nnodes; n++)*/
 /*	{*/
 /*		x = dat->r[n + Nnodes*0];*/
