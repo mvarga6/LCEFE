@@ -105,7 +105,7 @@ static MeshDimensions get_gmsh_dim(string fileName)
 		}
 	}
 	
-	printf("\nNodes are %d-dimensional", node_dim);
+	printf("\n[ INFO ] Nodes are %d-dimensional", node_dim);
 
 	// Read elements (actually tets only)
 
@@ -132,18 +132,8 @@ static MeshDimensions get_gmsh_dim(string fileName)
 
 				type = s_to_i4(text, length, ierror); //read type
 				text.erase(0, length);
-				//printf("id: %d\ttype: %d", indx, type);
 
 				if(type == 4) tet_num++; //count a tet
-
-				//k = 0;
-				//for( ; ; k++){
-				//	indx = stoi(text, &length);
-				//	text.erase(0, length);
-				//	if(text.size() == 0) break;
-				//}
-				//element_order = k - 3;
-				//break;
 			}
 
 		}
@@ -154,7 +144,7 @@ static MeshDimensions get_gmsh_dim(string fileName)
 	MeshDimensions dims;
 	dims.Nnodes = node_num;
 	dims.Ntets = tet_num;
-	printf("\n%d nodes\n%d tets\n", node_num, tet_num);
+	printf("\n[ INFO ] %d nodes\n[ INFO ] %d tets\n", node_num, tet_num);
 	input.close();
 	return dims;
 }
@@ -168,10 +158,6 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 	
 	real min[3] = {999999.f, 999999.f, 999999.f};
 	real max[3] = {-999999.f, -999999.f, -999999.f};
-	
-	//int Nnodes = nodes.size;
-	//int Ntets = tets.size;
-	//int indx;
 	ifstream input;
 	int n, c, k;
 	bool ierror;
@@ -186,7 +172,7 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 
 	input.open(fileName.c_str());
 	if(!input){
-		cerr << "\nGMSH_SIZE_READ - Fatal error!\n";
+		cerr << "\n[*** CRITICAL ***] GMSH_SIZE_READ - Fatal error!\n";
 		exit(1);
 	}
 
@@ -274,7 +260,6 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 	}
 	
 	input.close();
-	printf("\nNode positions and tetrahedral neighbors assigned.");
 	return result;
 }
 

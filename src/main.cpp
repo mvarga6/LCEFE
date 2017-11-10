@@ -87,38 +87,9 @@ int main(int argc, char *argv[])
 	// for printing to output files
 	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
 	
-	//int Ntets,Nnodes;
-	//get dimensions of the mesh
-	//get_mesh_dim(Ntets, Nnodes);
-	
-	//create objects of TetArray and NodeArray class with correct size
-	//TetArray Tets = TetArray(meshDim.Ntets);
-	//NodeArray Nodes = NodeArray(meshDim.Nnodes);
-
-	//read the mesh into Node and Tet objects
-	//get_mesh(Node,Tet,Ntets,Nnodes);
-	//get_gmsh(parameters.Mesh.File, Nodes, Tets, parameters.Mesh.Scale);
-	
-	//const real flatten_Z[3] = {1.0f, 1.0f, 0.75f};
-	//Nodes.deform(flatten_Z);
-	//Node.eulerRotation(0, PI/2.0, 0);
-
-	//get positions of tetrahedra
-	//get_tet_pos(Nodes, Tets);
-	
-	// comment out GPU calculations while Debugging director sim
-
-	//reorder tetrahedra 
-	//gorder_tet(Nodes, Tets);
-
-	//re-order nodes and reassing tetrahedra component lists
-	//finish_order(Nodes, Tets);
-	
 	// the mesh object
-	Mesh * mesh = new Mesh(&parameters);
-	
-	
-	//MeshDimensions meshDim = get_gmsh_dim(parameters.Mesh.File);
+	Mesh * mesh = new Mesh(&parameters, log);
+
 	bool cachedMesh;
 	if (!mesh->Load(&cachedMesh))
 	{
@@ -130,7 +101,7 @@ int main(int argc, char *argv[])
 	if (!cachedMesh)
 	{
 		// optimize the mesh
-		log->Msg("Beging to optimize mesh");
+		log->Msg(" *** Optimizing mesh *** ");
 		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition(log);
 		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.999999f, log);
 		MeshOptimizer * reIndex = new ReassignIndices(log);
@@ -162,22 +133,15 @@ int main(int argc, char *argv[])
 	//ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
 	//ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
 	//DirectorField * director 	  = new CartesianDirectorField(theta, phi);
-		
-	
+			
 	//mesh->SetDirector(director);
 
-	if (!(mesh->CalculateVolumes() && mesh->CalculateAinv()))
+	if (!(mesh->CalculateVolumes() 
+		&& mesh->CalculateAinv()))
 	{
 		// failed to calculate necessary things on mesh
 		exit(11);
 	}
-
-	//find initial A's and invert them  store all in Tet object
-	//init_As(*mesh->Nodes, *mesh->Tets);
-
-	//print spacefilling curve to represent adjacensy between tetrahedra
-	//printorder(*mesh->Tets, parameters.Output.Base);
-
 	//pritn director
 	mesh->Tets->printDirector(parameters.Output.Base);
 

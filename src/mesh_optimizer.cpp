@@ -141,6 +141,7 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 {
 	try
 	{
+		this->log->Msg("Running ReassignIndices ...");
 		int Ntets = Tets->size;
 		int Nnodes = Nodes->size;
 
@@ -153,7 +154,6 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 		{
 			Nodes->set_newnum(i,-100);
 		}
-		printf("init complete\n");
 	
 	
 		//Loop though the lists of tetrahedra and if 
@@ -161,6 +161,7 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 		//should keep nodes in same tetrahedra close 
 		//in memory and should keep nodes which share 
 		//tetrahedra also close in memory
+		this->log->Msg("Setting new node numbers: ");
 		int newi = 0;
 		int i;
 		for(int t = 0; t < Ntets; t++)
@@ -176,11 +177,12 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 				}
 			}
 		}
-		printf("Renumber complete newi = %d Nnodes=%d\n", newi, Nnodes);
+		this->log->StaticMsg("Setting new node numbers: complete");
 
 	
 		//now reassign each tetrahedra to neighbors
 		//in the new arrangement of nodes
+		this->log->Msg("Assigning nodes to tetrahedra: ");
 		for(int t = 0;t < Ntets; t++)
 		{
 			for (int tn = 0; tn < 4; tn++)
@@ -192,12 +194,13 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 				Tets->set_nabs(t, tn, Nodes->get_newnum(i));
 			}
 		}
-		printf("Reassign tets complete\n");
+		this->log->Msg("Assigning nodes to tetrahedra: complete");
 
 		//switch actual order of nodes
 		//do this by sweeping though and switching
 		//nodes which have lower real val
 		//not the most efficient sort but it will work
+		this->log->Msg("Sorting nodes by value: ");
 		bool go = true;
 		while(go)
 		{
@@ -211,16 +214,21 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 				}
 				if (Nodes->get_newnum(i) < 0)
 				{
-					printf("nodes not properly reassigned node %d\n",i);
+					//printf("nodes not properly reassigned node %d\n",i);
+					stringstream ss;
+					ss << "Nodes not properlyy reassigned node " << i;
+					this->log->Msg(ss.str());
 				}
 			}
 		}
+		this->log->Msg("Sorting nodes by value: complete");
 		
 		return OptimizationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// log something
+		this->log->Msg("ReassignIndices threw exception -- quiting");
 		return OptimizationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
