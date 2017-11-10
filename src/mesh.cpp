@@ -50,7 +50,7 @@ void Mesh::SetDirector(DirectorField *field)
 	int Ntets = this->Tets->size;
 	
 	DirectorOrientation dir;
-	float x, y, z;
+	real x, y, z;
 	
 	for (int t = 0; t < Ntets; t++)
 	{
@@ -110,7 +110,7 @@ bool Mesh::CalculateVolumes()
 {
 	try
 	{
-		float tempVol;
+		real tempVol;
 		int n0, n1, n2, n3;
 		int Ntets = this->Tets->size;
 	
@@ -152,7 +152,7 @@ bool Mesh::CalculateVolumes()
 
 		//normalize volume so that each node
 		//has an average volume of 1
-		//i_Node.normalize_volume(float(Nnodes));
+		//i_Node.normalize_volume(real(Nnodes));
 
 		//calculate total volume
 		Tets->calc_total_volume();
@@ -278,7 +278,7 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 		}
 		
 		// write the cached mesh file
-		gmsh_mesh3d_write(cacheFileName, 3, Nnodes, Nodes->MyPos, 4, Ntets, element_node);
+		gmsh_mesh3d_write(cacheFileName, 3, Nnodes, (float*)Nodes->MyPos, 4, Ntets, element_node);
 		
 		delete [] element_node;
 	}

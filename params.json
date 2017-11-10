@@ -8,8 +8,8 @@ cxxxx: 29400000
 cxxyy: 28000000
 cxyxy: 570000
 alpha: 171000
-damp: 0.9999999
+damp: 0.999999
 homeotop: true
 density: 1.2
 threadsperblock: 200
-caching: true
+caching: false

@@ -3,13 +3,13 @@
 
 TetArray::TetArray(int N){
 	size = N;
-	TetVolume = new float[size];
+	TetVolume = new real[size];
 	TetNab = new int[size*4];
-	TetPos = new float[size*4];    ///x y z |r|
-	TetA = new float[size*16];
-	TetinvA = new float[size*16];
+	TetPos = new real[size*4];    ///x y z |r|
+	TetA = new real[size*16];
+	TetinvA = new real[size*16];
 	TetNodeRank = new int[size*4];
-	ThPhi = new float[size*2];
+	ThPhi = new real[size*2];
 	S = new int[size];
 	totalVolume = 0.0;
 
@@ -42,27 +42,27 @@ TetArray::~TetArray(){
 	
 }
 
-void TetArray::set_A(int i, int j, int k,const float &newval){
+void TetArray::set_A(int i, int j, int k,const real &newval){
 		TetA[i*16+j*4+k]=newval;
 }
 
-void TetArray::set_volume(int i, const float &newval){
+void TetArray::set_volume(int i, const real &newval){
 		TetVolume[i] = newval;
 }
 
-float TetArray::get_volume(int i){
+real TetArray::get_volume(int i){
 		return TetVolume[i];
 }
 
-float TetArray::get_A(int i, int j, int k){
+real TetArray::get_A(int i, int j, int k){
 		return TetA[i*16+j*4+k];
 }
 
-void TetArray::set_invA(int i, int j, int k,const float &newval){
+void TetArray::set_invA(int i, int j, int k,const real &newval){
 		TetinvA[i*16+j*4+k]=newval;
 }
 
-float TetArray::get_invA(int i, int j, int k){
+real TetArray::get_invA(int i, int j, int k){
 		return TetinvA[i*16+j*4+k];
 }
 
@@ -74,7 +74,7 @@ void TetArray::set_nabsRank(int i, int j,const int &newval){
 		TetNodeRank[i*4+j] = newval;
 }
 
-void TetArray::set_pos(int i, int j,const float &newval){
+void TetArray::set_pos(int i, int j,const real &newval){
 		TetPos[i*4+j] = newval;		
 }
 
@@ -86,20 +86,20 @@ int TetArray::get_nabRank(int i, int j){
 		return TetNodeRank[i*4+j];		
 }
 
-float TetArray::get_pos(int i, int j){	
+real TetArray::get_pos(int i, int j){	
 		return TetPos[i*4+j];		
 }
 
-void TetArray::set_theta(int i ,const float &newval){
+void TetArray::set_theta(int i ,const real &newval){
 		ThPhi[i*2] = newval;
 }
 
-void TetArray::set_phi(int i ,const float &newval){
+void TetArray::set_phi(int i ,const real &newval){
 		ThPhi[i*2+1] = newval;
 }
 
 // sets S for ith tet by converting to int with _S_RES factor
-void TetArray::set_S(int i, const float &newval){
+void TetArray::set_S(int i, const real &newval){
 		int ival;
 		if(newval > 1.0f) ival = 1;
 		else if(newval < 0) ival = 0;
@@ -113,17 +113,17 @@ int TetArray::get_ThPhi(int i){
 	return th*10000+phi;
 }
 
-float TetArray::get_fS(int i){ //returns float
-	return (float(this->S[i]) / SRES); // converts S back to float in [ 0.0 : 1.0 ]
+real TetArray::get_fS(int i){ //returns real
+	return (real(this->S[i]) / SRES); // converts S back to real in [ 0.0 : 1.0 ]
 }
 
 int TetArray::get_iS(int i){
-	return this->S[i]; //returns int w/o converting back to float range
+	return this->S[i]; //returns int w/o converting back to real range
 }
 
 void TetArray::printDirector(std::string outputBase)
 {
-  float th, ph;
+  real th, ph;
   char fout[128];
   sprintf(fout, "%s_dir.vtk", outputBase.c_str());
   FILE * out;
@@ -134,7 +134,7 @@ void TetArray::printDirector(std::string outputBase)
   fprintf(out,"ASCII\n");
   fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
   fprintf(out,"\n");
-  fprintf(out,"POINTS %d FLOAT\n",size);
+  fprintf(out,"POINTS %d real\n",size);
   
   //loop over tetrahedras to get positons
   for (int i = 0; i < size; i++)
@@ -161,7 +161,7 @@ void TetArray::printDirector(std::string outputBase)
 
   //vector data
   fprintf(out,"POINT_DATA %d\n",size);
-  fprintf(out,"VECTORS director FLOAT\n");
+  fprintf(out,"VECTORS director real\n");
   for(int i = 0; i < size; i++)
   {
     th = ThPhi[i*2];
@@ -176,7 +176,7 @@ void TetArray::printDirector(std::string outputBase)
 
 //switch all elemnts of both Tet arrays for i and j
 void TetArray::switch_tets(int i, int j){
-	float buffpos,buffA,buffTh,buffPhi;
+	real buffpos,buffA,buffTh,buffPhi;
 	int buffnab;
 	if(i>-1&&i<size){
 		if(j>-1&&j<size){
@@ -208,8 +208,8 @@ void TetArray::switch_tets(int i, int j){
 }
 
 
-float TetArray::are_we_bros(int n1, int n2){
-	float ret=0.0;
+real TetArray::are_we_bros(int n1, int n2){
+	real ret=0.0;
 	if(n2>-1&&n2<size){
 	for (int i=0;i<4;i++){
 		for(int j=0;j<4;j++){
@@ -224,8 +224,8 @@ float TetArray::are_we_bros(int n1, int n2){
 	}
 }
 
-float TetArray::dist(int n1, int n2){
-float dx,dy,dz;
+real TetArray::dist(int n1, int n2){
+real dx,dy,dz;
 
 
 	if(n2>-1||n2<size){
@@ -239,7 +239,7 @@ float dx,dy,dz;
 }
 
 void TetArray::calc_total_volume(){
-	float totalVOLUME = 0.0;
+	real totalVOLUME = 0.0;
 	for (int t=0;t<size;t++){
 		totalVOLUME+=TetVolume[t];
 	}//t
@@ -247,15 +247,15 @@ void TetArray::calc_total_volume(){
 }//calc_total_volume
 
 
-float TetArray::get_total_volume(){
+real TetArray::get_total_volume(){
 	return totalVolume;
 }//get total volume
 
 
 
-float TetArray::max(int cord){
-	float maxVal = -100000.0;
-	float tempVal;
+real TetArray::max(int cord){
+	real maxVal = -100000.0;
+	real tempVal;
 
 	for (int t=0;t<size;t++){
 		tempVal = TetPos[t*4+cord];
@@ -265,9 +265,9 @@ float TetArray::max(int cord){
 	return maxVal;
 }//find largest point in [0 1 2] = [x y z] directions
 
-float TetArray::min(int cord){
-	float minVal = 100000.0;
-	float tempVal;
+real TetArray::min(int cord){
+	real minVal = 100000.0;
+	real tempVal;
 
 	for (int t=0;t<size;t++){
 		tempVal = TetPos[t*4+cord];

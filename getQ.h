@@ -5,7 +5,7 @@
 #include "parameters.h"
 #include <math.h>
 
-__device__ float sigmoid(const float &x){
+__device__ real sigmoid(const real &x){
 	return 1.0f/(1.0f + exp(-x));
 }
 
@@ -14,40 +14,40 @@ __device__ float sigmoid(const float &x){
 //given its position (initial) and time
 //==============================================
 __device__ void getQ(int myThPhi    //theta and Phi
-					,float (&Q)[9]  //array to store Q in
-					,float t       //time
-					//,float t_on 	//total time element has been illuminated in simulation
+					,real (&Q)[9]  //array to store Q in
+					,real t       //time
+					//,real t_on 	//total time element has been illuminated in simulation
 					,int &S_in	//previous order parameter to calc/set new
 					,int L		//illumination amount
 					){
 
 
-const float oneThird = 1.0 / 3.0;
-const float mythphi = float(myThPhi);
-//const float tau = 0.001f; // trans-cis transition characteristic time
-//const float t_off = t - t_on;
+const real oneThird = 1.0 / 3.0;
+const real mythphi = real(myThPhi);
+//const real tau = 0.001f; // trans-cis transition characteristic time
+//const real t_off = t - t_on;
 
 //calculate S as sigmoid function:
 // if {t_on - _t_off = 0} then {S = S0 / 2}
 // if {t_on >> t_off}     then {S --> S0}
 // if {t_on << t_off}	  then {S --> 0} 
 // maybe this
-//const float S = S0 * sigmoid((t_on - t_off)/tau);
+//const real S = S0 * sigmoid((t_on - t_off)/tau);
 // or maybe this
-//const float fS_in = float(S_in) / SRES; //map to float range
-//const float fL = float(L);
-//const float a = 0.5f, b = 0.5f;
-//const float S = fS_in;
-//const float S = S0 * sigmoid(a*fS_in + b*fL);
+//const real fS_in = real(S_in) / SRES; //map to real range
+//const real fL = real(L);
+//const real a = 0.5f, b = 0.5f;
+//const real S = fS_in;
+//const real S = S0 * sigmoid(a*fS_in + b*fL);
 
-//float S = float((S_in)/float(SRES));//*(t/2.0);
+//real S = real((S_in)/real(SRES));//*(t/2.0);
 
 //old calculation
-float S = -1.0 * t / 0.2;
+real S = -1.0 * t / 0.2;
 if (S < -1.0){ S = -1.0; }
 
 //convert ThPhi into theta and phi
-float nTh,nPhi,theta,phi;
+real nTh,nPhi,theta,phi;
 nTh = floor(mythphi/10000.0);
 nPhi = mythphi-nTh*10000.0;
 
@@ -55,7 +55,7 @@ theta = nTh*PI/1000.0;
 phi = nPhi*PI/500.0;
 
 //calculate nx ny and nz from theta and phi
-float nx,ny,nz;
+real nx,ny,nz;
 nx = sin(theta)*cos(phi);
 ny = sin(theta)*sin(phi);
 nz = cos(theta);

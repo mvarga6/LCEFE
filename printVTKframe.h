@@ -19,25 +19,25 @@ void printVTKframe(DevDataBlock *dev
 	//size_t widthNODE = Nnodes;
 
 /*	HANDLE_ERROR( cudaMemcpy2D(  host->r*/
-/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(real)*/
 /*								, dev->r*/
 /*								, dev->rpitch*/
-/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(real)*/
 /*								, height3*/
 /*								, cudaMemcpyDeviceToHost ) );*/
 
 /*	*/
 /*	HANDLE_ERROR( cudaMemcpy2D(  host->v*/
-/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(real)*/
 /*								, dev->v*/
 /*								, dev->vpitch*/
-/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(real)*/
 /*								, height3*/
 /*								, cudaMemcpyDeviceToHost ) );*/
 
 /*	HANDLE_ERROR( cudaMemcpy(  host->pe*/
 /*								, dev->pe*/
-/*								, Ntets*sizeof(float)*/
+/*								, Ntets*sizeof(real)*/
 /*								, cudaMemcpyDeviceToHost ) );*/
 
 /*	HANDLE_ERROR( cudaMemcpy ( host->S*/
@@ -50,8 +50,8 @@ void printVTKframe(DevDataBlock *dev
 	//for(int i = 0; i < Ntets; i++)
 		//sloc[i] = -S0*SRES; // set all S = 1
 
-	//float light_k[3] = {sin(IANGLE*DEG2RAD), 0, -cos(IANGLE*DEG2RAD)};
-	//float light_k[3] = {1, 0, 0};
+	//real light_k[3] = {sin(IANGLE*DEG2RAD), 0, -cos(IANGLE*DEG2RAD)};
+	//real light_k[3] = {1, 0, 0};
 	
 /*	if(step > iterPerFrame*25) {*/
 /*		calc_S_from_light(light_k, */
@@ -86,7 +86,7 @@ void printVTKframe(DevDataBlock *dev
 	fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
 	fprintf(out,"\n");
 
-	fprintf(out,"POINTS %d FLOAT\n",Nnodes);
+	fprintf(out,"POINTS %d float\n",Nnodes);
 
 
 	//write node points
@@ -118,15 +118,15 @@ void printVTKframe(DevDataBlock *dev
 	fprintf(out,"\n");
 
 	fprintf(out,"CELL_DATA %d\n", Ntets);
-	fprintf(out,"SCALARS potentialEnergy FLOAT 1\n");
+	fprintf(out,"SCALARS potentialEnergy real 1\n");
 	fprintf(out,"LOOKUP_TABLE default\n");
-	float tetpe, peTOTAL = 0.0;
+	real tetpe, peTOTAL = 0.0;
 	for(int nt = 0; nt < Ntets; nt++)
 	{
 		tetpe = host->pe[nt];
 		peTOTAL += tetpe;
 		//fprintf(out,"%f\n",tetpe+10.0);
-		fprintf(out, "%f\n", float(host->S[nt]) / float(SRES)); // print S for debugging
+		fprintf(out, "%f\n", real(host->S[nt]) / real(SRES)); // print S for debugging
 		//fprintf(out, "%f\n", ); // print S for debugging
 	}//nt
 	//delete [] sloc;
@@ -136,7 +136,7 @@ void printVTKframe(DevDataBlock *dev
 	fprintf(out,"\n");
 	fclose(out);		//close output file
 
-	float tetke, keTOTAL = 0.0, vx, vy, vz;
+	real tetke, keTOTAL = 0.0, vx, vy, vz;
 	for(int nt = 0; nt < Nnodes; nt++)
 	{
 		vx = host->v[nt+0*Nnodes];
@@ -147,7 +147,7 @@ void printVTKframe(DevDataBlock *dev
 	}//nt
 	
 	keTOTAL = keTOTAL;
-	float totalVolume = host->totalVolume*10.0;
+	real totalVolume = host->totalVolume*10.0;
 	printf("\npE = %f J/cm^3\nkE = %f J/cm^3\npE+kE = %f J/cm^3\n", 
 		peTOTAL / totalVolume,
 		keTOTAL / totalVolume,

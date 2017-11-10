@@ -19,7 +19,7 @@ using namespace std;
 struct MeshDimensions
 {
 	int Ntets, Nnodes;
-	float rmin[3], rmax[3];
+	real rmin[3], rmax[3];
 };
 
 static MeshDimensions get_gmsh_dim(string fileName)
@@ -159,15 +159,15 @@ static MeshDimensions get_gmsh_dim(string fileName)
 	return dims;
 }
 
-static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, float MeshScale){
+static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, real MeshScale){
 	
 	
 	MeshDimensions result;
 	result.Nnodes = nodes.size;
 	result.Ntets = tets.size;
 	
-	float min[3] = {999999.f, 999999.f, 999999.f};
-	float max[3] = {-999999.f, -999999.f, -999999.f};
+	real min[3] = {999999.f, 999999.f, 999999.f};
+	real max[3] = {-999999.f, -999999.f, -999999.f};
 	
 	//int Nnodes = nodes.size;
 	//int Ntets = tets.size;

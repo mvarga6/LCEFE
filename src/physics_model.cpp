@@ -1,14 +1,15 @@
 
 #include "physics_model.h"
 #include "cuda_runtime.h"
+#include "defines.h"
 
 
 __host__ __device__
 void Physics::CalculateEpsilon(
-	float eps[9], 
-	float a[4], 
-	float b[4], 
-	float c[4])
+	real eps[9], 
+	real a[4], 
+	real b[4], 
+	real c[4])
 {
 	eps[3*0+0] = a[1]+0.5*(a[1]*a[1]+b[1]*b[1]+c[1]*c[1]);
 	eps[3*1+1] = b[2]+0.5*(a[2]*a[2]+b[2]*b[2]+c[2]*c[2]);
@@ -24,11 +25,11 @@ void Physics::CalculateEpsilon(
 
 __device__
 void CalculateElasticPotential(
-	float &local_Pe, 
-	const float eps[9], 
-	const float &cxxxx, 
-	const float &cxxyy, 
-	const float &cxyxy)
+	real &local_Pe, 
+	const real eps[9], 
+	const real &cxxxx, 
+	const real &cxxyy, 
+	const real &cxyxy)
 {
 	local_Pe = 0.0f;
 	local_Pe += cxxxx*(eps[3*0+0]*eps[3*0+0]+eps[3*1+1]*eps[3*1+1]+eps[3*2+2]*eps[3*2+2]);
@@ -39,10 +40,10 @@ void CalculateElasticPotential(
 
 __host__ __device__
 void Physics::CalculateLiquidCrystalEnergy(
-	float &lcEnergy, 
-	const float eps[9], 
-	const float Q[9], 
-	const float &alpha)
+	real &lcEnergy, 
+	const real eps[9], 
+	const real Q[9], 
+	const real &alpha)
 {
 	// alpha has units of energy density 
 	lcEnergy = -1.0*alpha*(eps[3*0+0]*Q[3*0+0]
@@ -55,15 +56,15 @@ void Physics::CalculateLiquidCrystalEnergy(
 
 __host__ __device__
 void Physics::AddElasticForces(
-	float F[12], 
-	const float eps[9], 
-	const float Ainv[16], 
-	const float a[4], 
-	const float b[4], 
-	const float c[4], 
-	const float &cxxxx, 
-	const float &cxxyy, 
-	const float &cxyxy)
+	real F[12], 
+	const real eps[9], 
+	const real Ainv[16], 
+	const real a[4], 
+	const real b[4], 
+	const real c[4], 
+	const real &cxxxx, 
+	const real &cxxyy, 
+	const real &cxyxy)
 {
 	for(int n = 0; n < 4; n++)
 	{
@@ -123,13 +124,13 @@ void Physics::AddElasticForces(
 
 __host__ __device__
 void Physics::AddLiquidCrystalForces(
-	float F[12], 
-	const float Q[9], 
-	const float Ainv[16], 
-	const float a[4], 
-	const float b[2], 
-	const float c[4], 
-	const float &alpha)
+	real F[12], 
+	const real Q[9], 
+	const real Ainv[16], 
+	const real a[4], 
+	const real b[2], 
+	const real c[4], 
+	const real &alpha)
 {
 	for(int n = 0; n < 4; n++)
 	{
@@ -160,14 +161,14 @@ void Physics::AddLiquidCrystalForces(
 
 __host__ __device__
 void Physics::CalculateShapeFunction(
-	float a[4], 
-	float b[4], 
-	float c[4], 
-	const float r[12], 
-	const float r0[12], 
-	const float Ainv[16])
+	real a[4], 
+	real b[4], 
+	real c[4], 
+	const real r[12], 
+	const real r0[12], 
+	const real Ainv[16])
 {
-	float u[4], v[4] ,w[4];
+	real u[4], v[4] ,w[4];
 	a[0] = a[1] = a[2] = a[3] = 0.0f;
 	b[0] = b[1] = b[2] = b[3] = 0.0f;
 	c[0] = c[1] = c[2] = c[3] = 0.0f;

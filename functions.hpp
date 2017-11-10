@@ -1,26 +1,27 @@
 #ifndef __FUNCTIONS_HPP__
 #define __FUNCTIONS_HPP__
 
+#include "defines.h"
 #include <math.h>
 #include <vector>
 #include "parameters.h"
 
 using namespace std;
 
-class UnivariableFunction { public:	virtual float operator()(float) = 0; };
-class ScalerField3D{ public: virtual float operator()(float, float, float) = 0; };
+class UnivariableFunction { public:	virtual real operator()(real) = 0; };
+class ScalerField3D{ public: virtual real operator()(real, real, real) = 0; };
 
 
 class ConstantField3D : public ScalerField3D
 {
-	float a;
+	real a;
 public:
-	inline ConstantField3D(float A)
+	inline ConstantField3D(real A)
 	{
 		a = A;
 	}
 	
-	inline float operator()(float x, float y, float z)
+	inline real operator()(real x, real y, real z)
 	{
 		return a;
 	}
@@ -29,11 +30,11 @@ public:
 template <int D = 1>
 class Polynomial : public UnivariableFunction
 {
-	float c[D];
-	float c0;
+	real c[D];
+	real c0;
 public:
 	
-	inline Polynomial(vector<float> coef, float C0 = 0)
+	inline Polynomial(vector<real> coef, real C0 = 0)
 	{
 		// make coef vector of correct length
 		if (coef.size() < D)
@@ -52,9 +53,9 @@ public:
 		c0 = C0;
 	}
 	
-	inline float operator()(float u)
+	inline real operator()(real u)
 	{
-		float result = c0;
+		real result = c0;
 		for(int d = 0; d < D; d++)
 		{
 			result += c[d] * powf(u, d+1);
@@ -67,7 +68,7 @@ public:
 class UnityFunction : public UnivariableFunction
 {
 public:
-	inline float operator()(float u)
+	inline real operator()(real u)
 	{
 		return 1.0f;
 	}
@@ -76,7 +77,7 @@ public:
 class ZeroFunction : public UnivariableFunction
 {
 public:
-	inline float operator()(float u)
+	inline real operator()(real u)
 	{
 		return 0.0f;
 	}
@@ -85,7 +86,7 @@ public:
 class IdenityFunction : public UnivariableFunction
 {
 public:
-	inline float operator()(float u)
+	inline real operator()(real u)
 	{
 		return u;
 	}
@@ -93,15 +94,15 @@ public:
 
 class Sinusoinal : public UnivariableFunction
 {
-	float factor, phase;
+	real factor, phase;
 public:
-	inline Sinusoinal(float wavelength = _2PI, float phase = 0)
+	inline Sinusoinal(real wavelength = _2PI, real phase = 0)
 	{
 		this->factor = (2.0f * PI) / wavelength;
 		this->phase = phase;
 	}
 	
-	inline float operator()(float u)
+	inline real operator()(real u)
 	{
 		return sinf(u * factor + phase);
 	}
@@ -124,7 +125,7 @@ public:
 		fofz = (FofZ != NULL ? FofZ : new UnityFunction);
 	}
 	
-	inline float operator()(float x, float y, float z)
+	inline real operator()(real x, real y, real z)
 	{
 		return (*fofx)(x) * (*fofy)(y) * (*fofz)(z);
 	}
@@ -141,7 +142,7 @@ public:
 		fofz = (FofZ != NULL ? FofZ : new ZeroFunction);
 	}
 	
-	inline float operator()(float x, float y, float z)
+	inline real operator()(real x, real y, real z)
 	{
 		return (*fofx)(x) + (*fofy)(y) + (*fofz)(z);
 	}

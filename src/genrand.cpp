@@ -1,4 +1,5 @@
 #include "genrand.h"
+#include "defines.h"
 
 int mt_index;
 unsigned long mt_buffer[MT_LEN];
@@ -63,7 +64,7 @@ for (int j = 0; j < 2500; j++)
 
 double randgauss(double sigma, double mean)
 {
-float x1, x2, w, y2, gauss; //y1, 
+real x1, x2, w, y2, gauss; //y1, 
  
          do {
                  x1 = 2.0 * genrand() - 1.0;

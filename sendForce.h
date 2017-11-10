@@ -7,12 +7,12 @@
 // Send forces to linear pitched global device array to 
 // later be summed and get total force one each node
 //==========================================================
-__device__ void sendForce(    float *dF
+__device__ void sendForce(    real *dF
 							, int dFshift
-							, float F[12]
+							, real F[12]
 							, int node_num[4]
 							, int TetNodeRank[4]
-							, float myVol){
+							, real myVol){
 
 
 	int n_glob,NodeRank;  
@@ -27,7 +27,6 @@ __device__ void sendForce(    float *dF
 				dF[dFshift*(1+3*NodeRank)+n_glob]=F[1+3*n]*myVol;
 				dF[dFshift*(2+3*NodeRank)+n_glob]=F[2+3*n]*myVol;
 				
-
 		}//n
 
 }

@@ -6,14 +6,14 @@
 
 //get all data that will not change throughout the kernal call
 // Ainv, r0 and node_num
-__device__ void get_initial_data(float (&Ainv)[16]
-								,float (&r0)[12]
+__device__ void get_initial_data(real (&Ainv)[16]
+								,real (&r0)[12]
 								,int (&node_num)[4]
 								,int Ashift
-								,float *A
-								,float *v
+								,real *A
+								,real *v
 								,int vshift
-								,float (&vlocal)[12]
+								,real (&vlocal)[12]
 								,int *TetNodeRankG
 								,int (&TetNodeRank)[4]
 								,int *TetToNode
@@ -47,7 +47,7 @@ __device__ void get_initial_data(float (&Ainv)[16]
 //read data that will be read per iteration
 //boolian switcher will be used to know which
 //texture to read from
-__device__ void get_variable_data(float (&r)[12],int *node_num){
+__device__ void get_variable_data(real (&r)[12],int *node_num){
 
 	
 		for(int n = 0;n<4;n++){                   //loop over nodes

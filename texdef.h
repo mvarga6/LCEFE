@@ -6,11 +6,12 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <stdio.h>
+#include "defines.h"
 
 extern size_t global_texture_offset;
 
 //texture refference deffinitions
-extern texture<float, 2, cudaReadModeElementType> texRef_r0;
-extern texture<float, 2, cudaReadModeElementType> texRef_r;
+extern texture<real, 2, cudaReadModeElementType> texRef_r0;
+extern texture<real, 2, cudaReadModeElementType> texRef_r;
 
 #endif //__TEXDEF_H__

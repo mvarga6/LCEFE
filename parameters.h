@@ -20,14 +20,14 @@
 
 //parameters regarding sample illumination
 //static bool PLANARTOP = true;
-#define SRES	1000	     //--resolution for float to int conversion for gpu storage
+#define SRES	1000	     //--resolution for real to int conversion for gpu storage
 #define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
 #define LRATE	10
-static float SMAX =	0.0;
-static float SMIN =	-1.0;
-static float SRATE_ON =	-0.2;
-static float SRATE_OFF = 0.2;
-static float IANGLE =	80.0;
+static real SMAX =	0.0;
+static real SMIN =	-1.0;
+static real SRATE_ON =	-0.2;
+static real SRATE_OFF = 0.2;
+static real IANGLE =	80.0;
 
 //Elasticity constants (Lame' Coefficients)
 //  -there is a factor of two off here from
@@ -53,8 +53,8 @@ static float IANGLE =	80.0;
 
 //Pre-bend parameters
 //"squeezes mesh in x direction
-//static float SQZAMP = 0.1f;		//--[ ratio of height to length ]
-//static float SQZRATIO = 0.95f;	//--[ new length / old length ]
+//static real SQZAMP = 0.1f;		//--[ ratio of height to length ]
+//static real SQZRATIO = 0.95f;	//--[ new length / old length ]
 
 //x and y dimensions of n profile
 //input arrays

@@ -5,19 +5,19 @@
 
 //funtions tobe used by directorRelax
 
-void initAll(float *THETA
-			,float *PHI
-			,float *nx
-			,float *ny
-			,float *nz
-			,float *tx
-			,float *ty
-			,float *tz
+void initAll(real *THETA
+			,real *PHI
+			,real *nx
+			,real *ny
+			,real *nz
+			,real *tx
+			,real *ty
+			,real *tz
 			,int xSize
 			,int ySize
 			,int zSize){
 
-float theta,phi;
+real theta,phi;
 
 	//initialize everything-------------------------------------
 	for(int i=0;i<xSize;i++){
@@ -46,19 +46,19 @@ float theta,phi;
 
 
 //calculate the torque on all directors
-void calcTorque(float *nx
-			   ,float *ny
-			   ,float *nz
-			   ,float *tx
-			   ,float *ty
-			   ,float *tz
+void calcTorque(real *nx
+			   ,real *ny
+			   ,real *nz
+			   ,real *tx
+			   ,real *ty
+			   ,real *tz
 			   ,int xSize
 			   ,int ySize
 			   ,int zSize){
 //intialization
-float dott,crossx,crossy,crossz,Tx,Ty,Tz;
+real dott,crossx,crossy,crossz,Tx,Ty,Tz;
 int ip1,jp1,kp1,my,myip1,myjp1,mykp1;
-float K = 1.0,a = 1.0;
+real K = 1.0,a = 1.0;
 //use open boundary conditions for now
 for(int i=0;i<xSize-1;i++){
 	ip1 = i+1;
@@ -138,19 +138,19 @@ for(int i=0;i<xSize-1;i++){
 
 
 //update the director
-void updateN(   float *nx
-			   ,float *ny
-			   ,float *nz
-			   ,float *tx
-			   ,float *ty
-			   ,float *tz
+void updateN(   real *nx
+			   ,real *ny
+			   ,real *nz
+			   ,real *tx
+			   ,real *ty
+			   ,real *tz
 			   ,int xSize
 			   ,int ySize
 			   ,int zSize
-			   ,float deltat){
+			   ,real deltat){
 
 //intialize variabels
-float nxNew,nyNew,nzNew,norm;
+real nxNew,nyNew,nzNew,norm;
 int my;
 
 //top and bottom do not update
@@ -184,9 +184,9 @@ int my;
 
 
 //zero out the torque vecrors
-void zeroTorque(float * tx
-			   ,float * ty
-			   ,float * tz
+void zeroTorque(real * tx
+			   ,real * ty
+			   ,real * tz
 			   ,int xSize
 			   ,int ySize
 			   ,int zSize){
@@ -213,11 +213,11 @@ for(int i=0;i<xSize;i++){
 
 
 //convert nx, ny and nz back to THETA and PHI
-void n2ThetaPhi(float * nx
-			   ,float * ny
-			   ,float * nz
-			   ,float * THETA
-			   ,float * PHI
+void n2ThetaPhi(real * nx
+			   ,real * ny
+			   ,real * nz
+			   ,real * THETA
+			   ,real * PHI
 			   ,int xSize
 			   ,int ySize
 			   ,int zSize){

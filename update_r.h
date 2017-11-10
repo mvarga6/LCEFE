@@ -3,29 +3,40 @@
 
 #include "mainhead.h"
 #include "parameters.h"
-#include "constant_cuda_defs.h"
+#include "kernel_constants.h"
+#include "defines.h"
 
 //=============================================================
 // update velocities 
 //=============================================================
-__device__ void update_v(float (&vnew)[3]
-			,float *vold
-			,float *Fold
-			,float *Fnew
-			,float *v
+__device__ void update_v(real (&vnew)[3]
+			,real *vold
+			,real *Fold
+			,real *Fnew
+			,real *v
 			,int vshift
 			,int myNode
-			,float mass)
+			,real mass)
 {
 
-	const float damp = Parameters.Damp;
-	const float dto2 = Parameters.Dt / 2.0f;
+	const real damp = Parameters.Damp;
+	const real dto2 = Parameters.Dt / 2.0f;
 	
-	for (int cord=0;cord<3;cord++)
+	for (int c = 0; c < 3; c++)
 	{
-		vnew[cord] = vold[cord]*damp+dto2*((Fold[cord]+Fnew[cord])/mass);  //--[ mm / s ]
-		v[vshift*cord+myNode]=vnew[cord];
-	}//cord
+		vnew[c] = vold[c] * damp + dto2 * ((Fold[c] + Fnew[c]) / mass);  //--[ mm / s ]
+		v[vshift * c + myNode] = vnew[c];
+	}
+	
+	#ifdef __DEBUG_UPDATE_V__
+	if (myNode == __DEBUG_UPDATE_V__)
+	{
+		printf("\n\n -- update_v --");
+		printf("\n\tdto2 = %f", dto2);
+		printf("\n\tvold = { %.4f, %.4f, %.4f }", vold[0], vold[1], vold[2]);
+		printf("\n\tvnew = { %.4f, %.4f, %.4f }", vnew[0], vnew[1], vnew[2]);
+	}
+#endif
 
 }//update_v
 
@@ -34,36 +45,33 @@ __device__ void update_v(float (&vnew)[3]
 //=============================================================
 // calculate change in positions
 //=============================================================
-__device__ void update_r( float *r
+__device__ void update_r( real *r
 			,int rshift
-			,float *vnew
-			,float *Fnew
+			,real *v
+			,real *F
 			,int myNode
-			,float mass
-			,float xclamps[2]
-			,float ztable)
+			,real mass)
 {
-//update only if not on edge
-//const float x = r[rshift*0+myNode];
-//const float z = r[rshift*2+myNode];
-//if (x>xclamps[0] && x<xclamps[1] ){  //clamps both ends of LCE
-	
-	const float dt = Parameters.Dt;
-	const float dt2o2 = (dt*dt) / 2.0f;
+	const real dt = Parameters.Dt;
+	const real dt2o2 = (dt*dt) / 2.0f;
+	real dr[3] = { 0.0f, 0.0f, 0.0f };
 	
 	//update new r's from new v and new F
-	for (int cord=0;cord<3;cord++)
+	for (int c = 0; c < 3; c++)
 	{
-		r[rshift*cord+myNode] += dt*vnew[cord]+dt2o2*(Fnew[cord]/mass); //--[ mm ]
-	}//i
-
-	//if(z<ztable) r[rshift*2+myNode] = ztable; // puts sim on a table
-//}
-
-//else if (x > xclamps[1] && squeeze != 0.0f){ // shift outer end closer by squeeze
-//	r[rshift*0 + myNode] -= squeeze;
-
-//}//if rshift
+		dr[c] = dt * v[c] + dt2o2 * (F[c] / mass); //--[ mm ]
+		r[rshift * c + myNode] += dr[c];
+	}
+	
+#ifdef __DEBUG_UPDATE_R__
+	if (myNode == __DEBUG_UPDATE_R__)
+	{
+		printf("\n\n -- update_r --");
+		printf("\n\tF = { %.5f, %.5f, %.5f}", F[0], F[1], F[2]);
+		printf("\n\tdr = { %.2f, %.2f, %.2f }", dr[0], dr[1], dr[2]);
+		printf("\n\tr = { %.2f, %.2f, %.2f }", r[myNode], r[rshift + myNode], r[rshift*2 + myNode]);
+	}
+#endif
 
 }//update_r
 

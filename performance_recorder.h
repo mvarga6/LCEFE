@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include "defines.h"
 
 using namespace std;
 
@@ -10,11 +11,11 @@ struct PerformanceMetric
 {
 	cudaEvent_t start;
 	cudaEvent_t stop;
-	float elapsed;
-	float elapsed_total;
-	float elapsed_average;
-	float elapsed_min;
-	float elapsed_max;
+	real elapsed;
+	real elapsed_total;
+	real elapsed_average;
+	real elapsed_min;
+	real elapsed_max;
 	size_t nevents;
 	bool recording;
 	

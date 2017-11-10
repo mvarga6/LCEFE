@@ -10,7 +10,7 @@
 struct adrs_tet_pos {
 	int adrs;
 	int tet;
-	float posx, posy, posz;
+	real posx, posy, posz;
 	bool operator < (const adrs_tet_pos& cmp) const{
 		return (adrs < cmp.adrs);
 	}
@@ -19,7 +19,7 @@ struct adrs_tet_pos {
 struct adrs_node_tets {
 	int adrs, node;
 	std::vector<int> tets;
-	float x, y, z;
+	real x, y, z;
 	bool operator < (const adrs_node_tets& cmp) const{
 		return (adrs < cmp.adrs);
 	}
@@ -29,19 +29,19 @@ bool sort_on_adrs(adrs_tet_pos a, adrs_tet_pos b) {
 	return (a.adrs<b.adrs);
 }
 
-float dist_point_to_plane(float _r[3], float _n[3], float d){
-	const float numer = abs(_n[0]*_r[0]+_n[1]*_r[1]+_n[2]*_r[2]+d);
-	const float denom = sqrt(_n[0]*_n[0]+_n[1]*_n[1]+_n[2]*_n[2]);
+real dist_point_to_plane(real _r[3], real _n[3], real d){
+	const real numer = abs(_n[0]*_r[0]+_n[1]*_r[1]+_n[2]*_r[2]+d);
+	const real denom = sqrt(_n[0]*_n[0]+_n[1]*_n[1]+_n[2]*_n[2]);
 	return numer/denom;
 }
 
 //=============================================================
 //  On CPU (every print), calculate and set S for each tet
 
-void calc_S_from_light(float k[3], float *r, int *TetToNode, 
+void calc_S_from_light(real k[3], real *r, int *TetToNode, 
 			int Ntets, int Nnodes, int *S,
 			std::vector<int>* tetsList, 
-			float cell_dx, float cell_dy){
+			real cell_dx, real cell_dy){
 
 	//.. allocate whats needed
 	int Nsurf = tetsList->size();
@@ -51,15 +51,15 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode,
 	int icell, jcell;
 
 	//.. calc rotation matrix to place incident light along -z_hat
-	const float k_mag = sqrt(k[0]*k[0]+k[1]*k[1]+k[2]*k[2]);
-	const float k_mag_xy = sqrt(k[0]*k[0]+k[1]*k[1]);
-	const float phi = atan2(k[1], k[0]);  // angle in xy plane
-	const float the = atan2(k_mag_xy, -k[2]); // angle from z axis
-	const float cphi = cos(phi);
-	const float sphi = sin(phi);
-	const float cthe = cos(the);
-	const float sthe = sin(the);
-	float R[3][3];
+	const real k_mag = sqrt(k[0]*k[0]+k[1]*k[1]+k[2]*k[2]);
+	const real k_mag_xy = sqrt(k[0]*k[0]+k[1]*k[1]);
+	const real phi = atan2(k[1], k[0]);  // angle in xy plane
+	const real the = atan2(k_mag_xy, -k[2]); // angle from z axis
+	const real cphi = cos(phi);
+	const real sphi = sin(phi);
+	const real cthe = cos(the);
+	const real sthe = sin(the);
+	real R[3][3];
 	R[0][0] = cthe*cphi;
 	R[0][1] = -cthe*sphi;
 	R[0][2] = sthe;
@@ -71,7 +71,7 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode,
 	R[2][2] = cthe;
 
 	//.. check what new k vector is
-	float kp[3];
+	real kp[3];
 	kp[0] = k[0]*R[0][0] + k[1]*R[0][1] + k[2]*R[0][2];
 	kp[1] = k[0]*R[1][0] + k[1]*R[1][1] + k[2]*R[1][2];
 	kp[2] = k[0]*R[2][0] + k[1]*R[2][1] + k[2]*R[2][2];
@@ -81,8 +81,8 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode,
 	//.. first, calculate where light eminates from on plane wave (which cell with coords)
 	for(int _t = 0; _t < Nsurf; _t++){ // for all tets on in list
 		int t = tetsList->at(_t);
-		float _r[12]; 
-		float _rcom[3] = { 0, 0, 0 }; // position of nodes and tet c.o.m
+		real _r[12]; 
+		real _rcom[3] = { 0, 0, 0 }; // position of nodes and tet c.o.m
 		int mynode;
 		for(int n = 0; n < 4; n++){ // for nodes 1,2,3,4
 			mynode = TetToNode[t + n*Ntets]; // get node n of tet t
@@ -98,7 +98,7 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode,
 		data.at(_t).posz = _rcom[2];
 
 		//.. Rotate incident light to -k_hat
-		float _rcomp[3] = {0, 0, 0}, jsum;
+		real _rcomp[3] = {0, 0, 0}, jsum;
 		for(int i = 0; i < 3; i++){ // matrix multiplication r'[i] = R[i][j]*r[j]
 			jsum = 0;
 			for(int j = 0; j < 3; j++){
@@ -153,10 +153,10 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode,
 		} while (data.at(_t-1).adrs == data.at(_t).adrs);
 
 		//.. find closed node in queue
-		int closest_tet; float min_dist = 1000000;
-		float dist;
+		int closest_tet; real min_dist = 1000000;
+		real dist;
 		for(int q = 0; q < que_size; q++){
-			float pos[3] = { queue[q].posx, queue[q].posy, queue[q].posz };
+			real pos[3] = { queue[q].posx, queue[q].posy, queue[q].posz };
 			dist = dist_point_to_plane(pos, k, 100);
 			if(dist < min_dist){
 				closest_tet = queue[q].tet; 
@@ -182,7 +182,7 @@ void calc_S_from_light(float k[3], float *r, int *TetToNode,
 	}
 
 	// DONE !
-	printf("\n%d%c of top surface tets illuminated",int(100*float(count)/float(Ntets)),'%');
+	printf("\n%d%c of top surface tets illuminated",int(100*real(count)/real(Ntets)),'%');
 }
 
 #endif

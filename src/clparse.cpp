@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdlib>
 #include "simulation_parameters.h"
+#include "defines.h"
 
 void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 	
@@ -19,7 +20,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if (i + 1 < argc) 
 			{
-				float IANGLE = std::strtof(argv[1 + i++], NULL);
+				real IANGLE = std::strtof(argv[1 + i++], NULL);
 				params->Actuation.Optics.IncidentAngle = IANGLE;
 			}
 			else printf("\nOption '-p,--phi' requires one parameter.");
@@ -37,7 +38,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if (i + 1 < argc) 
 			{
-				float SMAX = std::strtof(argv[1 + i++], NULL);
+				real SMAX = std::strtof(argv[1 + i++], NULL);
 				params->Actuation.OrderParameter.Smax = SMAX;
 			}
 			else printf("\nOption '-t,--smax' requires one parameter.");
@@ -46,7 +47,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if (i + 1 < argc)
 			{
-				float SMIN = std::strtof(argv[1 + i++], NULL);
+				real SMIN = std::strtof(argv[1 + i++], NULL);
 				params->Actuation.OrderParameter.Smin = SMIN;
 			} 
 			else printf("\nOption '-b,--smin' requires one parameter.");
@@ -55,7 +56,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if (i + 1 < argc) 
 			{
-				float SQZRATIO = std::strtof(argv[1 + i++], NULL);
+				real SQZRATIO = std::strtof(argv[1 + i++], NULL);
 				params->Initalize.SqueezeRatio = SQZRATIO;
 			}
 			else printf("\nOption '-l,--sqzdlength' requires one parameter.");
@@ -64,7 +65,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if (i + 1 < argc) 
 			{
-				float SQZAMP = std::strtof(argv[1 + i++], NULL);
+				real SQZAMP = std::strtof(argv[1 + i++], NULL);
 				params->Initalize.SqueezeAmplitude = SQZAMP;
 			}
 			else printf("\nOption '-H,--sqzdheight' requires one parameter.");
@@ -92,7 +93,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if (i + 1 < argc) 
 			{
-				float SRATE_ON = std::strtof(argv[1 + i++], NULL);
+				real SRATE_ON = std::strtof(argv[1 + i++], NULL);
 				params->Actuation.OrderParameter.SRateOn = SRATE_ON;
 			}
 			else printf("\nOption '-r,--onrate' requires one parameter.");
@@ -101,7 +102,7 @@ void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 		{
 			if(i + 1 < argc) 
 			{
-				float SRATE_OFF = std::strtof(argv[1 + i++], NULL);
+				real SRATE_OFF = std::strtof(argv[1 + i++], NULL);
 				params->Actuation.OrderParameter.SRateOff = SRATE_OFF;
 			}
 			else printf("\nOption '-f,--offrate' requires one parameter.");

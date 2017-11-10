@@ -4,11 +4,11 @@
 NodeArray::NodeArray(int l){
 	size = l;
 	MyTet = new int[size];
-	MyPos = new float[size*3];
-	MyForce = new float[size*3]; 
+	MyPos = new real[size*3];
+	MyForce = new real[size*3]; 
 	NewNum = new int[size];
 	totalRank = new int[size];
-	volume = new float[size];
+	volume = new real[size];
 
 
 	for(int i=0;i<size;i++){
@@ -35,7 +35,7 @@ NodeArray::~NodeArray(){
 	volume = NULL;
 }
 
-void NodeArray::set_pos(int i, int j, const float &newval){	
+void NodeArray::set_pos(int i, int j, const real &newval){	
 			MyPos[i*3+j] = newval;			
 }
 
@@ -49,7 +49,7 @@ void NodeArray::add_totalRank(int i, const int &newval){
 			if(totalRank[i]>=MaxNodeRank){printf("Error: MaxNodeRank to low!\n");}
 }
 
-void NodeArray::set_force(int i, int j, const float &newval){	
+void NodeArray::set_force(int i, int j, const real &newval){	
 			MyForce[i*3+j] = newval;			
 }
 
@@ -57,7 +57,7 @@ void NodeArray::set_newnum(int i,const int &newval){
 	NewNum[i] = newval;
 }
 
-float NodeArray::get_pos(int i, int j){
+real NodeArray::get_pos(int i, int j){
 			return MyPos[i*3+j];			
 }
 
@@ -70,7 +70,7 @@ int NodeArray::get_totalRank(int i){
 }
 
 
-float NodeArray::get_force(int i, int j){	
+real NodeArray::get_force(int i, int j){	
 			return MyForce[i*3+j];			
 }
 
@@ -80,7 +80,7 @@ int NodeArray::get_newnum(int i){
 
 void NodeArray::switch_nodes(int i, int j){
 
-	float buffpos,bufftet,buffF,buffn; 
+	real buffpos,bufftet,buffF,buffn; 
 	int bufftrank;
 
 		    bufftrank= totalRank[i];
@@ -109,25 +109,25 @@ void NodeArray::switch_nodes(int i, int j){
 }
 
 
-void NodeArray::add_volume(int i, const float &newval){
+void NodeArray::add_volume(int i, const real &newval){
 		volume[i] += newval;
 }
 
-float NodeArray::get_volume(int i){
+real NodeArray::get_volume(int i){
 	return volume[i];
 }
 
-void NodeArray::normalize_volume(float realVolume){
-	float totalVolume = 0.0;
+void NodeArray::normalize_volume(real realVolume){
+	real totalVolume = 0.0;
 
 	for(int n=0;n<size;n++){totalVolume+=volume[n];}
 
-	float norm = realVolume/totalVolume;
+	real norm = realVolume/totalVolume;
 	for(int n=0;n<size;n++){volume[n]=volume[n]*norm;}
 }
 
-float NodeArray::max_point(int cord){
-	float buff,max = -10000.0;
+real NodeArray::max_point(int cord){
+	real buff,max = -10000.0;
 
 	for(int n = 0;n<size;n++){
 		buff = MyPos[n*3+cord];
@@ -140,8 +140,8 @@ float NodeArray::max_point(int cord){
 	return max;
 }//max_point
 
-float NodeArray::min_point(int cord){
-	float buff,min = 100000.0;
+real NodeArray::min_point(int cord){
+	real buff,min = 100000.0;
 
 	for(int n = 0;n<size;n++){
 		buff = MyPos[n*3+cord];
@@ -155,7 +155,7 @@ float NodeArray::min_point(int cord){
 }//max_point
 
 // Methods to Manipulate nodes at a whole body 
-void NodeArray::translate(const float &tx = 0, const float &ty = 0, const float &tz = 0){
+void NodeArray::translate(const real &tx = 0, const real &ty = 0, const real &tz = 0){
 	for(int n = 0; n < size; n++){
 		MyPos[n*3+0] += tx;
 		MyPos[n*3+1] += ty;
@@ -164,26 +164,26 @@ void NodeArray::translate(const float &tx = 0, const float &ty = 0, const float 
 }
 
 // Euler Rotation in Radians preserves COM and body size
-void NodeArray::eulerRotation(const float &about_z = 0, const float &about_new_x = 0, const float &about_new_z = 0){
-	const float phi = about_z;
-	const float the = about_new_x;
-	const float psi = about_new_z;
+void NodeArray::eulerRotation(const real &about_z = 0, const real &about_new_x = 0, const real &about_new_z = 0){
+	const real phi = about_z;
+	const real the = about_new_x;
+	const real psi = about_new_z;
 
 	// centor of mass
-	const float comx = 0.5f * (this->max_point(0) - this->min_point(0));
-	const float comy = 0.5f * (this->max_point(1) - this->min_point(1));
-	const float comz = 0.5f * (this->max_point(2) - this->min_point(2));
+	const real comx = 0.5f * (this->max_point(0) - this->min_point(0));
+	const real comy = 0.5f * (this->max_point(1) - this->min_point(1));
+	const real comz = 0.5f * (this->max_point(2) - this->min_point(2));
 
 	// translate COM to origin
 	this->translate(-comx, -comy, -comz);
 
 	// calculate components of rotation
-	const float costhe = cos(the), sinthe = sin(the),
+	const real costhe = cos(the), sinthe = sin(the),
 		cospsi = cos(psi), sinpsi = sin(psi),
 		cosphi = cos(phi), sinphi = sin(phi);
 
 	// calcuate rotation matrix
-	const float a11 =  cospsi*cosphi - costhe*sinphi*sinpsi,
+	const real a11 =  cospsi*cosphi - costhe*sinphi*sinpsi,
 		    a12 =  cospsi*sinphi + costhe*cosphi*sinpsi,
 		    a13 =  sinpsi*sinthe,
 		    a21 = -sinpsi*cosphi - costhe*sinphi*cospsi,
@@ -194,7 +194,7 @@ void NodeArray::eulerRotation(const float &about_z = 0, const float &about_new_x
 		    a33 =  costhe;
 
 	// apply rotation to all node positions
-	float x, y, z, xp, yp, zp;
+	real x, y, z, xp, yp, zp;
 	for(int n = 0; n < size; n++){
 		x = MyPos[n*3+0];
 		y = MyPos[n*3+1];
@@ -213,8 +213,8 @@ void NodeArray::eulerRotation(const float &about_z = 0, const float &about_new_x
 	this->translate(comx, comy, comz);
 }
 
-void NodeArray::deform(const float lambda[3]){
-	float min[3], shifted_scaled;
+void NodeArray::deform(const real lambda[3]){
+	real min[3], shifted_scaled;
 	for(int d = 0; d < 3; d++) min[d] = this->min_point(d);
 	for(int n = 0; n < size; n++){
 		for(int c = 0; c < 3; c++){

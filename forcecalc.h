@@ -4,24 +4,24 @@
 #include "mainhead.h"
 #include "parameters.h"
 #include "UserDefined.h"
-#include "constant_cuda_defs.h"
+#include "kernel_constants.h"
 #include "physics_model.h"
 
 //=============================================================
 //calculate forces on all 4 nodes in tetrahedra
 //=============================================================
 __device__ 
-void force_calc(float *Ainv,float *r0,float *r,float *Q,float (&F)[12],int *TetNodeRank,float *pe,int mytet,float myVol){
+void force_calc(real *Ainv,real *r0,real *r,real *Q,real (&F)[12],int *TetNodeRank,real *pe,int mytet,real myVol){
 
-	//float u[4],v[4],w[4];
-	float eps[9];
-	float a[4], b[4], c[4];
-	float localPe = 0.0;
-	float lcEnergy = 0.0f;
-	const float cxxxx = Parameters.Cxxxx;
-	const float cxxyy = Parameters.Cxxyy;
-	const float cxyxy = Parameters.Cxyxy;
-	const float alpha = Parameters.Alpha;
+	//real u[4],v[4],w[4];
+	real eps[9];
+	real a[4], b[4], c[4];
+	real localPe = 0.0;
+	real lcEnergy = 0.0f;
+	const real cxxxx = Parameters.Cxxxx;
+	const real cxxyy = Parameters.Cxxyy;
+	const real cxyxy = Parameters.Cxyxy;
+	const real alpha = Parameters.Alpha;
 
 	Physics::CalculateShapeFunction(a, b, c, r, r0, Ainv);
 	Physics::CalculateEpsilon(eps, a, b, c);
@@ -167,8 +167,8 @@ void force_calc(float *Ainv,float *r0,float *r,float *Q,float (&F)[12],int *TetN
 //----NOT WORKING
 //===========================================================
 /*
-__device__ void calc_drag(float *v,float *r,float (&F)[12]){
-	float dx,dy,dz,RR,R,dvx,dvy,dvz,ff,ffx,ffy,ffz;
+__device__ void calc_drag(real *v,real *r,real (&F)[12]){
+	real dx,dy,dz,RR,R,dvx,dvy,dvz,ff,ffx,ffy,ffz;
 
 	
 

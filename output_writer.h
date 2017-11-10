@@ -33,7 +33,7 @@ class VtkWriter : public OutputWriter
 	string outputBase;
 	
 	// points in outputfile
-	float *_points;
+	real *_points;
 	int npoints;
 	DataFormat points_format;
 	int points_dim;
@@ -47,7 +47,7 @@ class VtkWriter : public OutputWriter
 	bool cells_bound;
 	
 	// cell data in output file
-	float *_cell_data;
+	real *_cell_data;
 	int ncellsdata;
 	DataFormat cells_data_format;
 	int cells_data_dim;
@@ -60,9 +60,9 @@ class VtkWriter : public OutputWriter
 		VtkWriter(string outputBaseName);
 		
 		// bind data pointers
-		void BindPoints(float *points, int nPoints, DataFormat format, int dim);
+		void BindPoints(real *points, int nPoints, DataFormat format, int dim);
 		void BindCells(int *cells, int nCells, DataFormat format, CellType type);
-		void BindCellData(float *cellsData, int nCells, DataFormat format, int dim, string cellDataName);
+		void BindCellData(real *cellsData, int nCells, DataFormat format, int dim, string cellDataName);
 		
 		// write to output file
 		bool Write();

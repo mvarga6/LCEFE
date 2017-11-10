@@ -14,7 +14,7 @@ OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Node
 	{
 		this->log->Msg("Running SortOnTetrahedraPosition ...");
 		int Ntets = Tets->size;	
-		float dr1, dr2;
+		real dr1, dr2;
 		int count = 0;
 		int switched = 1;
 		
@@ -53,7 +53,7 @@ OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Node
 	}
 }
 
-MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(const float kBTStart, const float kBTEnd, const float annealFactor, Logger *log)
+MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(const real kBTStart, const real kBTEnd, const real annealFactor, Logger *log)
 {
 	this->kbt_start = kBTStart;
 	this->kbt_end = kBTEnd;
@@ -67,9 +67,9 @@ OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, N
 	{
 		this->log->Msg("Running MonteCarloMinimizeDistanceBetweenPairs ...");
 		int Ntets = Tets->size;	
-		float olddist, newdist;
+		real olddist, newdist;
 		int n1,n2;
-		float KbT = this->kbt_start;
+		real KbT = this->kbt_start;
 	    int count = 0;
 		int tot = 0;
 		int switched = 0;
@@ -83,8 +83,8 @@ OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, N
 		{
 			tot++;
 			count++;
-			n1 = int(floor(genrand()*float(Ntets)));
-			n2 = int(floor(genrand()*float(Ntets)));
+			n1 = int(floor(genrand()*real(Ntets)));
+			n2 = int(floor(genrand()*real(Ntets)));
 		
 				olddist = Tets->dist(n1,n1+1) \
 						+ Tets->dist(n1,n1-1) \

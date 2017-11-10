@@ -3,7 +3,7 @@
 
 #include "mainhead.h"
 #include "simulation_parameters.h"
-#include "constant_cuda_defs.h"
+#include "kernel_constants.h"
 
 void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters *params, DataManager *manager){
 
@@ -30,37 +30,37 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->A 
 									, &dev->Apitch 
-									, widthTETS*sizeof(float) 
+									, widthTETS*sizeof(real) 
 									, height16 ) );
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->dF 
 									, &dev->dFpitch 
-									, widthNODE*sizeof(float) 
+									, widthNODE*sizeof(real) 
 									, heightMR ) );
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->TetToNode 
 									, &dev->TetToNodepitch 
-									, widthTETS*sizeof(float) 
+									, widthTETS*sizeof(real) 
 									, height4 ) );
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r0 
 									, &dev->r0pitch  
-									, widthNODE*sizeof(float) 
+									, widthNODE*sizeof(real) 
 									, height3 ) );
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r 
 									, &dev->rpitch 
-									, widthNODE*sizeof(float) 
+									, widthNODE*sizeof(real) 
 									, height3 ) );
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->v 
 									, &dev->vpitch 
-									, widthNODE*sizeof(float) 
+									, widthNODE*sizeof(real) 
 									, height3 ) );
 	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->F, &dev->Fpitch
-									, widthNODE*sizeof(float) 
+									, widthNODE*sizeof(real) 
 									, height3 ) );
 
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetNodeRank, Ntets*4*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRank, Nnodes*sizeof(int) ) );
-	HANDLE_ERROR( cudaMalloc( (void**) &dev->m, Nnodes*sizeof(float) ) );
-	HANDLE_ERROR( cudaMalloc( (void**) &dev->pe, Ntets*sizeof(float) ) );
-	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetVol, Ntets*sizeof(float) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->m, Nnodes*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->pe, Ntets*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetVol, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->ThPhi, Ntets*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
@@ -88,11 +88,11 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 /*								,cudaMemcpyHostToDevice) );*/
 /*	HANDLE_ERROR( cudaMemcpy(dev->m*/
 /*								,host->m*/
-/*								,Nnodes*sizeof(float)*/
+/*								,Nnodes*sizeof(real)*/
 /*								,cudaMemcpyHostToDevice) );*/
 /*	HANDLE_ERROR( cudaMemcpy(dev->TetVol*/
 /*								,host->TetVol*/
-/*								,Ntets*sizeof(float)*/
+/*								,Ntets*sizeof(real)*/
 /*								,cudaMemcpyHostToDevice) );*/
 
 /*	HANDLE_ERROR( cudaMemcpy(dev->S*/
@@ -103,8 +103,8 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 /*	HANDLE_ERROR( cudaMemcpy2D( dev->A*/
 /*								, dev->Apitch*/
 /*								, host->A*/
-/*								, widthTETS*sizeof(float)*/
-/*								, widthTETS*sizeof(float)*/
+/*								, widthTETS*sizeof(real)*/
+/*								, widthTETS*sizeof(real)*/
 /*                                , height16*/
 /*								, cudaMemcpyHostToDevice ) );*/
 /*	HANDLE_ERROR( cudaMemcpy2D( dev->TetToNode*/
@@ -117,29 +117,29 @@ void data_to_device(DevDataBlock *dev, HostDataBlock *host, SimulationParameters
 /*	HANDLE_ERROR( cudaMemcpy2D( dev->r0*/
 /*								, dev->r0pitch*/
 /*								, host->r0*/
-/*								, widthNODE*sizeof(float)*/
-/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(real)*/
+/*								, widthNODE*sizeof(real)*/
 /*								, height3*/
 /*								, cudaMemcpyHostToDevice ) );*/
 /*	HANDLE_ERROR( cudaMemcpy2D( dev->r*/
 /*								, dev->rpitch*/
 /*								, host->r*/
-/*								, widthNODE*sizeof(float)*/
-/*								, widthNODE*sizeof(float)*/
+/*								, widthNODE*sizeof(real)*/
+/*								, widthNODE*sizeof(real)*/
 /*								, height3*/
 /*								, cudaMemcpyHostToDevice ) );*/
 /*	HANDLE_ERROR( cudaMemcpy2D( dev->v*/
 /*								, dev->vpitch*/
 /*								, host->v*/
-/*                                , widthNODE*sizeof(float)*/
-/*								, widthNODE*sizeof(float)*/
+/*                                , widthNODE*sizeof(real)*/
+/*								, widthNODE*sizeof(real)*/
 /*                                , height3*/
 /*								, cudaMemcpyHostToDevice ) );*/
 /*	HANDLE_ERROR( cudaMemcpy2D( dev->F*/
 /*								, dev->Fpitch*/
 /*								, host->F*/
-/*                                , widthNODE*sizeof(float)*/
-/*								, widthNODE*sizeof(float)*/
+/*                                , widthNODE*sizeof(real)*/
+/*								, widthNODE*sizeof(real)*/
 /*                                , height3*/
 /*								, cudaMemcpyHostToDevice ) );*/
 

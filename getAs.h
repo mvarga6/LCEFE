@@ -9,7 +9,7 @@ static void init_As(NodeArray &Nodes, TetArray &Tets)
 {
 	int Ntets = Tets.size;
 	//int Nnodes = Nodes.size;
-	float tempAin[16],tempAout[16];
+	real tempAin[16],tempAout[16];
 	int ip;
 
 	for(int t = 0; t < Ntets; t++)

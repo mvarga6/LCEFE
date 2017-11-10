@@ -6,9 +6,9 @@
 // GLU library.  Found on Stackoverflow
 //http://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
 
-static bool gluInvertMatrix(const float m[16], float invOut[16])
+static bool gluInvertMatrix(const real m[16], real invOut[16])
 {
-    float inv[16], det;
+    real inv[16], det;
     int i;
 
     inv[0] = m[5]  * m[10] * m[15] - 
