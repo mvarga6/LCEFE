@@ -49,23 +49,23 @@ void ConsoleLogger::Log(LogEntry *item)
 	switch(item->priority)
 	{
 	case LogEntryPriority::VERBOSE:
-		cout << "\t" << item->AsString() << endl;
+		cout << endl << "\t" << item->AsString();
 		break;
 		 
 	case LogEntryPriority::DEBUG:
-		cout << "[ DEBUG ] " << item->AsString() << endl;
+		cout << endl << "[ DEBUG ] " << item->AsString();
 		break;
 		
 	case LogEntryPriority::INFO:
-		cout << "[ INFO ] " << item->AsString() << endl;
+		cout << endl << "[ INFO ] " << item->AsString();
 		break;
 		
 	case LogEntryPriority::WARNING:
-		cout << "[ ** WARNING ** ] " << item->AsString() << endl;
+		cout << endl << "[ ** WARNING ** ] " << item->AsString();
 		break;
 		
 	case LogEntryPriority::CRITICAL:
-		cout << endl << "[ *** CRITICAL *** ] " << item->AsString() << endl << endl;
+		cout << endl << endl << "[ *** CRITICAL *** ] " << item->AsString() << endl;
 		break;
 	}
 }
@@ -80,23 +80,23 @@ void ConsoleLogger::Msg(const string& message, LogEntryPriority priority)
 	switch(priority)
 	{
 	case LogEntryPriority::VERBOSE:
-		cout << "\t" << message << endl;
+		cout << endl <<  "\t" << message;
 		break;
 		 
 	case LogEntryPriority::DEBUG:
-		cout << "[ DEBUG ] " << message << endl;
+		cout << endl << "[ DEBUG ] " << message;
 		break;
 		
 	case LogEntryPriority::INFO:
-		cout << "[ INFO ] " << message << endl;
+		cout << endl << "[ INFO ] " << message;
 		break;
 		
 	case LogEntryPriority::WARNING:
-		cout << "[ ** WARNING ** ] " << message << endl;
+		cout << endl << "[ ** WARNING ** ] " << message;
 		break;
 		
 	case LogEntryPriority::CRITICAL:
-		cout << endl << "[ *** CRITICAL *** ] " << message << endl << endl;
+		cout << endl << endl << "[ *** CRITICAL *** ] " << message << endl;
 		break;
 	}
 }
@@ -109,5 +109,5 @@ void ConsoleLogger::StaticMsg(const string& message)
 
 void ConsoleLogger::Error(const string& message)
 {
-	cout << "\r" << "[ ERROR ] " << message << "\t";
+	cout << endl << "[ ERROR ] " << message;
 }

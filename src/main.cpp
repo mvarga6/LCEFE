@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	bool cachedMesh;
 	if (!mesh->Load(&cachedMesh))
 	{
-		// log failure
+		// TODO: log failure
 		exit(10);
 	}
 
@@ -102,11 +102,17 @@ int main(int argc, char *argv[])
 	{
 		// optimize the mesh
 		log->Msg(" *** Optimizing mesh *** ");
+		
+		// simple sorting based on location in sim space
 		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition(log);
-		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.999999f, log);
-		MeshOptimizer * reIndex = new ReassignIndices(log);
 		mesh->Apply(simpleSort);
+		
+		// re-order using mc simulation
+		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.9999995f, log);
 		mesh->Apply(mcReorder);
+		
+		// re-index the mesh and tet's neighbors
+		MeshOptimizer * reIndex = new ReassignIndices(log);
 		mesh->Apply(reIndex);
 		
 		// save the optimized mesh
@@ -114,9 +120,14 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		//printf("\nMesh loaded from cache!");
+		// TODO: Index assignment should happen when reading mesh automatically
+		MeshOptimizer * reIndex = new ReassignIndices(log);
+		mesh->Apply(reIndex);
+		
 		log->Msg("Mesh Loaded from cache!");
 	}
+	
+	
 	
 	//set director n for each tetrahedra
 	set_n(*mesh->Tets, &parameters);
