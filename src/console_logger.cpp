@@ -61,11 +61,11 @@ void ConsoleLogger::Log(LogEntry *item)
 		break;
 		
 	case LogEntryPriority::WARNING:
-		cout << "[ WARNING ] " << item->AsString() << endl;
+		cout << "[ ** WARNING ** ] " << item->AsString() << endl;
 		break;
 		
 	case LogEntryPriority::CRITICAL:
-		cout << endl << "[ CRITICAL ] " << item->AsString() << endl << endl;
+		cout << endl << "[ *** CRITICAL *** ] " << item->AsString() << endl << endl;
 		break;
 	}
 }
@@ -92,11 +92,11 @@ void ConsoleLogger::Msg(const string& message, LogEntryPriority priority)
 		break;
 		
 	case LogEntryPriority::WARNING:
-		cout << "[** WARNING **] " << message << endl;
+		cout << "[ ** WARNING ** ] " << message << endl;
 		break;
 		
 	case LogEntryPriority::CRITICAL:
-		cout << endl << "[*** CRITICAL ***] " << message << endl << endl;
+		cout << endl << "[ *** CRITICAL *** ] " << message << endl << endl;
 		break;
 	}
 }
@@ -106,3 +106,8 @@ void ConsoleLogger::StaticMsg(const string& message)
 	cout << "\r" << "[ INFO ] " << message << "\t";
 }
 
+
+void ConsoleLogger::Error(const string& message)
+{
+	cout << "\r" << "[ ERROR ] " << message << "\t";
+}

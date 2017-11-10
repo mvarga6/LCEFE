@@ -5,10 +5,11 @@
 
 #include "file_operations.hpp"
 
-Mesh::Mesh(SimulationParameters *parameters)
+Mesh::Mesh(SimulationParameters *parameters, Logger *log)
 {
 	this->loaded = false;
 	this->params = parameters;
+	this->log = log;
 }
 
 
@@ -99,7 +100,7 @@ void Mesh::Apply(MeshOptimizer *optimizer)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return;
 	}
 }
@@ -161,7 +162,7 @@ bool Mesh::CalculateVolumes()
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return false;
 	}
 }
@@ -175,7 +176,7 @@ bool Mesh::CalculateAinv()
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return false;
 	}
 }
@@ -183,7 +184,9 @@ bool Mesh::CalculateAinv()
 
 bool Mesh::LoadMesh(const std::string &meshFile)
 {
-	printf("\nLoading mesh %s", meshFile.c_str());
+	stringstream ss;
+	ss << "Loading mesh " << meshFile;
+	this->log->Msg(ss.str());
 
 	//get dimensions of the mesh
 	dimensions = new MeshDimensions;
@@ -195,7 +198,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	catch (const std::exception& e)
 	{
 		// print something
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return false;
 	}
 	
@@ -217,7 +220,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return false;
 	}
 	
@@ -228,7 +231,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return false;
 	}
 	
@@ -242,7 +245,9 @@ bool Mesh::ReadCache(const std::string &cachedMeshFile)
 	if (!FileOperations::Exists(cachedMeshFile))
 	{
 		// theres no cache for this mesh file
-		printf("\nCached mesh %s does not exist", cachedMeshFile.c_str());
+		stringstream ss;
+		ss << "Cached mesh " << cachedMeshFile << " does not exist";
+		this->log->Msg(ss.str());
 		return false;
 	}
 	
@@ -253,16 +258,20 @@ bool Mesh::ReadCache(const std::string &cachedMeshFile)
 
 bool Mesh::WriteCache(const std::string &cacheFileName)
 {
+	stringstream ss;
+
 	if (FileOperations::Exists(cacheFileName))
 	{
 		// already cached
-		printf("\nCached mesh %s already exists", cacheFileName.c_str());
+		ss << "Cached mesh " << cacheFileName << " already exists, abort overwriting it.";
+		this->log->Msg(ss.str());
 		return true;
 	}
 	
 	try
 	{
-		printf("\nCaching mesh %s", cacheFileName.c_str());
+		ss << "Caching mesh " << cacheFileName;
+		this->log->Msg(ss.str());
 		int Nnodes = Nodes->size;
 		int Ntets = Tets->size;
 		
@@ -284,7 +293,7 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 	}
 	catch (const std::exception& e)
 	{
-		printf("\n[Error] %s", e.what());
+		this->log->Error(e.what());
 		return false;
 	}
 	

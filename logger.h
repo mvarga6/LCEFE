@@ -2,6 +2,7 @@
 #define __LOGGER_H__
 
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -53,6 +54,7 @@ public:
 	virtual void Log(LogEntry*) = 0;
 	virtual void Msg(const string& message, LogEntryPriority priority = LogEntryPriority::INFO) = 0;
 	virtual void StaticMsg(const string& message) = 0;
+	virtual void Error(const string& message) = 0;
 	static Logger * Default;
 };
 
@@ -67,6 +69,7 @@ public:
 	void Log(LogEntry*);
 	void Msg(const string& message, LogEntryPriority priority = LogEntryPriority::INFO);
 	void StaticMsg(const string& message);
+	void Error(const string& message);
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "simulation_parameters.h"
 #include "mesh_optimizer.h"
 #include "director_field.h"
+#include "logger.h"
 #include <string>
 
 using namespace std;
@@ -14,6 +15,7 @@ struct MeshDimensions;
 class Mesh
 {
 	bool loaded;
+	Logger *log;
 
 public:
 
@@ -23,7 +25,7 @@ public:
 	SimulationParameters *params; // a ptr to the simulation parameters
 	MeshDimensions *dimensions;
 
-	Mesh(SimulationParameters *);
+	Mesh(SimulationParameters *, Logger *log);
 	
 	bool Load(bool*);
 	bool Cache();
