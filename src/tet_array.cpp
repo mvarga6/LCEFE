@@ -134,7 +134,7 @@ void TetArray::printDirector(std::string outputBase)
   fprintf(out,"ASCII\n");
   fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
   fprintf(out,"\n");
-  fprintf(out,"POINTS %d real\n",size);
+  fprintf(out,"POINTS %d float\n",size);
   
   //loop over tetrahedras to get positons
   for (int i = 0; i < size; i++)
@@ -161,12 +161,16 @@ void TetArray::printDirector(std::string outputBase)
 
   //vector data
   fprintf(out,"POINT_DATA %d\n",size);
-  fprintf(out,"VECTORS director real\n");
+  fprintf(out,"VECTORS director float\n");
+  real nx, ny, nz;
   for(int i = 0; i < size; i++)
   {
     th = ThPhi[i*2];
     ph = ThPhi[i*2+1];
-    fprintf(out,"%f %f %f\n",sin(th)*cos(ph),sin(th)*sin(ph),cos(th));
+    nx = sinf(th)*cosf(ph);
+    ny = sinf(th)*sinf(ph);
+    nz = cosf(th);
+    fprintf(out,"%f %f %f\n", nx, ny, nz);
   }//i
   fprintf(out,"\n");
 
@@ -240,8 +244,8 @@ real dx,dy,dz;
 
 void TetArray::calc_total_volume(){
 	real totalVOLUME = 0.0;
-	for (int t=0;t<size;t++){
-		totalVOLUME+=TetVolume[t];
+	for (int t = 0; t < size; t++){
+		totalVOLUME += TetVolume[t];
 	}//t
 	totalVolume =  totalVOLUME;
 }//calc_total_volume

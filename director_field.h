@@ -43,4 +43,16 @@ public:
 	DirectorOrientation GetDirectorAt(const real x, const real y, const real z);
 };
 
+/*
+  Given an origin, create a director field
+  radial with reference to the origin.
+*/
+class RadialDirectorField : public DirectorField
+{
+	const float3 origin;
+public:
+	RadialDirectorField(const float3 origin);
+	DirectorOrientation GetDirectorAt(const real x, const real y, const real z);
+};
+
 #endif

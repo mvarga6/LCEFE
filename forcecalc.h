@@ -1,9 +1,9 @@
 #ifndef __FORCECALC_H__
 #define __FORCECALC_H__
 
-#include "mainhead.h"
+//#include "mainhead.h"
 #include "parameters.h"
-#include "UserDefined.h"
+//#include "UserDefined.h"
 #include "kernel_constants.h"
 #include "physics_model.h"
 
@@ -25,10 +25,10 @@ void force_calc(real *Ainv,real *r0,real *r,real *Q,real (&F)[12],int *TetNodeRa
 
 	Physics::CalculateShapeFunction(a, b, c, r, r0, Ainv);
 	Physics::CalculateEpsilon(eps, a, b, c);
-	//Physics::CalculateElasticPotential(localPe, eps, cxxxx, cxxyy, cxyxy);
-	Physics::CalculateLiquidCrystalEnergy(lcEnergy, eps, Q, alpha);
+	Physics::CalculateElasticPotential(localPe, eps, cxxxx, cxxyy, cxyxy);
 	Physics::AddElasticForces(F, eps, Ainv, a, b, c, cxxxx, cxxyy, cxyxy);
 	Physics::AddLiquidCrystalForces(F, Q, Ainv, a, b, c, alpha);
+	Physics::CalculateLiquidCrystalEnergy(lcEnergy, eps, Q, alpha);
 	pe[mytet] = (localPe + lcEnergy) * myVol;
 
 /*//clacluate displacements from original position and zero out forces*/

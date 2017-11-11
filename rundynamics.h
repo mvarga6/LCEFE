@@ -95,8 +95,6 @@ void run_dynamics(DevDataBlock *dev
 			printf("\nTime: %f seconds", real(iKern)*dt);
 			recorder->Log("time-loop");
 			
-			//HANDLE_ERROR(cudaEventRecord(frameStart));
-		
 			// execute procedure using 
 			dataManager->Execute(getPrintData);
 		

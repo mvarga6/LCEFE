@@ -31,6 +31,7 @@
 #include "mesh.h"
 #include "functions.hpp"
 #include "logger.h"
+#include "helpers_math.h"
 
 // these will go away into their own service class
 #include "getAs.h"
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
 	
 	
 	//set director n for each tetrahedra
-	set_n(*mesh->Tets, &parameters);
+	//set_n(*mesh->Tets, &parameters);
 	
 	// Get the director field (default for now)
 	//DirectorField * director = new UniformField(PI / 2, 0.0f);
@@ -144,15 +145,19 @@ int main(int argc, char *argv[])
 	//ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
 	//ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
 	//DirectorField * director 	  = new CartesianDirectorField(theta, phi);
-			
-	//mesh->SetDirector(director);
-
+	
 	if (!(mesh->CalculateVolumes() 
 		&& mesh->CalculateAinv()))
 	{
 		// failed to calculate necessary things on mesh
 		exit(11);
 	}
+	
+			
+	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
+	DirectorField * director = new RadialDirectorField(origin);
+	mesh->SetDirector(director);
+	
 	//pritn director
 	mesh->Tets->printDirector(parameters.Output.Base);
 

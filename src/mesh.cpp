@@ -57,8 +57,8 @@ void Mesh::SetDirector(DirectorField *field)
 	{
 		// the position of this tet
 		x = this->Tets->get_pos(t, 0);
-		y = this->Tets->get_pos(t, 0);
-		z = this->Tets->get_pos(t, 0);
+		y = this->Tets->get_pos(t, 1);
+		z = this->Tets->get_pos(t, 2);
 	
 		// get the director there
 		// done this way so it could be read

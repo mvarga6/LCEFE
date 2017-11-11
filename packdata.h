@@ -43,10 +43,6 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 		dat->min[c] = Nodes.min_point(c);
 		dat->max[c] = Nodes.max_point(c);
 	}
-	
-	//L = dat->max[0] - dat->min[0];
-//	w = dat->max[1] - dat->min[1];
-//	h = dat->max[2] - dat->min[2];
 
 	//.. determine tets on the top surface of film and build list
 	real rz;
@@ -57,9 +53,6 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 		{ // tet neighbors (to get average z pos)
 			rz += 0.25f * Nodes.get_pos(Tets.get_nab(t,i), 2); // z pos of node in tet
 		}
-
-		//.. condition to consider on surface (within one mesh unit of top surface)
-		//if (rz > (dat->max[2] - meshScale)) surf_Tets->push_back(t);
 	}
 
 
@@ -94,11 +87,6 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 			dat->F[nod+Nnodes*sweep] = 0.0; //100.f*(genrand() - 0.5f);
 		}//sweep
 
-    		//add force to end of beam
-    		//if(i_Node.get_pos(nod,0)>39.9){
-    		//  dat->host_v[nod+Nnodes*2] =100.0;
-    		//}//if rx >39.0
-
 		for(int rank = 0; rank < MaxNodeRank; rank++)
 		{
 			dat->dr[nod+rank] = 0.0;
@@ -107,28 +95,7 @@ void packdata(NodeArray &Nodes,TetArray &Tets, HostDataBlock *dat,
 
 
 	//.. transformation of initial state (leaves reference state intact)
-/*	real x, z, minx=1000, maxx=0, minz=1000, maxz=0;*/
-/*	const real sqzRatio = params->Initalize.SqueezeRatio;*/
-/*	const real sqzAmp = params->Initalize.SqueezeAmplitude;*/
-/*	for(int n = 0; n < Nnodes; n++)*/
-/*	{*/
-/*		x = dat->r[n + Nnodes*0];*/
-/*		z = dat->r[n + Nnodes*2];*/
-/*		z += (sqzAmp * L) * sin(PI * (x - dat->min[0]) / L);*/
-/*		x *= sqzRatio;*/
-/*		dat->r[n + Nnodes*0] = x;*/
-/*		dat->r[n + Nnodes*2] = z;*/
-/*		if(x > maxx) maxx = x;*/
-/*		else if(x < minx) minx = x;*/
-/*		if(z > maxz) maxz = z;*/
-/*		else if(z < minz) minz = z;*/
-/*	}*/
-/*	dat->max[0] = maxx;*/
-/*	dat->max[2] = maxz;*/
-/*	dat->min[0] = minx;*/
-/*	dat->min[2] = minz;*/
-
-/*	printf("Data packed to go to device\n");*/
+	// TODO: Initiall state transformations before packdata
 }
 
 

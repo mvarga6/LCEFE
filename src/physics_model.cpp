@@ -23,21 +23,6 @@ void Physics::CalculateEpsilon(
 }
 
 
-__device__
-void CalculateElasticPotential(
-	real &local_Pe, 
-	const real eps[9], 
-	const real &cxxxx, 
-	const real &cxxyy, 
-	const real &cxyxy)
-{
-	local_Pe = 0.0f;
-	local_Pe += cxxxx*(eps[3*0+0]*eps[3*0+0]+eps[3*1+1]*eps[3*1+1]+eps[3*2+2]*eps[3*2+2]);
-	local_Pe += 2.0*cxxyy*(eps[3*0+0]*eps[3*1+1]+eps[3*1+1]*eps[3*2+2]+eps[3*0+0]*eps[3*2+2]);
-	local_Pe += 4.0*cxyxy*(eps[3*0+1]*eps[3*0+1]+eps[3*1+2]*eps[3*1+2]+eps[3*2+0]*eps[3*2+0]);
-}
-
-
 __host__ __device__
 void Physics::CalculateLiquidCrystalEnergy(
 	real &lcEnergy, 
@@ -53,6 +38,20 @@ void Physics::CalculateLiquidCrystalEnergy(
 				+eps[3*0+2]*Q[3*0+2]+eps[3*2+0]*Q[3*2+0]);
 }
 
+
+__host__ __device__
+void Physics::CalculateElasticPotential(
+	real &local_Pe, 
+	const real eps[9], 
+	const real &cxxxx, 
+	const real &cxxyy, 
+	const real &cxyxy)
+{
+	local_Pe = 0.0f;
+	local_Pe += cxxxx*(eps[3*0+0]*eps[3*0+0]+eps[3*1+1]*eps[3*1+1]+eps[3*2+2]*eps[3*2+2]);
+	local_Pe += 2.0*cxxyy*(eps[3*0+0]*eps[3*1+1]+eps[3*1+1]*eps[3*2+2]+eps[3*0+0]*eps[3*2+2]);
+	local_Pe += 4.0*cxyxy*(eps[3*0+1]*eps[3*0+1]+eps[3*1+2]*eps[3*1+2]+eps[3*2+0]*eps[3*2+0]);
+}
 
 __host__ __device__
 void Physics::AddElasticForces(

@@ -73,9 +73,7 @@ void printVTKframe(DevDataBlock *dev
 	std::string meshFile(outputBase + "_mesh");
 
 	char fout[128];
-//	sprintf(fout,"VTKOUT//mesh%d.vtk",step);
 	sprintf(fout,"%s_%d.vtk", meshFile.c_str(), step);
-//	sprintf(fout,VTKNAME,step);
 	FILE*out;
 	out = fopen(fout,"w");
 
@@ -118,16 +116,14 @@ void printVTKframe(DevDataBlock *dev
 	fprintf(out,"\n");
 
 	fprintf(out,"CELL_DATA %d\n", Ntets);
-	fprintf(out,"SCALARS potentialEnergy real 1\n");
+	fprintf(out,"SCALARS potentialEnergy float 1\n");
 	fprintf(out,"LOOKUP_TABLE default\n");
 	real tetpe, peTOTAL = 0.0;
 	for(int nt = 0; nt < Ntets; nt++)
 	{
 		tetpe = host->pe[nt];
 		peTOTAL += tetpe;
-		//fprintf(out,"%f\n",tetpe+10.0);
-		fprintf(out, "%f\n", real(host->S[nt]) / real(SRES)); // print S for debugging
-		//fprintf(out, "%f\n", ); // print S for debugging
+		fprintf(out,"%f\n", tetpe);
 	}//nt
 	//delete [] sloc;
 
