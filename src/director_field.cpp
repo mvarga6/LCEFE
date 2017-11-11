@@ -1,5 +1,7 @@
 #include "director_field.h"
 
+#include <stdio.h>
+
 UniformField::UniformField(const real theta, const real phi)
 {
 	this->const_director.theta = theta;
@@ -36,5 +38,25 @@ DirectorOrientation CartesianDirectorField::GetDirectorAt(
 	DirectorOrientation result;
 	result.theta = (*theta_field)(x, y, z);
 	result.phi = (*phi_field)(x, y, z);
+	return result;
+}
+
+RadialDirectorField::RadialDirectorField(const float3 origin)
+ : origin(origin)
+{
+}
+
+DirectorOrientation RadialDirectorField::GetDirectorAt(
+	const real x,
+	const real y, 
+	const real z)
+{
+	DirectorOrientation result;
+	const real dx = x - origin.x;
+	const real dy = y - origin.y;
+	const real dz = z - origin.z;
+	result.theta = atan2(sqrt(dx*dx + dy*dy), dz);
+	result.phi = atan2(dy, dx);
+	//printf("\n%.2f %.2f %.2f %.2f %.2f", dx, dy, dz, result.theta, result.phi);
 	return result;
 }

@@ -3,7 +3,6 @@
 
 #include "cuda.h"
 #include "cuda_runtime.h"
-
 #include "defines.h"
 
 class Physics
@@ -19,7 +18,7 @@ public:
 	/*
 		Calculate the mechanical potential energy using strain
 	*/
-	__device__
+	__host__ __device__
 	static void CalculateElasticPotential(real &local_Pe, const real eps[9], const real &cxxxx, const real &cxxyy, const real &cxyxy);
 	
 	/*

@@ -1,32 +1,15 @@
 #ifndef __GPUFORCE_H__
 #define __GPUFORCE_H__
-#include "mainhead.h"
+
+//#include "mainhead.h"
+
 #include "sendForce.h"
 #include "read_dev_data.h"
 #include "getQ.h"
 #include "device_helpers.h"
 
-/*__global__ void force_kernel(	real *A*/
-/*								,int pitchA*/
-/*								,real *dF*/
-/*								,int pitchdF*/
-/*								,int *TetNodeRankG*/
-/*								,int Ntets*/
-/*								,real *v*/
-/*								,int pitchv*/
-/*								,real *pe*/
-/*								,real *TetVol*/
-/*								,int *ThPhi*/
-/*								,int *S //order parameter*/
-/*								,int *L //illumination parameter*/
-/*								,int *TetToNode*/
-/*								,int pitchTetToNode*/
-/*								,real t*/
-/*								){*/
 __global__ void force_kernel(DevDataBlock data, real t)
 {
-
-
 	int Ashift = data.Apitch/sizeof(real);
 	int dFshift = data.dFpitch/sizeof(real);
 	int vshift = data.vpitch/sizeof(real);

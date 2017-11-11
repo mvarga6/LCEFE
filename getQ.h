@@ -1,7 +1,7 @@
 #ifndef __GETQ_H__
 #define __GETQ_H__
 
-#include "mainhead.h"
+//#include "mainhead.h"
 #include "parameters.h"
 #include <math.h>
 
