@@ -35,7 +35,8 @@ enum ParameterType : int
 	IncidentAngle = 24,
 	IterPerIllumRecalc = 25,
 	ParametersFile = 26,
-	MeshCaching = 27
+	MeshCaching = 27,
+	InitNoise = 28
 };
 
 struct MaterialConstants
@@ -96,6 +97,7 @@ struct InitialState
 	bool PlanarSideUp;
 	real SqueezeAmplitude;
 	real SqueezeRatio;
+	real Noise;
 };
 
 struct LiquidCrystalParameters

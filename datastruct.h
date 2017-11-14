@@ -5,6 +5,9 @@
 #include "cuda_runtime.h"
 #include "stdio.h"
 #include "defines.h"
+#include "node_array.h"
+#include "tet_array.h"
+#include "simulation_parameters.h"
 
 struct DevDataBlock 
 {
@@ -33,14 +36,14 @@ struct DevDataBlock
 	size_t vpitch;
 	size_t drpitch;
 	size_t dFpitch;
-
-
+	
 	//cudaEvent_t     start, stop;
     //	real           totalTime;
 };
 
-struct HostDataBlock 
+class HostDataBlock 
 {
+public:
 	int Ntets, Nnodes;
 	real *A;
 	int *TetToNode;
@@ -59,6 +62,10 @@ struct HostDataBlock
 	int *S;
 
 	real min[3], max[3];
+	
+	// so we can easily construct on cpu
+	// from Nodes and tets
+	HostDataBlock(NodeArray *, TetArray*, SimulationParameters *);
 };
 
 

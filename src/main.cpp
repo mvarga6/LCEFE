@@ -165,13 +165,13 @@ int main(int argc, char *argv[])
 	//delcare data stuctures for data on device
 	//and host
 	DevDataBlock dev;
-	HostDataBlock host;
+	HostDataBlock host(mesh->Nodes, mesh->Tets, &parameters);
 	DataManager * dataManager = new DataManager(&host, &dev);
 	
 	std::vector<int> surfTets;
 
 	//Pack data to send to device
-	packdata(*mesh->Nodes, *mesh->Tets, &host, &surfTets, &parameters);
+	//packdata(*mesh->Nodes, *mesh->Tets, &host, &surfTets, &parameters);
 	
 	//send data to device
 	data_to_device(&dev, &host, &parameters, dataManager);

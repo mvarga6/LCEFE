@@ -207,6 +207,7 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 		case SRateOff: 		p.Actuation.OrderParameter.SRateOff = ::atof(v.c_str()); break;
 		case IncidentAngle: p.Actuation.Optics.IncidentAngle = ::atof(v.c_str()); break;
 		case IterPerIllumRecalc: p.Actuation.Optics.IterPerIllumRecalc = ::atoi(v.c_str()); break;
+		case InitNoise: p.Initalize.Noise = ::atof(v.c_str()); break;
 		default: break;
 		}
 	} 
