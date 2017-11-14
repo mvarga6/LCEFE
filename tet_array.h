@@ -3,6 +3,7 @@
 
 #include <string>
 #include "defines.h"
+#include <vector>
 
 //  class to hold the tetrahedral array with instances which will be usefull for renumbering
 class TetArray
@@ -50,6 +51,7 @@ public:
 	real max(int cord);
 	real min(int cord);
   	void printDirector(std::string);
+	void reorder(std::vector<int> const &order);
 };
 
 #endif

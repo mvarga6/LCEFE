@@ -1,5 +1,8 @@
 #include "mesh_optimizer.h"
 #include <sstream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
 //#include "getmesh.h"
 #include "genrand.h"
 
@@ -14,35 +17,97 @@ OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Node
 	{
 		this->log->Msg("Running SortOnTetrahedraPosition ...");
 		int Ntets = Tets->size;	
-		real dr1, dr2;
-		int count = 0;
-		int switched = 1;
 		
-		stringstream ss;
+	
 		
-		while(switched > 0)
+		this->log->Msg("Creating index list");
+		// create value/key pairs to sort
+		std::vector<std::pair<real, int> > posIdxList;
+		
+		// initialize the list
+		for (int n = 0; n < Ntets; n++)
 		{
-			count++;
-			switched = 0;
-			
-			// loop at tets
-			for(int n1 = 0; n1 < Ntets - 1; n1++)
-			{
-				dr1 = Tets->get_pos(n1,3);
-				dr2 = Tets->get_pos(n1+1,3);
-				if (dr2 < dr1)
-				{
-					switched++;
-					Tets->switch_tets(n1,n1+1);
-				}
-			}//n1
-			
-			ss.str(std::string());
-			ss << "iteration = " << count << " reordered = " << switched;
-			this->log->StaticMsg(ss.str());
-		}//go==1
+			posIdxList.push_back(std::pair<real, int>(Tets->get_pos(n, 3), n));
+		}
 		
+		// sort on position
+		this->log->Msg("Sorting index list on distance from origin");
+		std::sort(posIdxList.begin(), posIdxList.end());
+		
+		this->log->Msg("Copy new index list");
+		std::vector<int> tetOrder(Ntets);
+		for (int i = 0; i < Ntets; i++)
+		{
+			tetOrder.at(i) = posIdxList.at(i).second;
+		}
+		
+		// put them into the proper order
+		this->log->Msg("Reordering data");
+		Tets->reorder(tetOrder);
+				
 		this->log->Msg("Completed!");
+		
+//		std::vector<int> tetIdx(Ntets);
+//		std::iota(tetIdx.begin(), tetIdx.end(), 0);
+//		
+//		this->log->Msg("OLD WAY");
+//		real dr1, dr2;
+//		int count = 0;
+//		int switched = 1;
+//		stringstream ss;
+//		while(switched > 0)
+//		{
+//			count++;
+//			switched = 0;
+//			
+//			// loop at tets
+//			for(int n1 = 0; n1 < Ntets - 1; n1++)
+//			{
+//				dr1 = Tets->get_pos(n1,3);
+//				dr2 = Tets->get_pos(n1+1,3);
+//				if (dr2 < dr1)
+//				{
+//					switched++;
+//					Tets->switch_tets(n1,n1+1);
+//				}
+//			}//n1
+//			
+//			ss.str(std::string());
+//			ss << "iteration = " << count << " reordered = " << switched;
+//			this->log->Msg(ss.str());
+//		}//go==1
+//		ss.str(std::string());
+//		
+//		this->log->Msg("Completed!");
+//		
+//		this->log->Msg("Checking if they agree ...");
+//		
+//		// check that the first 1000 are correct
+//		int correct = 0;
+//		std::vector<std::pair<int,int>> incorrect;
+//		for (int i = 0; i < 1000; i++)
+//		{
+//			if (tetIdx.at(i) == posIdxList.at(i).second) correct++;
+//			else incorrect.push_back(std::pair<int,int>(tetIdx.at(i), posIdxList.at(i).second));
+//		}
+//		ss << correct << " of 1000 correct";
+//		this->log->Msg(ss.str());
+//		
+//		// print first 10 incorrcect if there are some
+//		if (incorrect.size() > 0)
+//		{
+//			for (int i = 0; i < incorrect.size(); i++)
+//			{
+//				if (i > 10) break;
+//				
+//				ss.str(std::string()); // clear
+//				ss << i << ": " << incorrect.at(i).first << " " << incorrect.at(i).second;
+//				this->log->Msg(ss.str());				
+//			}
+//		}
+		
+//		exit(1);
+		
 		return OptimizationResult::SUCCESS;
 	}
 	catch (const std::exception& e)

@@ -158,7 +158,7 @@ static bool get_mesh(NodeArray &i_Node,TetArray &i_Tet,int Ntets, int Nnodes){
 //of the nodes so we can arrange the tetrahedra in a smart
 //order to optimize memmory calls in the GPU
 
-static void get_tet_pos(NodeArray &Nodes, TetArray &Tets)
+static void get_tet_pos(NodeArray &Nodes, TetArray &Tets, real x_offset = 0.0f, real y_offset = 0.0f, real z_offset = 0.0f)
 {
 	int Ntets = Tets.size;
 	int n0,n1,n2,n3;
@@ -170,20 +170,23 @@ static void get_tet_pos(NodeArray &Nodes, TetArray &Tets)
 		n2 = Tets.get_nab(i,2);
 		n3 = Tets.get_nab(i,3);
 
-		xave = (Nodes.get_pos(n0,0) \
+		xave = ((Nodes.get_pos(n0,0) \
 			   +Nodes.get_pos(n1,0) \
 			   +Nodes.get_pos(n2,0) \
-			   +Nodes.get_pos(n3,0))/4.0;
+			   +Nodes.get_pos(n3,0))/4.0)
+			   - x_offset;
 
-		yave = (Nodes.get_pos(n0,1) \
+		yave = ((Nodes.get_pos(n0,1) \
 			   +Nodes.get_pos(n1,1) \
 			   +Nodes.get_pos(n2,1) \
-			   +Nodes.get_pos(n3,1))/4.0;
+			   +Nodes.get_pos(n3,1))/4.0)
+			   - y_offset;
 
-		zave = (Nodes.get_pos(n0,2) \
+		zave = ((Nodes.get_pos(n0,2) \
 			   +Nodes.get_pos(n1,2) \
 			   +Nodes.get_pos(n2,2) \
-			   +Nodes.get_pos(n3,2))/4.0;
+			   +Nodes.get_pos(n3,2))/4.0)
+			   - z_offset;
 
 		Tets.set_pos(i,0,xave);
 		Tets.set_pos(i,1,yave);

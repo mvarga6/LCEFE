@@ -42,6 +42,22 @@ TetArray::~TetArray(){
 	
 }
 
+void TetArray::reorder(std::vector<int> const &order)
+{   
+    for ( int s = 0, d; s < order.size(); ++s) 
+    {
+        for ( d = order[s]; d < s; d = order[d]);
+        if (d == s) 
+        {
+        	while (d = order[d], d != s ) 
+        	{
+        		//swap( v[s], v[d]);
+        		this->switch_tets(s, d);
+        	}	
+        }
+    }
+}
+
 void TetArray::set_A(int i, int j, int k,const real &newval){
 		TetA[i*16+j*4+k]=newval;
 }
