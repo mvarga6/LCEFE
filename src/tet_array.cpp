@@ -1,5 +1,6 @@
 #include "tet_array.h"
 #include "parameters.h"
+#include <fstream>
 
 TetArray::TetArray(int N){
 	size = N;
@@ -139,58 +140,92 @@ int TetArray::get_iS(int i){
 
 void TetArray::printDirector(std::string outputBase)
 {
-  real th, ph;
-  char fout[128];
-  sprintf(fout, "%s_dir.vtk", outputBase.c_str());
-  FILE * out;
-//  out = fopen("Output//dir.vtk","w");
-  out = fopen(fout,"w");
-  fprintf(out,"# vtk DataFile Version 3.1\n");
-  fprintf(out,"director profile\n");
-  fprintf(out,"ASCII\n");
-  fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
-  fprintf(out,"\n");
-  fprintf(out,"POINTS %d float\n",size);
-  
-  //loop over tetrahedras to get positons
-  for (int i = 0; i < size; i++)
-  {
-    fprintf(out,"%f %f %f\n",TetPos[i*4],TetPos[i*4+1],TetPos[i*4+2]);
-  }//i
-  fprintf(out,"\n");
+	std::string fileName(outputBase + "_dir.xyzv");
 
-  //cells
-  fprintf(out,"CELLS %d %d\n",size,size*2);
-  for(int i = 0; i < size; i++)
-  {
-    fprintf(out,"1 %d\n",i);
-  }//i
-  fprintf(out,"\n");
-  
-  //cell types
-  fprintf(out,"CELL_TYPES %d\n",size);
-  for(int i = 0; i < size; i++)
-  {
-    fprintf(out,"1\n");
-  }//i
-  fprintf(out,"\n");
+	std::ofstream fout(fileName.c_str());
+	if (!fout.is_open())
+	{
+		printf("\n[ Error ] Failed to open director print file: %s", outputBase.c_str());
+	}
 
-  //vector data
-  fprintf(out,"POINT_DATA %d\n",size);
-  fprintf(out,"VECTORS director float\n");
-  real nx, ny, nz;
-  for(int i = 0; i < size; i++)
-  {
-    th = ThPhi[i*2];
-    ph = ThPhi[i*2+1];
-    nx = sinf(th)*cosf(ph);
-    ny = sinf(th)*sinf(ph);
-    nz = cosf(th);
-    fprintf(out,"%f %f %f\n", nx, ny, nz);
-  }//i
-  fprintf(out,"\n");
+	
+	// variables
+	real nx, ny, nz, th, ph, x, y, z;
+	
+	// write file header
+	printf("\n[ INFO ] Writing director file: %s", fileName.c_str());
+	fout << this->size << std::endl << "LCE director" << std::endl;
+	for(int i = 0; i < size; i++)
+	{
+		th = ThPhi[i*2];
+    	ph = ThPhi[i*2+1];
+	
+		nx = sinf(th)*cosf(ph);
+    	ny = sinf(th)*sinf(ph);
+    	nz = cosf(th);
+    	
+    	x = this->get_pos(i, 0);
+    	y = this->get_pos(i, 1);
+    	z = this->get_pos(i, 2);
+    	
+    	fout << "A " << x << " " << y << " " << z << " "
+    		 << nx << " " << ny << " " << nz << std::endl;
+	}
+	fout.close();
+	printf("\n[ INFO ] Complete");
+	
+//  real th, ph;
+//  char fout[128];
+//  sprintf(fout, "%s_dir.vtk", outputBase.c_str());
+//  FILE * out;
+////  out = fopen("Output//dir.vtk","w");
+//  out = fopen(fout,"w");
+//  fprintf(out,"# vtk DataFile Version 3.1\n");
+//  fprintf(out,"director profile\n");
+//  fprintf(out,"ASCII\n");
+//  fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
+//  fprintf(out,"\n");
+//  fprintf(out,"POINTS %d float\n",size);
+//  
+//  //loop over tetrahedras to get positons
+//  for (int i = 0; i < size; i++)
+//  {
+//    fprintf(out,"%f %f %f\n",TetPos[i*4],TetPos[i*4+1],TetPos[i*4+2]);
+//  }//i
+//  fprintf(out,"\n");
 
-  fclose(out); 
+//  //cells
+//  fprintf(out,"CELLS %d %d\n",size,size*2);
+//  for(int i = 0; i < size; i++)
+//  {
+//    fprintf(out,"1 %d\n",i);
+//  }//i
+//  fprintf(out,"\n");
+//  
+//  //cell types
+//  fprintf(out,"CELL_TYPES %d\n",size);
+//  for(int i = 0; i < size; i++)
+//  {
+//    fprintf(out,"1\n");
+//  }//i
+//  fprintf(out,"\n");
+
+//  //vector data
+//  fprintf(out,"POINT_DATA %d\n",size);
+//  fprintf(out,"VECTORS director float\n");
+//  real nx, ny, nz;
+//  for(int i = 0; i < size; i++)
+//  {
+//    th = ThPhi[i*2];
+//    ph = ThPhi[i*2+1];
+//    nx = sinf(th)*cosf(ph);
+//    ny = sinf(th)*sinf(ph);
+//    nz = cosf(th);
+//    fprintf(out,"%f %f %f\n", nx, ny, nz);
+//  }//i
+//  fprintf(out,"\n");
+
+//  fclose(out); 
 
 }//print director
 

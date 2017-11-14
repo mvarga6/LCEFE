@@ -3,7 +3,7 @@ dt: 0.00002
 framerate: 500
 meshfile: "Mesh/SphericalShell4_offset.msh"
 meshScale: 1.0
-outputBase: "VTKOUT/SS4"
+outputBase: "VTKOUT/SS4_offset"
 cxxxx: 5940000
 cxxyy: 1800000
 cxyxy: 570000
