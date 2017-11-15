@@ -98,16 +98,13 @@ int main(int argc, char *argv[])
 		log->Msg(" *** Optimizing mesh *** ");
 		
 		// simple sorting based on location in sim space
-		MeshOperation * simpleSort = new SortOnTetrahedraPosition();
-		mesh->Apply(simpleSort);
+		mesh->Apply(new SortOnTetrahedraPosition());
 		
 		// re-order using mc simulation
-		MeshOperation * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.9999995f);
-		mesh->Apply(mcReorder);
+		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.999f));
 		
 		// re-index the mesh and tet's neighbors
-		MeshOperation * reIndex = new ReassignIndices();
-		mesh->Apply(reIndex);
+		mesh->Apply(new ReassignIndices());
 		
 		// save the optimized mesh
 		mesh->Cache();
@@ -115,8 +112,8 @@ int main(int argc, char *argv[])
 	else
 	{
 		// TODO: Index assignment should happen when reading mesh automatically
-		MeshOperation * reIndex = new ReassignIndices();
-		mesh->Apply(reIndex);
+		//MeshOperation * reIndex = ;
+		mesh->Apply(new ReassignIndices());
 		
 		log->Msg("Mesh Loaded from cache!");
 	}
