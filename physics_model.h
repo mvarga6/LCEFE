@@ -4,6 +4,7 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "defines.h"
+#include "simulation_parameters.h"
 
 class Physics
 {
@@ -44,6 +45,12 @@ public:
 	*/
 	__host__ __device__
 	static void CalculateShapeFunction(real a[4], real b[4], real c[4], const real r[12], const real r0[12], const real Ainv[16]);
+
+	/*
+		Calculates all physics Forces
+	*/
+	__device__
+	static void CalculateForcesAndEnergies(PackedParameters params, real *Ainv,real *r0,real *r,real *Q,real (&F)[12],int *TetNodeRank,real *pe,int mytet,real myVol);
 };
 
 #endif

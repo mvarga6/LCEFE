@@ -3,7 +3,6 @@
 #include "cuda_runtime.h"
 #include "defines.h"
 
-
 __host__ __device__
 void Physics::CalculateEpsilon(
 	real eps[9], 
@@ -189,6 +188,38 @@ void Physics::CalculateShapeFunction(
 	}//i
 }
 
+//=============================================================
+//calculate forces on all 4 nodes in tetrahedra
+//=============================================================
+__device__ 
+void Physics::CalculateForcesAndEnergies(PackedParameters params,
+	real *Ainv,
+	real *r0,
+	real *r,
+	real *Q,
+	real (&F)[12],
+	int *TetNodeRank,
+	real *pe,
+	int mytet,
+	real myVol)
+{
 
+	//real u[4],v[4],w[4];
+	real eps[9];
+	real a[4], b[4], c[4];
+	real localPe = 0.0;
+	real lcEnergy = 0.0f;
+	const real cxxxx = params.Cxxxx;
+	const real cxxyy = params.Cxxyy;
+	const real cxyxy = params.Cxyxy;
+	const real alpha = params.Alpha;
 
+	Physics::CalculateShapeFunction(a, b, c, r, r0, Ainv);
+	Physics::CalculateEpsilon(eps, a, b, c);
+	Physics::CalculateElasticPotential(localPe, eps, cxxxx, cxxyy, cxyxy);
+	Physics::AddElasticForces(F, eps, Ainv, a, b, c, cxxxx, cxxyy, cxyxy);
+	Physics::AddLiquidCrystalForces(F, Q, Ainv, a, b, c, alpha);
+	Physics::CalculateLiquidCrystalEnergy(lcEnergy, eps, Q, alpha);
+	pe[mytet] = (localPe + lcEnergy) * myVol;
+}
 

@@ -1,16 +1,16 @@
 #ifndef __RUNDYNAMICS_H__
 #define __RUNDYNAMICS_H__
-#include "mainhead.h"
+//#include "mainhead.h"
 #include "parameters.h"
 #include "printVTKframe.h"
-#include "gpuForce.h"
-#include "updateKernel.h"
+//#include "gpuForce.h"
+//#include "updateKernel.h"
 #include "getEnergy.h"
 
 #include "output_writer.h"
 #include "data_manager.h"
 #include "performance_recorder.h"
-
+#include "physics_kernels.h"
 
 //This funciton handles all dynamics which will be run
 void run_dynamics(DevDataBlock *dev
@@ -74,10 +74,10 @@ void run_dynamics(DevDataBlock *dev
 	for(int iKern = 0; iKern < nSteps; iKern++)
 	{
 		//calculate force and send force components to be summed
-		force_kernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*real(iKern));
+		ForceKernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*real(iKern));
 
 		//sum forces and update positions	
-		updateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev);
+		UpdateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev);
 
 		//sync threads before updating
 		cudaThreadSynchronize();

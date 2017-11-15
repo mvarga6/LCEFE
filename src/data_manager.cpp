@@ -2,8 +2,6 @@
 #include "errorhandle.h"
 #include "kernel_constants.h"
 
-__constant__ PackedParameters Parameters;
-
 DataManager::DataManager(HostDataBlock *hostDataBlock, DevDataBlock *devDataBlock)
 {
 	this->host = hostDataBlock;

@@ -1,7 +1,9 @@
 #ifndef __SUMFORCE_H__
 #define __SUMFORCE_H__
 
-#include "mainhead.h"
+//#include "mainhead.h"
+#include "defines.h"
+#include "parameters.h"
 
 //===========================================
 // read in a sum all forces present on node 

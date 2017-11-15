@@ -5,7 +5,8 @@
 #include "parameters.h"
 #include <math.h>
 
-__device__ real sigmoid(const real &x){
+inline __host__ __device__ 
+real sigmoid(const real &x){
 	return 1.0f/(1.0f + exp(-x));
 }
 
@@ -13,7 +14,8 @@ __device__ real sigmoid(const real &x){
 //Calculate what Q should be for this tetrahedra 
 //given its position (initial) and time
 //==============================================
-__device__ void getQ(int myThPhi    //theta and Phi
+inline __host__ __device__ 
+void getQ(int myThPhi    //theta and Phi
 					,real (&Q)[9]  //array to store Q in
 					,real t       //time
 					//,real t_on 	//total time element has been illuminated in simulation
