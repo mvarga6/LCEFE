@@ -66,6 +66,7 @@ public:
 	// so we can easily construct on cpu
 	// from Nodes and tets
 	HostDataBlock(NodeArray *, TetArray*, SimulationParameters *);
+	DevDataBlock* CreateDevDataBlock();
 };
 
 

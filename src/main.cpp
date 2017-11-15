@@ -32,6 +32,7 @@
 #include "functions.hpp"
 #include "logger.h"
 #include "helpers_math.h"
+#include "../data_procedures.h"
 
 // these will go away into their own service class
 #include "getAs.h"
@@ -132,23 +133,29 @@ int main(int argc, char *argv[])
 	//now ready to prepare for dyanmics
 	//delcare data stuctures for data on device
 	//and host
-	DevDataBlock dev;
-	HostDataBlock host(mesh->Nodes, mesh->Tets, &parameters);
-	DataManager * dataManager = new DataManager(&host, &dev);
+	
+	HostDataBlock * host = new HostDataBlock(mesh->Nodes, mesh->Tets, &parameters);
+	DevDataBlock * dev = host->CreateDevDataBlock();
+	
+	DataManager * dataManager = new DataManager(host, dev);
 	
 	std::vector<int> surfTets;
 
 	//Pack data to send to device
 	//packdata(*mesh->Nodes, *mesh->Tets, &host, &surfTets, &parameters);
 	
+	// move data to gpu
+	dataManager->Execute(new PushAllToGpu());
+	dataManager->SetSimulationParameters(&parameters);
+	
 	//send data to device
-	data_to_device(&dev, &host, &parameters, dataManager);
+	//data_to_device(dev, host, &parameters, dataManager);
 
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
 				parameters.Output.FrameRate,
-				host.totalVolume,
-				host.totalVolume * parameters.Material.Density);
+				host->totalVolume,
+				host->totalVolume * parameters.Material.Density);
 
 
 	//=================================================================
@@ -187,7 +194,7 @@ int main(int argc, char *argv[])
 	//=================================================================
 	//run dynamics
 	//=================================================================
-	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, vtkWriter, dataManager, recorder);
+	run_dynamics(dev, host, &parameters, Syncin, Syncout, g_mutex, &surfTets, vtkWriter, dataManager, recorder);
 
 	//check for CUDA erros
 	any_errors();
@@ -197,7 +204,7 @@ int main(int argc, char *argv[])
 	HANDLE_ERROR(cudaFree( Syncin ) );
 	HANDLE_ERROR(cudaFree( Syncout ) );
 	HANDLE_ERROR(cudaFree( g_mutex ) );
-	exit_program(&dev);
+	exit_program(dev);
 
 	//*/
 

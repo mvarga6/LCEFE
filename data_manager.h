@@ -16,10 +16,10 @@ class DataManager
 	DevDataBlock *dev;
 
 public:
-	DataManager(HostDataBlock *hostDataBlock, DevDataBlock *devDataBlock);
-	bool Execute(DataProcedure *procedure);
-	bool Execute(DataOperation *operation);
-	bool SetSimulationParameters(SimulationParameters *parameters);
+	DataManager(HostDataBlock*, DevDataBlock*);
+	bool Execute(DataProcedure*);
+	bool Execute(DataOperation*);
+	bool SetSimulationParameters(SimulationParameters*);
 };
 
 #endif

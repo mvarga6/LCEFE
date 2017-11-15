@@ -3,6 +3,6 @@
 
 #include "simulation_parameters.h"
 
-__constant__ PackedParameters Parameters;
+extern __constant__ PackedParameters Parameters;
 
 #endif

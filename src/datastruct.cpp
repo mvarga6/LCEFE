@@ -1,5 +1,5 @@
-#include "../datastruct.h"
-
+#include "datastruct.h"
+#include "errorhandle.h"
 
 HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParameters *params)
 {
@@ -87,4 +87,69 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParamet
 
 	//.. transformation of initial state (leaves reference state intact)
 	// TODO: Initiall state transformations before packthisa
+}
+
+DevDataBlock* HostDataBlock::CreateDevDataBlock()
+{
+	// new up data block
+	DevDataBlock *dev = new DevDataBlock();
+
+	//need to pitch 1D memory correctly to send to device
+	int Nnodes = this->Nnodes;
+	int Ntets = this->Ntets;
+	size_t height16 = 16;
+	size_t height4 = 4;
+	size_t height3 = 3;
+	size_t heightMR = MaxNodeRank*3;
+	size_t widthNODE = Nnodes;
+	size_t widthTETS = Ntets;
+	
+	dev->Nnodes = Nnodes;
+	dev->Ntets = Ntets;
+
+
+	//set offset to be 0
+	//size_t offset = 0;
+
+	//used pitch linear memory on device for fast access
+	//allocate memory on device for pitched linear memory
+
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->A 
+									, &dev->Apitch 
+									, widthTETS*sizeof(real) 
+									, height16 ) );
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->dF 
+									, &dev->dFpitch 
+									, widthNODE*sizeof(real) 
+									, heightMR ) );
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->TetToNode 
+									, &dev->TetToNodepitch 
+									, widthTETS*sizeof(real) 
+									, height4 ) );
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r0 
+									, &dev->r0pitch  
+									, widthNODE*sizeof(real) 
+									, height3 ) );
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r 
+									, &dev->rpitch 
+									, widthNODE*sizeof(real) 
+									, height3 ) );
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->v 
+									, &dev->vpitch 
+									, widthNODE*sizeof(real) 
+									, height3 ) );
+	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->F, &dev->Fpitch
+									, widthNODE*sizeof(real) 
+									, height3 ) );
+
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetNodeRank, Ntets*4*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRank, Nnodes*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->m, Nnodes*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->pe, Ntets*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetVol, Ntets*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->ThPhi, Ntets*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
+	
+	return dev;
 }
