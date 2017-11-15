@@ -45,13 +45,6 @@
 
 int main(int argc, char *argv[])
 {
-	// Move this somewhere else
-	//Get Device properties
-	cudaDeviceProp prop;
-	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
-	printf( "Code executing on %s\n\n", prop.name );
-	//displayGPUinfo(prop);
-
 	// Read simulation parameters
 	SimulationParameters parameters;
 	ParametersReader * reader = new ParametersReader();
@@ -128,34 +121,8 @@ int main(int argc, char *argv[])
 		log->Msg("Mesh Loaded from cache!");
 	}
 	
-	
-	
-	//set director n for each tetrahedra
-	//set_n(*mesh->Tets, &parameters);
-	
-	// Get the director field (default for now)
-	//DirectorField * director = new UniformField(PI / 2, 0.0f);
-	
-	//UnivariableFunction *theta_of_x = new Linear({1.0f});
-	//UnivariableFunction *phi_of_y = new Sinusoinal(/* some simulation length */);	
-	//ScalerField3D * theta = new MultiplicativeField3D(theta_of_x);
-	//ScalerField3D * phi = new AdditiveField3D(NULL, phi_of_y);	
-	
-	//UnivariableFunction *phi_of_z = new Linear({(PI / 6)}, PI / 4.0f);
-	//ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
-	//ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
-	//DirectorField * director 	  = new CartesianDirectorField(theta, phi);
-	
-//	if (!(mesh->CalculateVolumes() 
-//		&& mesh->CalculateAinv()))
-//	{
-//		// failed to calculate necessary things on mesh
-//		exit(11);
-//	}
-
 	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
 	DirectorField * director = new RadialDirectorField(origin);
-	//mesh->SetDirector(director);
 	
 	mesh->Apply(new CalculateVolumes());
 	mesh->Apply(new CalculateAinv());
@@ -209,6 +176,13 @@ int main(int argc, char *argv[])
 	//allocate global mutex and set =0 
 	HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
 	HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+	 
+	// Move this somewhere else
+	//Get Device properties
+	cudaDeviceProp prop;
+	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
+	printf( "Code executing on %s\n\n", prop.name );
+	//displayGPUinfo(prop);
 	 
 	recorder->Stop("init");
 	recorder->Log("init");

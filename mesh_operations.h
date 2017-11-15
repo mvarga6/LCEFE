@@ -56,6 +56,9 @@ public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
+/*
+  Set the director in the mesh using an operation
+*/
 class SetDirector : public MeshOperation
 {
 	DirectorField *director;
@@ -64,13 +67,18 @@ public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
-
+/*
+  Calculate the Shape functions for the mesh in an operation.
+*/
 class CalculateAinv : public MeshOperation
 {
 public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
+/*
+  Calculate the tet volumes in the mesh using an operation.
+*/
 class CalculateVolumes : public MeshOperation
 {
 public:

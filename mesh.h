@@ -31,10 +31,6 @@ public:
 	bool Cache();
 	void Apply(MeshOperation*);
 	
-	//void SetDirector(DirectorField *);
-	//bool CalculateVolumes();
-	//bool CalculateAinv();
-	
 private:
 	
 	bool LoadMesh(const std::string&);
