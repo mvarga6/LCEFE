@@ -73,23 +73,23 @@ void Mesh::SetDirector(DirectorField *field)
 
 
 
-void Mesh::Apply(MeshOptimizer *optimizer)
+void Mesh::Apply(MeshOperation *operation)
 {
-	OptimizationResult result;
+	OperationResult result;
 	try
 	{
-		result = optimizer->Run(this->Tets, this->Nodes);
+		result = operation->Run(this->Tets, this->Nodes, this->log);
 		switch(result)
 		{
-		case OptimizationResult::SUCCESS:
+		case OperationResult::SUCCESS:
 			// log success
 			return;
 		
-		case OptimizationResult::FAILURE_NO_OPTIMATION:
+		case OperationResult::FAILURE_NO_OPTIMATION:
 			// log no optimization
 			return;
 		
-		case OptimizationResult::FAILURE_EXCEPTION_THROWN:
+		case OperationResult::FAILURE_EXCEPTION_THROWN:
 			// log exception
 			exit(101);
 		

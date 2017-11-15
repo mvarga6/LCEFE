@@ -1,4 +1,4 @@
-#include "mesh_optimizer.h"
+#include "mesh_operations.h"
 #include <sstream>
 #include <vector>
 #include <algorithm>
@@ -6,21 +6,16 @@
 //#include "getmesh.h"
 #include "genrand.h"
 
-SortOnTetrahedraPosition::SortOnTetrahedraPosition(Logger *log)
-{
-	this->log = log;
-}
-
-OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes)
+OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 {
 	try
 	{
-		this->log->Msg("Running SortOnTetrahedraPosition ...");
+		log->Msg("Running SortOnTetrahedraPosition ...");
 		int Ntets = Tets->size;	
 		
 	
 		
-		this->log->Msg("Creating index list");
+		log->Msg("Creating index list");
 		// create value/key pairs to sort
 		std::vector<std::pair<real, int> > posIdxList;
 		
@@ -31,10 +26,10 @@ OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Node
 		}
 		
 		// sort on position
-		this->log->Msg("Sorting index list on distance from origin");
+		log->Msg("Sorting index list on distance from origin");
 		std::sort(posIdxList.begin(), posIdxList.end());
 		
-		this->log->Msg("Copy new index list");
+		log->Msg("Copy new index list");
 		std::vector<int> tetOrder(Ntets);
 		for (int i = 0; i < Ntets; i++)
 		{
@@ -42,10 +37,10 @@ OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Node
 		}
 		
 		// put them into the proper order
-		this->log->Msg("Reordering data");
+		log->Msg("Reordering data");
 		Tets->reorder(tetOrder);
 				
-		this->log->Msg("Completed!");
+		log->Msg("Completed!");
 		
 //		std::vector<int> tetIdx(Ntets);
 //		std::iota(tetIdx.begin(), tetIdx.end(), 0);
@@ -108,29 +103,28 @@ OptimizationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Node
 		
 //		exit(1);
 		
-		return OptimizationResult::SUCCESS;
+		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// print something
-		this->log->Msg("SortOnTetrahedraPosition threw exception -- quiting");
-		return OptimizationResult::FAILURE_EXCEPTION_THROWN;
+		log->Msg("SortOnTetrahedraPosition threw exception -- quiting");
+		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
 
-MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(const real kBTStart, const real kBTEnd, const real annealFactor, Logger *log)
+MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(const real kBTStart, const real kBTEnd, const real annealFactor)
 {
 	this->kbt_start = kBTStart;
 	this->kbt_end = kBTEnd;
 	this->anneal_factor = annealFactor;
-	this->log = log;
 }
 
-OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, NodeArray *Nodes)
+OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 {
 	try
 	{
-		this->log->Msg("Running MonteCarloMinimizeDistanceBetweenPairs ...");
+		log->Msg("Running MonteCarloMinimizeDistanceBetweenPairs ...");
 		int Ntets = Tets->size;	
 		real olddist, newdist;
 		int n1,n2;
@@ -141,7 +135,7 @@ OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, N
 
 		stringstream ss;
 		ss << this->kbt_start << " < kbt < " << this->kbt_end << " annealFactor = " << this->anneal_factor;
-		this->log->Msg(ss.str());
+		log->Msg(ss.str());
 		
 		//simple reordering scheme bassed only on spacial locallity
 		while(KbT >= this->kbt_end)
@@ -185,28 +179,23 @@ OptimizationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, N
 			}
 		}
 		
-		this->log->Msg("Completed!");
-		return OptimizationResult::SUCCESS;
+		log->Msg("Completed!");
+		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// log something
-		this->log->Msg("MonteCarloMinimizeDistanceBetweenPairs threw exception -- quiting");
-		return OptimizationResult::FAILURE_EXCEPTION_THROWN;
+		log->Msg("MonteCarloMinimizeDistanceBetweenPairs threw exception -- quiting");
+		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
 
 
-ReassignIndices::ReassignIndices(Logger *log)
-{
- this->log = log;
-}
-
-OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
+OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 {
 	try
 	{
-		this->log->Msg("Running ReassignIndices ...");
+		log->Msg("Running ReassignIndices ...");
 		int Ntets = Tets->size;
 		int Nnodes = Nodes->size;
 
@@ -226,7 +215,7 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 		//should keep nodes in same tetrahedra close 
 		//in memory and should keep nodes which share 
 		//tetrahedra also close in memory
-		this->log->Msg("Setting new node numbers: ");
+		log->Msg("Setting new node numbers: ");
 		int newi = 0;
 		int i;
 		for(int t = 0; t < Ntets; t++)
@@ -242,12 +231,12 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 				}
 			}
 		}
-		this->log->StaticMsg("Setting new node numbers: complete");
+		log->StaticMsg("Setting new node numbers: complete");
 
 	
 		//now reassign each tetrahedra to neighbors
 		//in the new arrangement of nodes
-		this->log->Msg("Assigning nodes to tetrahedra: ");
+		log->Msg("Assigning nodes to tetrahedra: ");
 		for(int t = 0;t < Ntets; t++)
 		{
 			for (int tn = 0; tn < 4; tn++)
@@ -259,13 +248,13 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 				Tets->set_nabs(t, tn, Nodes->get_newnum(i));
 			}
 		}
-		this->log->Msg("Assigning nodes to tetrahedra: complete");
+		log->Msg("Assigning nodes to tetrahedra: complete");
 
 		//switch actual order of nodes
 		//do this by sweeping though and switching
 		//nodes which have lower real val
 		//not the most efficient sort but it will work
-		this->log->Msg("Sorting nodes by value: ");
+		log->Msg("Sorting nodes by value: ");
 		bool go = true;
 		while(go)
 		{
@@ -282,19 +271,19 @@ OptimizationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes)
 					//printf("nodes not properly reassigned node %d\n",i);
 					stringstream ss;
 					ss << "Nodes not properlyy reassigned node " << i;
-					this->log->Msg(ss.str());
+					log->Msg(ss.str());
 				}
 			}
 		}
-		this->log->Msg("Sorting nodes by value: complete");
+		log->Msg("Sorting nodes by value: complete");
 		
-		return OptimizationResult::SUCCESS;
+		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// log something
-		this->log->Msg("ReassignIndices threw exception -- quiting");
-		return OptimizationResult::FAILURE_EXCEPTION_THROWN;
+		log->Msg("ReassignIndices threw exception -- quiting");
+		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
 

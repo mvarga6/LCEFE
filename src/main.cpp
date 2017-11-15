@@ -26,7 +26,7 @@
 #include "data_manager.h"
 //#include "constant_cuda_defs.h"
 #include "performance_recorder.h"
-#include "mesh_optimizer.h"
+#include "mesh_operations.h"
 #include "director_field.h"
 #include "mesh.h"
 #include "functions.hpp"
@@ -105,15 +105,15 @@ int main(int argc, char *argv[])
 		log->Msg(" *** Optimizing mesh *** ");
 		
 		// simple sorting based on location in sim space
-		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition(log);
+		MeshOperation * simpleSort = new SortOnTetrahedraPosition();
 		mesh->Apply(simpleSort);
 		
 		// re-order using mc simulation
-		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.9999995f, log);
+		MeshOperation * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.9999995f);
 		mesh->Apply(mcReorder);
 		
 		// re-index the mesh and tet's neighbors
-		MeshOptimizer * reIndex = new ReassignIndices(log);
+		MeshOperation * reIndex = new ReassignIndices();
 		mesh->Apply(reIndex);
 		
 		// save the optimized mesh
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		// TODO: Index assignment should happen when reading mesh automatically
-		MeshOptimizer * reIndex = new ReassignIndices(log);
+		MeshOperation * reIndex = new ReassignIndices();
 		mesh->Apply(reIndex);
 		
 		log->Msg("Mesh Loaded from cache!");

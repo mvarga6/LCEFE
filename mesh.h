@@ -3,7 +3,7 @@
 
 #include "classstruct.h"
 #include "simulation_parameters.h"
-#include "mesh_optimizer.h"
+#include "mesh_operations.h"
 #include "director_field.h"
 #include "logger.h"
 #include <string>
@@ -29,7 +29,7 @@ public:
 	
 	bool Load(bool*);
 	bool Cache();
-	void Apply(MeshOptimizer *);
+	void Apply(MeshOperation*);
 	
 	void SetDirector(DirectorField *);
 	bool CalculateVolumes();
