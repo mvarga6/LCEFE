@@ -16,10 +16,6 @@
 void run_dynamics(DevDataBlock *dev
 				,HostDataBlock *host
 				,SimulationParameters *params
-				,int *Syncin
-				,int *Syncout
-				,int *g_mutex
-				,std::vector<int>* surf_tets
 				,VtkWriter *vtkWriter
 				,DataManager *dataManager
 				,PerformanceRecorder *recorder)
@@ -102,7 +98,6 @@ void run_dynamics(DevDataBlock *dev
 			printVTKframe(dev
 				,host
 				,params->Output.Base
-				,surf_tets
 				,iKern+1);
 				
 			//vtkWriter->Write(iKern+1);

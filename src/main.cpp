@@ -32,15 +32,16 @@
 #include "functions.hpp"
 #include "logger.h"
 #include "helpers_math.h"
-#include "../data_procedures.h"
+#include "data_procedures.h"
+#include "rundynamics.h"
 
 // these will go away into their own service class
-#include "getAs.h"
-#include "setn.h"
-#include "printmeshorder.h"
-#include "packdata.h"
+//#include "getAs.h"
+//#include "setn.h"
+//#include "printmeshorder.h"
+//#include "packdata.h"
 #include "errorhandle.h"
-#include "datatodevice.h"
+//#include "datatodevice.h"
 #include "anyerrors.h"
 #include "exit_program.h"
 
@@ -112,13 +113,11 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		// TODO: Index assignment should happen when reading mesh automatically
-		//MeshOperation * reIndex = ;
 		mesh->Apply(new ReassignIndices());
-		
 		log->Msg("Mesh Loaded from cache!");
 	}
 	
+	// create director field
 	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
 	DirectorField * director = new RadialDirectorField(origin);
 	
@@ -130,27 +129,18 @@ int main(int argc, char *argv[])
 	//pritn director
 	mesh->Tets->printDirector(parameters.Output.Base);
 
-	//now ready to prepare for dyanmics
-	//delcare data stuctures for data on device
-	//and host
-	
+	// Create Host and Device Data blocks with the mesh
 	HostDataBlock * host = new HostDataBlock(mesh->Nodes, mesh->Tets, &parameters);
 	DevDataBlock * dev = host->CreateDevDataBlock();
 	
 	DataManager * dataManager = new DataManager(host, dev);
 	
-	std::vector<int> surfTets;
+	//std::vector<int> surfTets;
 
-	//Pack data to send to device
-	//packdata(*mesh->Nodes, *mesh->Tets, &host, &surfTets, &parameters);
-	
 	// move data to gpu
 	dataManager->Execute(new PushAllToGpu());
 	dataManager->SetSimulationParameters(&parameters);
 	
-	//send data to device
-	//data_to_device(dev, host, &parameters, dataManager);
-
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
 				parameters.Output.FrameRate,
@@ -158,30 +148,7 @@ int main(int argc, char *argv[])
 				host->totalVolume * parameters.Material.Density);
 
 
-	//=================================================================
-	//initillize GPU syncronization arrays
-	//will store syncronization information
-	//=================================================================
-	int Threads_Per_Block = parameters.Gpu.ThreadsPerBlock;
-	int Blocks = (mesh->Tets->size + Threads_Per_Block) / Threads_Per_Block;
-	int *Syncin,*Syncout,*g_mutex, *SyncZeros;
-	//allocate memory on device for Syncin and Syncoutd
-	
-	HANDLE_ERROR( cudaMalloc( (void**)&Syncin, Blocks*sizeof(int) ) );
-	HANDLE_ERROR( cudaMalloc( (void**)&Syncout, Blocks*sizeof(int) ) );
-	SyncZeros = (int*)malloc(Blocks*sizeof(int));
-	
-	for (int i = 0; i < Blocks; i++)
-	{
-		SyncZeros[i]=0;
-	}
-	
-	HANDLE_ERROR( cudaMemcpy(Syncin, SyncZeros, Blocks*sizeof(int), cudaMemcpyHostToDevice ) );
-	//allocate global mutex and set =0 
-	HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
-	HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
-	 
-	// Move this somewhere else
+	// TODO: Move gpu info print somewhere else
 	//Get Device properties
 	cudaDeviceProp prop;
 	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
@@ -194,16 +161,10 @@ int main(int argc, char *argv[])
 	//=================================================================
 	//run dynamics
 	//=================================================================
-	run_dynamics(dev, host, &parameters, Syncin, Syncout, g_mutex, &surfTets, vtkWriter, dataManager, recorder);
+	run_dynamics(dev, host, &parameters, vtkWriter, dataManager, recorder);
 
 	//check for CUDA erros
 	any_errors();
-
-	//exit program
-
-	HANDLE_ERROR(cudaFree( Syncin ) );
-	HANDLE_ERROR(cudaFree( Syncout ) );
-	HANDLE_ERROR(cudaFree( g_mutex ) );
 	exit_program(dev);
 
 	//*/

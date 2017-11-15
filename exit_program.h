@@ -3,6 +3,7 @@
 
 #include "datastruct.h"
 #include "errorhandle.h"
+#include "texdef.h"
 
 #include "cuda.h"
 #include "cuda_runtime.h"

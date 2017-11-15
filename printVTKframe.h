@@ -9,7 +9,6 @@
 void printVTKframe(DevDataBlock *dev
 			,HostDataBlock *host
 			,std::string outputBase
-			,std::vector<int>* illum_list
 			,int step){
 
 	//need to pitch 1D memory correctly to send to device
