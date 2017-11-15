@@ -3,6 +3,7 @@
 
 #include "classstruct.h"
 #include "logger.h"
+#include "director_field.h"
 #include "defines.h"
 
 enum class OperationResult : int
@@ -50,6 +51,27 @@ public:
   current configuration in memory.
 */
 class ReassignIndices : public MeshOperation
+{
+public:
+	OperationResult Run(TetArray*, NodeArray*, Logger*);
+};
+
+class SetDirector : public MeshOperation
+{
+	DirectorField *director;
+public:
+	SetDirector(DirectorField*);
+	OperationResult Run(TetArray*, NodeArray*, Logger*);
+};
+
+
+class CalculateAinv : public MeshOperation
+{
+public:
+	OperationResult Run(TetArray*, NodeArray*, Logger*);
+};
+
+class CalculateVolumes : public MeshOperation
 {
 public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);

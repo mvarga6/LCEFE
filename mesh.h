@@ -31,9 +31,9 @@ public:
 	bool Cache();
 	void Apply(MeshOperation*);
 	
-	void SetDirector(DirectorField *);
-	bool CalculateVolumes();
-	bool CalculateAinv();
+	//void SetDirector(DirectorField *);
+	//bool CalculateVolumes();
+	//bool CalculateAinv();
 	
 private:
 	

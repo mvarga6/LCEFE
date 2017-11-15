@@ -264,4 +264,45 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 }
 
 
+//set the positon of each array by averaging the positions
+//of the nodes so we can arrange the tetrahedra in a smart
+//order to optimize memmory calls in the GPU
+
+static void get_tet_pos(NodeArray *Nodes, TetArray *Tets, real x_offset = 0.0f, real y_offset = 0.0f, real z_offset = 0.0f)
+{
+	int Ntets = Tets->size;
+	int n0,n1,n2,n3;
+	real xave,yave,zave;
+	for (int i = 0; i < Ntets; i++)
+	{
+		n0 = Tets->get_nab(i,0);
+		n1 = Tets->get_nab(i,1);
+		n2 = Tets->get_nab(i,2);
+		n3 = Tets->get_nab(i,3);
+
+		xave = ((Nodes->get_pos(n0,0) \
+			   +Nodes->get_pos(n1,0) \
+			   +Nodes->get_pos(n2,0) \
+			   +Nodes->get_pos(n3,0))/4.0)
+			   - x_offset;
+
+		yave = ((Nodes->get_pos(n0,1) \
+			   +Nodes->get_pos(n1,1) \
+			   +Nodes->get_pos(n2,1) \
+			   +Nodes->get_pos(n3,1))/4.0)
+			   - y_offset;
+
+		zave = ((Nodes->get_pos(n0,2) \
+			   +Nodes->get_pos(n1,2) \
+			   +Nodes->get_pos(n2,2) \
+			   +Nodes->get_pos(n3,2))/4.0)
+			   - z_offset;
+
+		Tets->set_pos(i,0,xave);
+		Tets->set_pos(i,1,yave);
+		Tets->set_pos(i,2,zave);
+		Tets->set_pos(i,3,xave*xave+yave*yave+zave*zave);
+	}
+}
+
 #endif

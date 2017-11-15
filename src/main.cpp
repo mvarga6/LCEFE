@@ -146,17 +146,21 @@ int main(int argc, char *argv[])
 	//ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
 	//DirectorField * director 	  = new CartesianDirectorField(theta, phi);
 	
-	if (!(mesh->CalculateVolumes() 
-		&& mesh->CalculateAinv()))
-	{
-		// failed to calculate necessary things on mesh
-		exit(11);
-	}
-	
-			
+//	if (!(mesh->CalculateVolumes() 
+//		&& mesh->CalculateAinv()))
+//	{
+//		// failed to calculate necessary things on mesh
+//		exit(11);
+//	}
+
 	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
 	DirectorField * director = new RadialDirectorField(origin);
-	mesh->SetDirector(director);
+	//mesh->SetDirector(director);
+	
+	mesh->Apply(new CalculateVolumes());
+	mesh->Apply(new CalculateAinv());
+	mesh->Apply(new SetDirector(director));
+			
 	
 	//pritn director
 	mesh->Tets->printDirector(parameters.Output.Base);

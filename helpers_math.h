@@ -1446,5 +1446,36 @@ inline __device__ __host__ float4 smoothstep(float4 a, float4 b, float4 x)
     return (y*y*(make_float4(3.0f) - (make_float4(2.0f)*y)));
 }
 
+//====================================================
+// calculate the volume of a tetrahedra
+//====================================================
+inline __device__ __host__
+real tetVolume(real x1, real y1, real z1
+			   ,real x2, real y2, real z2
+			   ,real x3, real y3, real z3
+			   ,real x4, real y4, real z4){
+
+
+real a11=x1-x2;
+real a12=y1-y2;
+real a13=z1-z2;
+
+real a21=x2-x3;
+real a22=y2-y3;
+real a23=z2-z3;
+
+real a31=x3-x4;
+real a32=y3-y4;
+real a33=z3-z4;
+real vol0=a11*a22*a33+a12*a23*a31+a13*a21*a32;
+      vol0=vol0-a13*a22*a31-a11*a23*a32-a12*a21*a33;
+      vol0=vol0/6.0;
+
+return abs(vol0);
+
+	
+
+}//tet volume
+
 #endif
 

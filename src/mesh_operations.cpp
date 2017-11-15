@@ -5,6 +5,8 @@
 #include <numeric>
 //#include "getmesh.h"
 #include "genrand.h"
+#include "getAs.h"
+#include "helpers_math.h"
 
 OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 {
@@ -287,3 +289,130 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 	}
 }
 
+
+SetDirector::SetDirector(DirectorField *director)
+{
+	this->director = director;
+}
+
+
+OperationResult SetDirector::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+{
+	try
+	{
+		log->Msg("Assigning director to mesh...");
+	
+		int Ntets = Tets->size;
+	
+		DirectorOrientation dir;
+		real x, y, z;
+	
+		for (int t = 0; t < Ntets; t++)
+		{
+			// the position of this tet
+			x = Tets->get_pos(t, 0);
+			y = Tets->get_pos(t, 1);
+			z = Tets->get_pos(t, 2);
+	
+			// get the director there
+			// done this way so it could be read
+			// from file or hardcoded etc
+			dir = this->director->GetDirectorAt(x, y, z);
+			
+			// assign 
+			Tets->set_theta(t, dir.theta);
+			Tets->set_phi(t, dir.phi);
+		}
+		
+		log->StaticMsg("Assigning director to mesh...\t\tcomplete");
+		return OperationResult::SUCCESS;
+	}
+	catch (const std::exception& e)
+	{
+		// log something
+		log->Msg("SetDirector threw exception -- quiting");
+		return OperationResult::FAILURE_EXCEPTION_THROWN;
+	}
+}
+
+
+OperationResult CalculateAinv::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+{
+	try
+	{
+		log->Msg("Calculating tetrahedra shape functions...");
+		init_As(*Nodes, *Tets);
+		log->StaticMsg("Calculating tetrahedra shape functions...\tcomplete");
+		return OperationResult::SUCCESS;
+	}
+	catch (const std::exception& e)
+	{
+		log->Error(e.what());
+		return OperationResult::FAILURE_EXCEPTION_THROWN;
+	}
+}
+
+
+OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+{
+	try
+	{
+		log->Msg("Calculating tetrahedra volumes...");
+	
+		real tempVol;
+		int n0, n1, n2, n3;
+		int Ntets = Tets->size;
+	
+		//calculate volume of each tetrahedra
+		for(int t = 0;t < Ntets; t++)
+		{
+			n0 = Tets->get_nab(t,0);
+			n1 = Tets->get_nab(t,1);
+			n2 = Tets->get_nab(t,2);
+			n3 = Tets->get_nab(t,3);
+			tempVol = tetVolume( Nodes->get_pos(n0,0)
+								,Nodes->get_pos(n0,1)
+								,Nodes->get_pos(n0,2)
+								,Nodes->get_pos(n1,0)
+								,Nodes->get_pos(n1,1)
+								,Nodes->get_pos(n1,2)
+								,Nodes->get_pos(n2,0)
+								,Nodes->get_pos(n2,1)
+								,Nodes->get_pos(n2,2)
+								,Nodes->get_pos(n3,0)
+								,Nodes->get_pos(n3,1)
+								,Nodes->get_pos(n3,2));
+
+			Tets->set_volume(t,tempVol);
+		}
+	
+	
+		//calculate effective volume of each node
+		int i;
+		for(int t = 0; t < Ntets; t++)
+		{
+			tempVol = 0.25 * Tets->get_volume(t);
+			for (int tn = 0; tn < 4; tn++)
+			{
+				i = Tets->get_nab(t,tn);
+				Nodes->add_volume(i,tempVol);
+			}
+		}
+
+		//normalize volume so that each node
+		//has an average volume of 1
+		//i_Node.normalize_volume(real(Nnodes));
+
+		//calculate total volume
+		Tets->calc_total_volume();
+		
+		log->StaticMsg("Calculating tetrahedra volumes...\t\tcomplete");
+		
+		return OperationResult::SUCCESS;
+	}
+	catch (const std::exception& e)
+	{
+		log->Error(e.what());
+		return OperationResult::FAILURE_EXCEPTION_THROWN;
+	}
+}
