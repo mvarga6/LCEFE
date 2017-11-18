@@ -1,7 +1,7 @@
 #ifndef __ILLUMINATION_CPU_H__
 #define __ILLUMINATION_CPU_H__
 
-#include "mainhead.h"
+//#include "mainhead.h"
 #include <vector>
 #include <algorithm>
 #include <map>

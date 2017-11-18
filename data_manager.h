@@ -12,14 +12,23 @@
 */
 class DataManager
 {
+	// pointers to data
 	HostDataBlock *host;
 	DevDataBlock *dev;
+	
+	// pointers to data procedures
+	DataProcedure * setup;
+	DataProcedure * exit;
+	DataProcedure * print;
 
 public:
-	DataManager(HostDataBlock*, DevDataBlock*);
+	DataManager(HostDataBlock*, DevDataBlock*, DataProcedure*, DataProcedure*, DataProcedure *);
 	bool Execute(DataProcedure*);
 	bool Execute(DataOperation*);
-	bool SetSimulationParameters(SimulationParameters*);
+	bool UpdateSimulationParameters(SimulationParameters*);
+	bool Setup(SimulationParameters*);
+	bool GetPrintData();
+	bool Exit();
 };
 
 #endif

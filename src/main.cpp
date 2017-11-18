@@ -24,7 +24,6 @@
 #include "parameters_writer.h"
 #include "output_writer.h"
 #include "data_manager.h"
-//#include "constant_cuda_defs.h"
 #include "performance_recorder.h"
 #include "mesh_operations.h"
 #include "director_field.h"
@@ -33,17 +32,18 @@
 #include "logger.h"
 #include "helpers_math.h"
 #include "data_procedures.h"
-#include "rundynamics.h"
+#include "simulation_runner.h"
 
 // these will go away into their own service class
+//#include "rundynamics.h"
 //#include "getAs.h"
 //#include "setn.h"
 //#include "printmeshorder.h"
 //#include "packdata.h"
 #include "errorhandle.h"
 //#include "datatodevice.h"
-#include "anyerrors.h"
-#include "exit_program.h"
+//#include "anyerrors.h"
+//#include "exit_program.h"
 
 int main(int argc, char *argv[])
 {
@@ -133,14 +133,10 @@ int main(int argc, char *argv[])
 	HostDataBlock * host = new HostDataBlock(mesh->Nodes, mesh->Tets, &parameters);
 	DevDataBlock * dev = host->CreateDevDataBlock();
 	
-	DataManager * dataManager = new DataManager(host, dev);
-	
-	//std::vector<int> surfTets;
+	DataProcedure * setup = new PushAllToGpu();
+	DataProcedure * print = new GetPrintData();
+	DataManager * dataManager = new DataManager(host, dev, setup, print);
 
-	// move data to gpu
-	dataManager->Execute(new PushAllToGpu());
-	dataManager->SetSimulationParameters(&parameters);
-	
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
 				parameters.Output.FrameRate,
@@ -161,13 +157,21 @@ int main(int argc, char *argv[])
 	//=================================================================
 	//run dynamics
 	//=================================================================
-	run_dynamics(dev, host, &parameters, vtkWriter, dataManager, recorder);
-
+	//run_dynamics(dev, host, &parameters, vtkWriter, dataManager, recorder);	
 	//check for CUDA erros
-	any_errors();
-	exit_program(dev);
-
-	//*/
-
-    return 0;
+	//any_errors();
+	//exit_program(dev);
+	
+	SimulationRunner * sim = new SimulationRunner(
+		&parameters,
+		vtkWriter,
+		dataManager,
+		log,
+		recorder,
+		host,
+		dev
+	);
+	
+	sim->RunDynamics();
+    return sim->Exit();
 }

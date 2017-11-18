@@ -2,10 +2,17 @@
 #include "errorhandle.h"
 #include "kernel_constants.h"
 
-DataManager::DataManager(HostDataBlock *hostDataBlock, DevDataBlock *devDataBlock)
+DataManager::DataManager(HostDataBlock *hostDataBlock, 
+	DevDataBlock *devDataBlock,
+	DataProcedure *setupProcedure,
+	DataProcedure *printProcedure = NULL,
+	DataProcedure *exitProcedure = NULL)
 {
 	this->host = hostDataBlock;
 	this->dev = devDataBlock;
+	this->setup = setupProcedure;
+	this->print = printProcedure;
+	this->exit = exitProcedure;
 }
 
 
@@ -27,7 +34,7 @@ bool DataManager::Execute(DataOperation *operation)
 	return (*operation)(dev, host);
 }
 
-bool DataManager::SetSimulationParameters(SimulationParameters *params)
+bool DataManager::UpdateSimulationParameters(SimulationParameters *params)
 {
 	PackedParameters _tmp;
 	_tmp.Alpha = params->Material.Alpha;
@@ -47,4 +54,35 @@ bool DataManager::SetSimulationParameters(SimulationParameters *params)
 	
 	HANDLE_ERROR( cudaMemcpyToSymbol(Parameters, &_tmp, sizeof(PackedParameters)) );
 	return true;
+}
+
+
+bool DataManager::Setup(SimulationParameters * parameters)
+{
+	bool p_success = this->UpdateSimulationParameters(parameters);	
+	if (this->setup == NULL)
+	{
+		return p_success;
+	}
+	
+	bool s_success = Execute(setup);
+	return p_success && s_success;
+}
+
+bool DataManager::GetPrintData()
+{
+	if (this->print == NULL)
+	{
+		return true;
+	}
+	return Execute(print);
+}
+
+bool DataManager::Exit()
+{
+	if (this->exit == NULL)
+	{
+		return true;
+	}
+	return Execute(exit);
 }

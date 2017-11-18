@@ -63,7 +63,6 @@ class PushVelocityToGpu : public DataOperation
 class PushForceToGpu : public DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
 
-
 /*
   Data Operations that Bind things to cuda textures
 */

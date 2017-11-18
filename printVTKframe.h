@@ -1,7 +1,8 @@
 #ifndef __PRINTVTKFRAME_H__
 #define __PRINTVTKFRAME_H__
 
-#include "mainhead.h"
+//#include "mainhead.h"
+#include <stdio.h>
 #include "illumination_cpu.h"
 
 //=============================================================
