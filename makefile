@@ -14,6 +14,9 @@ OBJ_FILES := $(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
 	
 all: world ext $(OBJ_FILES)
 	nvcc $(FLAGS) $(OBJ_FILES) $(EXTLIB) -o $(BLDDIR)/$(BUILDNAME)
+
+debug: world ext $(OBJ_FILES)
+	nvcc $(FLAGS) -G -g $(OBJ_FILES) $(EXTLIB) -o $(BLDDIR)/$(BUILDNAME)
 	
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	nvcc -x cu $(FLAGS) -I. -dc $< -o $@

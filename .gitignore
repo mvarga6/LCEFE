@@ -6,3 +6,4 @@
 *.dat
 builds/*
 .vscode/launch.json
+.vscode/tasks.json
