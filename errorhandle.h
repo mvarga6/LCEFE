@@ -1,6 +1,8 @@
 #ifndef __ERRORHANDLE_H__
 #define __ERRORHANDLE_H__
 
+#include "cuda.h"
+#include "cuda_runtime.h"
 
 static void HandleError( cudaError_t err,
                          const char *file,

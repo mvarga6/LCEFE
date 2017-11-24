@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 	
 	DataProcedure * setup = new PushAllToGpu();
 	DataProcedure * print = new GetPrintData();
-	DataManager * dataManager = new DataManager(host, dev, setup, print);
+	DataManager * dataManager = new DataManager(host, dev, setup, print, NULL);
 
 	//Print Simulation Parameters and Such
 	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",

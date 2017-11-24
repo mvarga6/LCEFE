@@ -7,7 +7,7 @@ BLDDIR := builds
 WORLD := $(OBJDIR) $(VTKDIR) $(BLDDIR)
 
 EXTLIB = extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a
-FLAGS = -lcurand -ccbin=g++ -std=c++11 -Wno-deprecated-gpu-targets
+FLAGS = -lcurand -ccbin=g++ -std=c++11 -G -g -lineinfo -Wno-deprecated-gpu-targets
 
 CPP_FILES := $(wildcard $(SRCDIR)/*.cpp)
 OBJ_FILES := $(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
@@ -16,7 +16,7 @@ all: world ext $(OBJ_FILES)
 	nvcc $(FLAGS) $(OBJ_FILES) $(EXTLIB) -o $(BLDDIR)/$(BUILDNAME)
 
 debug: world ext $(OBJ_FILES)
-	nvcc $(FLAGS) -G -g $(OBJ_FILES) $(EXTLIB) -o $(BLDDIR)/$(BUILDNAME)
+	nvcc $(FLAGS) $(OBJ_FILES) $(EXTLIB) -o $(BLDDIR)/$(BUILDNAME)
 	
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	nvcc -x cu $(FLAGS) -I. -dc $< -o $@
