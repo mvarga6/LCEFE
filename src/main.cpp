@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// test rotaition of mesh
-	mesh->Apply(new EulerRotation(1.0, 1.0, 1.0));
+	//mesh->Apply(new EulerRotation(1.0, 1.0, 1.0));
 
 	// create director field
 	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
