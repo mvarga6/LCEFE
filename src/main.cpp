@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		mesh->Apply(new SortOnTetrahedraPosition());
 		
 		// re-order using mc simulation
-		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.999f));
+		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.99999f));
 		
 		// re-index the mesh and tet's neighbors
 		mesh->Apply(new ReassignIndices());
@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
 	// create director field
 	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
 	DirectorField * director = new RadialDirectorField(origin);
+//	DirectorField * director = new RandomDirectorField();
 	
 	mesh->Apply(new CalculateVolumes());
 	mesh->Apply(new CalculateAinv());

@@ -78,4 +78,21 @@ public:
 	DirectorOrientation GetDirectorAt(const real x, const real y, const real z);
 };
 
+///
+/// Given an origin, create a director field
+/// radial with reference to the origin.
+class RandomDirectorField : public DirectorField
+{
+public:
+
+	///
+	/// Construct a director field that points
+	/// radially out from the given origin
+	RandomDirectorField();
+
+	/// Returns the director orientations and a given
+	/// position in Euclidean space	
+	DirectorOrientation GetDirectorAt(const real x, const real y, const real z);
+};
+
 #endif
