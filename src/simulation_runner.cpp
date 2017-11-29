@@ -25,9 +25,7 @@ SimulationRunner::SimulationRunner(
 
 void SimulationRunner::RunDynamics()
 {
-	// TODO: DataProcdure for getting data should be inject somehow
-	// Prossibly into the printer, so it know's how to get data it needs.
-	//DataProcedure *getPrintData = new GetPrintData();
+	// Set parameters before running
 	this->dataManager->Setup(parameters);
 	
 	// local variables
@@ -43,10 +41,9 @@ void SimulationRunner::RunDynamics()
 	const int BlocksTet = (Ntets + Threads_Per_Block) / Threads_Per_Block;
 	const int BlocksNode = (Nnodes + Threads_Per_Block) / Threads_Per_Block;
 	
+	// the main simulation time loop
 	recorder->Create("time-loop")->Start();
 	this->log->Msg("Beginning Dynamics");
-	
-	// the main simulation time loop
 	for(int iKern = 0; iKern < nSteps; iKern++)
 	{
 		// calculate force and send force components to be summed
