@@ -17,6 +17,7 @@ endif
 # Directories in repo
 SRCDIR := src
 VTKDIR := VTKOUT
+DOCDIR := doc
 WORLD := $(OBJDIR) $(VTKDIR) $(BLDDIR)
 
 # Source files
@@ -48,6 +49,9 @@ clean:
 	cd extlib/jsmn && $(MAKE) clean
 	cd extlib/gmsh_io && $(MAKE) clean
 
-clear: $(VTKDIR) $(CACHE)
+clear vtk: $(VTKDIR)
 	rm -f $(VTKDIR)/*
+
+clear doc: $(DOCDIR)
+	rm -f -r $(DOCDIR)/*
 	
