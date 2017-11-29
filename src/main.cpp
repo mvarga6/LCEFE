@@ -117,6 +117,9 @@ int main(int argc, char *argv[])
 		log->Msg("Mesh Loaded from cache!");
 	}
 	
+	// test rotaition of mesh
+	mesh->Apply(new EulerRotation(1.0, 1.0, 1.0));
+
 	// create director field
 	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
 	DirectorField * director = new RadialDirectorField(origin);

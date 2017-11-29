@@ -11,4 +11,4 @@ alpha: 1500000
 damp: 0.999
 density: 1.2
 threadsperblock: 512
-caching: false
+caching: true

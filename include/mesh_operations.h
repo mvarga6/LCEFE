@@ -13,10 +13,10 @@ enum class OperationResult : int
 	FAILURE_EXCEPTION_THROWN = 3
 };
 
-/*
-  Abstract parent of all optimization operations
-  to run on the mesh
-*/
+/**
+ * Abstract parent of all optimization operations
+ * to run on the mesh
+ */
 class MeshOperation
 {
 public:
@@ -24,20 +24,20 @@ public:
 };
 
 
-/*
-  Optimize the mesh by sorting it based on
-  positions of tetrahedra.
-*/
+/**
+ * Optimize the mesh by sorting it based on
+ * positions of tetrahedra.
+ */
 class SortOnTetrahedraPosition : public MeshOperation
 {
 public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
-/*
-  Minimize distances between tets and their neighbors
-  by using simulated annealing.
-*/
+/**
+ * Minimize distances between tets and their neighbors
+ * by using simulated annealing.
+ */
 class MonteCarloMinimizeDistanceBetweenPairs : public MeshOperation
 {
 	real kbt_start, kbt_end, anneal_factor;
@@ -46,19 +46,19 @@ public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
-/*
-  Reassign all the node and tet numbers in their
-  current configuration in memory.
-*/
+/**
+ * Reassign all the node and tet numbers in their
+ * current configuration in memory.
+ */
 class ReassignIndices : public MeshOperation
 {
 public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
-/*
-  Set the director in the mesh using an operation
-*/
+/**
+ * Set the director in the mesh using an operation
+ */
 class SetDirector : public MeshOperation
 {
 	DirectorField *director;
@@ -67,22 +67,31 @@ public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
-/*
-  Calculate the Shape functions for the mesh in an operation.
-*/
+/**
+ * Calculate the Shape functions for the mesh in an operation.
+ */
 class CalculateAinv : public MeshOperation
 {
 public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
 
-/*
-  Calculate the tet volumes in the mesh using an operation.
-*/
+/**
+ * Calculate the tet volumes in the mesh using an operation.
+ */
 class CalculateVolumes : public MeshOperation
 {
 public:
 	OperationResult Run(TetArray*, NodeArray*, Logger*);
 };
+
+class EulerRotation : public MeshOperation
+{
+	real theta, phi, rho;
+public:
+	EulerRotation(const real, const real, const real);
+	OperationResult Run(TetArray*, NodeArray*, Logger*);
+};
+
 
 #endif

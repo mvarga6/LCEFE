@@ -7,6 +7,7 @@
 #include "genrand.h"
 #include "getAs.h"
 #include "helpers_math.h"
+#include "getgmsh.h"
 
 OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 {
@@ -415,4 +416,28 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 		log->Error(e.what());
 		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
+}
+
+
+EulerRotation::EulerRotation(const real theta, const real phi, const real rho)
+{
+	this->theta = theta;
+	this->phi = phi;
+	this->rho = rho;
+}
+
+
+OperationResult EulerRotation::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+{
+	log->Msg("Rotation nodes of mesh.");
+
+	// rotate nodes
+	Nodes->eulerRotation(theta, phi, rho);
+
+	log->Msg("Recalculating tetrahedra positions");
+
+	// recalculate tet positions
+	get_tet_pos(Nodes, Tets);
+
+	log->Msg("Complete");
 }

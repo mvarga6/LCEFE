@@ -57,6 +57,5 @@ DirectorOrientation RadialDirectorField::GetDirectorAt(
 	const real dz = z - origin.z;
 	result.theta = atan2(sqrt(dx*dx + dy*dy), dz);
 	result.phi = atan2(dy, dx);
-	//printf("\n%.2f %.2f %.2f %.2f %.2f", dx, dy, dz, result.theta, result.phi);
 	return result;
 }
