@@ -6,9 +6,16 @@
 
 #include "defines.h"
 
+///
+/// Service class with gpu only static methods
+/// for helping on gpu
 class DeviceHelpers
 {
 public:
+
+	///
+	/// Reads global gpu memory data into tet-thread local
+	/// data arrays specific to a single tetrahedron.
 	static __device__
 	void ReadGlobalToLocal(
 		int (&node_num_local)[4]
@@ -27,6 +34,10 @@ public:
 		,int Ntets
 	);
 	
+	///
+	/// Write forces on 4 nodes to global
+	/// memory in the correct rank location
+	/// so it can be summed in node-local thread
 	static __device__
 	void SendForce(
 		 real *dF
@@ -38,6 +49,10 @@ public:
 		int tid
 	);
 	
+	///
+	/// TODO: Should be moved to DeviceHelpers
+	/// Convert two ints into a double on the gpu
+	/// Will be used to support double precision
 	static __inline__ __device__ 
 	double ConvertToDouble(uint2 p){
     	return __hiloint2double(p.y, p.x);

@@ -6,9 +6,9 @@
 
 using namespace std;
 
-/*
-  The priority of a log item
-*/
+/**
+ * The priority of a log item
+ */
 enum class LogEntryPriority : int
 {
 	VERBOSE = 0,
@@ -19,23 +19,34 @@ enum class LogEntryPriority : int
 };
 
 
-/*
-  Abstact parent for anything that can be logged
-*/
+/**
+ * Abstact parent for anything that can be logged
+ */
 class LogEntry
 {
 public:
+
+	///
+	/// The priority for this item
 	LogEntryPriority priority;
+
+	///
+	/// Get the item as a string
 	virtual string AsString() = 0;
 };
 
 
-/*
-  A log entry type for logging errors
-*/
+/**
+ * A log entry type for logging errors
+ */
 class ErrorLog : public LogEntry
 {
+	///
+	/// The error message
 	string msg;
+
+	///
+	/// an exception to go along with the error
 	exception e;
 	
 public:
@@ -45,9 +56,9 @@ public:
 };
 
 
-/*
-  Abstract parent of anything that is a logger
-*/
+/**
+ * Abstract parent of anything that is a logger
+ */
 class Logger
 {
 public:
@@ -58,9 +69,9 @@ public:
 	static Logger * Default;
 };
 
-/*
-  Log things to the console
-*/
+/**
+ * Log things to the console
+ */
 class ConsoleLogger : public Logger
 {
 	LogEntryPriority min_priority;

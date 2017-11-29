@@ -6,6 +6,8 @@
 #include <string>
 #include "defines.h"
 
+///
+/// Enum uniquely defining simulation parameters
 enum ParameterType : int
 {
 	Unknown = 0,
@@ -39,6 +41,8 @@ enum ParameterType : int
 	InitNoise = 28
 };
 
+///
+/// Parameterse for material constants
 struct MaterialConstants
 {
 	__host__
@@ -51,6 +55,8 @@ struct MaterialConstants
 	real Density;
 };
 
+///
+/// Parameters for the dynamics of the simulations
 struct DynamicsParameters
 {
 	__host__
@@ -61,6 +67,8 @@ struct DynamicsParameters
 	real Damp;
 };
 
+///
+/// Parameters for gpu execution
 struct GpuParameters
 {
 	__host__
@@ -69,6 +77,8 @@ struct GpuParameters
 	int ThreadsPerBlock;
 };
 
+///
+/// Parameteres for simulation output
 struct OutputParameters
 {
 	__host__
@@ -78,6 +88,8 @@ struct OutputParameters
 	int FrameRate;
 };
 
+///
+/// Parameters for the mesh used in the simulation
 struct MeshParameters
 {
 	__host__
@@ -89,6 +101,8 @@ struct MeshParameters
 	bool CachingOn;
 };
 
+///
+/// Parameters for the initialization of the simulation
 struct InitialState
 {
 	__host__
@@ -100,6 +114,8 @@ struct InitialState
 	real Noise;
 };
 
+///
+/// Parameters for Liquid Crystal properties of the Mesh
 struct LiquidCrystalParameters
 {
 	__host__
@@ -112,6 +128,8 @@ struct LiquidCrystalParameters
 	real SRateOff;
 };
 
+///
+/// Parameters for UV illumination on the sample
 struct UVIllumination
 {
 	__host__
@@ -121,6 +139,8 @@ struct UVIllumination
 	int IterPerIllumRecalc;
 };
 
+///
+/// Parameters defining how the LCE sample is actuated
 struct ActuationParameters
 {
 	__host__
@@ -133,6 +153,8 @@ struct ActuationParameters
 	UVIllumination Optics;
 };
 
+///
+/// Groups all parameteres types into one object
 struct SimulationParameters
 {
 	__host__
@@ -163,6 +185,8 @@ struct SimulationParameters
 	ActuationParameters Actuation;
 };
 
+///
+/// A flatten SimuationsParameteres object for use on the gpu
 struct PackedParameters
 {
 	real Alpha;

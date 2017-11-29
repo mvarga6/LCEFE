@@ -3,8 +3,8 @@
 
 #include "invert4x4.h"
 
-//calculate current A matrix and then invert it
-//inverted A and original A stored in Tet object
+/// Calculate current A matrix and then invert it
+/// inverted A and original A stored in Tet object
 static void init_As(NodeArray &Nodes, TetArray &Tets)
 {
 	int Ntets = Tets.size;

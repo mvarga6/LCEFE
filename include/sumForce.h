@@ -5,10 +5,9 @@
 #include "defines.h"
 #include "parameters.h"
 
-//===========================================
-// read in a sum all forces present on node 
-// being executed on this thread
-//===========================================
+///
+/// read in a sum all forces present on node 
+/// being executed on this thread
 __device__ void sumForce( int myNode
 						, int myNodeRank
 						, real (&Fnew)[3]

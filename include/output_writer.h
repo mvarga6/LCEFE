@@ -8,13 +8,20 @@
 
 using namespace std;
 
+///
+/// Abstract parent for anything that writes simulation output
 class OutputWriter
 {
-	public:
-		virtual bool Write() = 0;
-		virtual bool Write(int) = 0;
+public:
+
+	///
+	/// Write whatever has been specified		
+	virtual bool Write() = 0;
+	virtual bool Write(int) = 0;
 };
 
+///
+/// Enum to set the format of how the data is stored in arrays
 enum class DataFormat : int
 {
 	Linear = 0,
@@ -27,6 +34,8 @@ enum class CellType : int
 	Tetrahedral = 4
 };
 
+///
+/// Implements OutputWriter to write VTK files with binded data ptrs
 class VtkWriter : public OutputWriter
 {
 	// output base

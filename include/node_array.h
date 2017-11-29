@@ -4,6 +4,8 @@
 #include "defines.h"
 #include "parameters.h"
 
+///
+/// Host-only constainer for node data
 class NodeArray
 {
 
@@ -39,9 +41,16 @@ public:
 	real max_point(int cord);
 	real min_point(int cord);
 
-	// Method to manipulate nodes as whole body
+	///
+	/// Method to translate the nodes in Euclidean space
 	void translate(const real&, const real &, const real &);
+
+	///
+	/// Euler rotation of the nodes
 	void eulerRotation(const real&, const real&, const real&);
+
+	///
+	/// Deform the nodes positions in x,y,z
 	void deform(const real lambda[3]);
 };
 

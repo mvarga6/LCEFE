@@ -9,6 +9,11 @@
 #include "tet_array.h"
 #include "simulation_parameters.h"
 
+///
+/// Container for all data pointers that point
+/// to only device (GPU) data. Difference that
+/// HostDataBlock becuase we need to store the memory
+/// pitches when allocation 'pitched gpu memory'
 struct DevDataBlock 
 {
 	int Ntets, Nnodes;
@@ -41,6 +46,9 @@ struct DevDataBlock
     //	real           totalTime;
 };
 
+///
+/// Container for all data pointers that point
+/// to host (cpu) data
 class HostDataBlock 
 {
 public:
@@ -63,11 +71,14 @@ public:
 
 	real min[3], max[3];
 	
-	// so we can easily construct on cpu
-	// from Nodes and tets
+	///
+	/// Construct with a NodeArray and TetArray (probably coming from
+	/// members of Mesh) and the SimulationParameters object. 
 	HostDataBlock(NodeArray *, TetArray*, SimulationParameters *);
-	//~HostDataBlock();
 	
+	///
+	/// Create a DevDataBlock with corresponding data allocations
+	// as the current HostDataBlock object
 	DevDataBlock* CreateDevDataBlock();
 };
 

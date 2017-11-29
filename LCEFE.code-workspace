@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"*cpp": "cuda"
+			"*.cpp": "cuda",
+			"*.h": "cuda"
 		},
 		"editor.tokenColorCustomizations": {
 			"textMateRules": [

@@ -8,6 +8,9 @@
 #include "performance_recorder.h"
 #include "datastruct.h"
 
+///
+/// Class that handles running a simulation.
+/// Constains the simulation MAIN-LOOP
 class SimulationRunner
 {
 	SimulationParameters * parameters;
@@ -27,7 +30,12 @@ public:
 		HostDataBlock*,
 		DevDataBlock*);
 		
+	///
+	/// Executes the main loop: simulation dynamics
 	void RunDynamics();
+
+	///
+	/// Exits the simulation
 	int Exit();
 };
 
