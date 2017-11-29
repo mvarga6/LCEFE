@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 	bool cachedMesh;
 	if (!mesh->Load(&cachedMesh))
 	{
-		// TODO: log failure
+		log->Error("Failed to load mesh, exiting");
 		exit(10);
 	}
 
@@ -154,14 +154,7 @@ int main(int argc, char *argv[])
 	recorder->Stop("init");
 	recorder->Log("init");
 	 
-	//=================================================================
-	//run dynamics
-	//=================================================================
-	//run_dynamics(dev, host, &parameters, vtkWriter, dataManager, recorder);	
-	//check for CUDA erros
-	//any_errors();
-	//exit_program(dev);
-	
+	// Run the simulation
 	SimulationRunner * sim = new SimulationRunner(
 		&parameters,
 		vtkWriter,
