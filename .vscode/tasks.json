@@ -18,6 +18,16 @@
                 "isDefault": true
             },
             "problemMatcher": []
+        },
+        {
+            "label": "clean gafe6 (Debug)",
+            "type": "shell",
+            "command": "make clean DEBUG=true"
+        },
+        {
+            "label": "clean gafe6 (Release)",
+            "type": "shell",
+            "command": "make clean"
         }
     ]
 }
