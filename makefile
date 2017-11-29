@@ -2,6 +2,7 @@ BUILDNAME = gafe6
 
 # Path to external libraries
 EXTLIB = extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a
+INCDIR = include
 
 # Compiler Flags for Debug and Release
 ifeq ($(DEBUG),true)
@@ -34,7 +35,7 @@ all: world ext $(OBJ_FILES)
 
 # compiles src files into object files	
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	nvcc -x cu $(FLAGS) -I. -dc $< -o $@
+	nvcc -x cu $(FLAGS) -I. -I $(INCDIR) -dc $< -o $@
 	
 ext:
 	cd extlib/jsmn && $(MAKE) && $(MAKE) test
