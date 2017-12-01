@@ -3,6 +3,7 @@
 
 #include "defines.h"
 #include "parameters.h"
+#include <vector>
 
 ///
 /// Host-only constainer for node data
@@ -52,6 +53,10 @@ public:
 	///
 	/// Deform the nodes positions in x,y,z
 	void deform(const real lambda[3]);
+
+	///
+	/// Method to reorder the nodes
+	void reorder(std::vector<int> const &order);
 };
 
 #endif

@@ -50,7 +50,10 @@ public:
 	int get_iS(int i);
 	real max(int cord);
 	real min(int cord);
-  	void printDirector(std::string);
+	  void printDirector(std::string);
+	  
+	///
+	/// Method to reorder the tets
 	void reorder(std::vector<int> const &order);
 };
 

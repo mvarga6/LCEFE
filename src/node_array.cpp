@@ -35,6 +35,22 @@ NodeArray::~NodeArray(){
 	volume = NULL;
 }
 
+void NodeArray::reorder(std::vector<int> const &order)
+{   
+    for ( int s = 0, d; s < order.size(); ++s) 
+    {
+        for ( d = order[s]; d < s; d = order[d]);
+        if (d == s) 
+        {
+        	while (d = order[d], d != s ) 
+        	{
+        		//swap( v[s], v[d]);
+        		this->switch_nodes(s, d);
+        	}	
+        }
+    }
+}
+
 void NodeArray::set_pos(int i, int j, const real &newval){	
 			MyPos[i*3+j] = newval;			
 }

@@ -191,17 +191,51 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 				nrank = Nodes->get_totalRank(i);
 				Tets->set_nabsRank(t, tn, nrank);
 				Nodes->add_totalRank(i, 1);
-				Tets->set_nabs(t, tn, Nodes->get_newnum(i));
+				//Tets->set_nabs(t, tn, Nodes->get_newnum(i));
+				Tets->set_nabs(t, tn, i);
 			}
 		}
 		log->Msg("Assigning nodes to tetrahedra: complete");
+
+
+
+
+		// log->Msg("Creating node index list");
+		// // create value/key pairs to sort
+		// std::vector<std::pair<real, int> > numIdxList;
+		
+		// // initialize the list
+		// for (int n = 0; n < Nnodes; n++)
+		// {
+		// 	numIdxList.push_back(std::pair<int, int>(Nodes->get_newnum(n), n));
+		// }
+		
+		// // sort on position
+		// log->Msg("Sorting index list on distance from origin");
+		// std::stable_sort(numIdxList.begin(), numIdxList.end());
+		
+		// log->Msg("Copy new index list");
+		// std::vector<int> nodeOrder(Nnodes);
+		// for (int i = 0; i < Nnodes; i++)
+		// {
+		// 	nodeOrder.at(i) = numIdxList.at(i).second;
+		// }
+		
+		// // put them into the proper order
+		// log->Msg("Reordering data");
+		// //Nodes->reorder(nodeOrder);
+				
+		// log->Msg("Completed!");
+
+
+
 
 		//switch actual order of nodes
 		//do this by sweeping though and switching
 		//nodes which have lower real val
 		//not the most efficient sort but it will work
 		log->Msg("Sorting nodes by value: ");
-		bool go = true;
+		bool go = false;
 		while(go)
 		{
 			go = false;
@@ -223,6 +257,16 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		}
 		log->Msg("Sorting nodes by value: complete");
 		
+
+		// // print first 10
+		// for (int i = 0; i < 10; i++)
+		// {
+		// 	if (Nodes->get_newnum(i) != nodeOrder.at(i))
+		// 	{
+		// 		printf("\n%d: %d %d", i, Nodes->get_newnum(i), nodeOrder.at(i));
+		// 	}
+		// }
+
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
