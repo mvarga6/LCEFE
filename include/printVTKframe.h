@@ -116,7 +116,7 @@ void printVTKframe(DevDataBlock *dev
 	fprintf(out,"\n");
 
 	fprintf(out,"CELL_DATA %d\n", Ntets);
-	fprintf(out,"SCALARS potentialEnergy float 1\n");
+	fprintf(out,"SCALARS PotentialEnergy float 1\n");
 	fprintf(out,"LOOKUP_TABLE default\n");
 	real tetpe, peTOTAL = 0.0;
 	for(int nt = 0; nt < Ntets; nt++)
@@ -126,6 +126,27 @@ void printVTKframe(DevDataBlock *dev
 		fprintf(out,"%f\n", tetpe);
 	}//nt
 	//delete [] sloc;
+
+	//fprintf(out,"CELL_DATA %d\n", Ntets);
+	//fprintf(out,"LOOKUP_TABLE default\n");
+	fprintf(out,"VECTORS Director float\n");
+	real thphi, nTh,nPhi, theta, phi, nx, ny, nz;
+	for(int t = 0; t < Ntets; t++)
+	{
+		thphi = real(host->ThPhi[t]);
+		
+		nTh = floor(thphi/10000.0);
+		nPhi = thphi-nTh*10000.0;
+		
+		theta = nTh*PI/1000.0;
+		phi = nPhi*PI/500.0;
+
+		nx = sin(theta)*cos(phi);
+		ny = sin(theta)*sin(phi);
+		nz = cos(theta);
+
+		fprintf(out,"%f %f %f\n", nx, ny, nz);
+	}//nt
 
 	//peTOTAL = peTOTAL*10000000.0;
 
