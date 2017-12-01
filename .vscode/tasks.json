@@ -22,7 +22,8 @@
         {
             "label": "clean gafe6 (Debug)",
             "type": "shell",
-            "command": "make clean DEBUG=true"
+            "command": "make clean DEBUG=true",
+            "problemMatcher": []
         },
         {
             "label": "clean gafe6 (Release)",
