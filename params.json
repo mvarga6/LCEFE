@@ -1,9 +1,9 @@
 nsteps: 20000
 dt: 0.00002
 framerate: 500
-meshfile: "Mesh/SphericalShell3.msh"
+meshfile: "Mesh/SphericalShell4.msh"
 meshScale: 1.0
-outputBase: "VTKOUT/SphereShell3"
+outputBase: "VTKOUT/SphereShell4"
 cxxxx: 29400000
 cxxyy: 28000000
 cxyxy: 570000

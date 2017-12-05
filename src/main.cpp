@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		mesh->Apply(new SortOnTetrahedraPosition());
 		
 		// re-order using mc simulation
-		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.999995f));
+		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.999999f));
 		
 		// re-index the mesh and tet's neighbors
 		mesh->Apply(new ReassignIndices());

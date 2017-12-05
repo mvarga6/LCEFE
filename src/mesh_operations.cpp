@@ -13,12 +13,12 @@ OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, 
 {
 	try
 	{
-		log->Msg("Running SortOnTetrahedraPosition ...");
+		log->Msg("Running Sort-On-Tetrahedra-Position ...");
 		int Ntets = Tets->size;	
 		
 	
 		
-		log->Msg("Creating index list");
+		log->Msg("Creating tetrahedra index list");
 		// create value/key pairs to sort
 		std::vector<std::pair<real, int> > posIdxList;
 		
@@ -29,10 +29,10 @@ OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, 
 		}
 		
 		// sort on position
-		log->Msg("Sorting index list on distance from origin");
+		log->Msg("Sorting index list on tetrahedra CoM distance from origin");
 		std::sort(posIdxList.begin(), posIdxList.end());
 		
-		log->Msg("Copy new index list");
+		log->Msg("Reordering data: ");
 		std::vector<int> tetOrder(Ntets);
 		for (int i = 0; i < Ntets; i++)
 		{
@@ -40,17 +40,16 @@ OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, 
 		}
 		
 		// put them into the proper order
-		log->Msg("Reordering data");
 		Tets->reorder(tetOrder);
 				
-		log->Msg("Completed!");
+		log->Msg("Reordering data: complete");
 		
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// print something
-		log->Msg("SortOnTetrahedraPosition threw exception -- quiting");
+		log->Msg("Sort-On-Tetrahedra-Position threw exception -- quiting");
 		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
@@ -70,7 +69,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 {
 	try
 	{
-		log->Msg("Running MonteCarloMinimizeDistanceBetweenPairs ...");
+		log->Msg("Running Monte-Carlo-Minimize-Distance-Between-Pairs ...");
 		int Ntets = Tets->size;	
 		real olddist, newdist;
 		int n1,n2;
@@ -131,7 +130,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 	catch (const std::exception& e)
 	{
 		// log something
-		log->Msg("MonteCarloMinimizeDistanceBetweenPairs threw exception -- quiting");
+		log->Msg("Monte-Carlo-Minimize-Distance-Between-Pairs threw exception -- quiting");
 		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
@@ -141,7 +140,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 {
 	try
 	{
-		log->Msg("Running ReassignIndices ...");
+		log->Msg("Running Reassign-Indices ...");
 		int Ntets = Tets->size;
 		int Nnodes = Nodes->size;
 
@@ -169,7 +168,6 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 			for (int tn = 0; tn < 4; tn++)
 			{
 				i = Tets->get_nab(t, tn);
-				//printf("i = %d for t= %d and tn = %d\n",i,t,tn);
 				if(Nodes->get_newnum(i) < 0)
 				{
 					Nodes->set_newnum(i, newi);
@@ -183,6 +181,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		//now reassign each tetrahedra to neighbors
 		//in the new arrangement of nodes
 		log->Msg("Assigning nodes to tetrahedra: ");
+		std::vector<int> newOrder(Nnodes);
 		for(int t = 0;t < Ntets; t++)
 		{
 			for (int tn = 0; tn < 4; tn++)
@@ -191,88 +190,66 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 				nrank = Nodes->get_totalRank(i);
 				Tets->set_nabsRank(t, tn, nrank);
 				Nodes->add_totalRank(i, 1);
-				//Tets->set_nabs(t, tn, Nodes->get_newnum(i));
-				Tets->set_nabs(t, tn, i);
+				Tets->set_nabs(t, tn, Nodes->get_newnum(i));
+				newOrder.at(i) = Nodes->get_newnum(i);
 			}
 		}
-		log->Msg("Assigning nodes to tetrahedra: complete");
-
-
-
-
-		// log->Msg("Creating node index list");
-		// // create value/key pairs to sort
-		// std::vector<std::pair<real, int> > numIdxList;
 		
-		// // initialize the list
-		// for (int n = 0; n < Nnodes; n++)
-		// {
-		// 	numIdxList.push_back(std::pair<int, int>(Nodes->get_newnum(n), n));
-		// }
-		
-		// // sort on position
-		// log->Msg("Sorting index list on distance from origin");
-		// std::stable_sort(numIdxList.begin(), numIdxList.end());
-		
-		// log->Msg("Copy new index list");
-		// std::vector<int> nodeOrder(Nnodes);
-		// for (int i = 0; i < Nnodes; i++)
-		// {
-		// 	nodeOrder.at(i) = numIdxList.at(i).second;
-		// }
-		
-		// // put them into the proper order
-		// log->Msg("Reordering data");
-		// //Nodes->reorder(nodeOrder);
-				
-		// log->Msg("Completed!");
+		log->StaticMsg("Assigning nodes to tetrahedra: complete");
 
+		log->Msg("Reordering nodes in this configuration: ");
+		Nodes->reorder(newOrder);
+		log->StaticMsg("Reordering nodes in this configuration: complete");
 
+		
+		int outOfOrderCount = 0;
+		for (int i = 0; i < Nnodes; i++)
+		{
+			if (i != Nodes->get_newnum(i)) 
+			{
+				outOfOrderCount++;
+			}
+		}
 
+		if (outOfOrderCount > 0)
+		{
+			printf("\n[ ERROR ] # of nodes out of order: %d", outOfOrderCount);
+		}
+		
 
 		//switch actual order of nodes
 		//do this by sweeping though and switching
 		//nodes which have lower real val
 		//not the most efficient sort but it will work
-		log->Msg("Sorting nodes by value: ");
-		bool go = false;
-		while(go)
-		{
-			go = false;
-			for(int i = 0; i < Nnodes-1; i++)
-			{
-				if (Nodes->get_newnum(i) > Nodes->get_newnum(i+1))
-				{
-					Nodes->switch_nodes(i,i+1);
-					go = true;
-				}
-				if (Nodes->get_newnum(i) < 0)
-				{
-					//printf("nodes not properly reassigned node %d\n",i);
-					stringstream ss;
-					ss << "Nodes not properlyy reassigned node " << i;
-					log->Msg(ss.str());
-				}
-			}
-		}
-		log->Msg("Sorting nodes by value: complete");
-		
-
-		// // print first 10
-		// for (int i = 0; i < 10; i++)
+		// log->Msg("Sorting nodes by value: ");
+		// bool go = false;
+		// while(go)
 		// {
-		// 	if (Nodes->get_newnum(i) != nodeOrder.at(i))
+		// 	go = false;
+		// 	for(int i = 0; i < Nnodes-1; i++)
 		// 	{
-		// 		printf("\n%d: %d %d", i, Nodes->get_newnum(i), nodeOrder.at(i));
+		// 		if (Nodes->get_newnum(i) > Nodes->get_newnum(i+1))
+		// 		{
+		// 			Nodes->switch_nodes(i,i+1);
+		// 			go = true;
+		// 		}
+		// 		if (Nodes->get_newnum(i) < 0)
+		// 		{
+		// 			//printf("nodes not properly reassigned node %d\n",i);
+		// 			stringstream ss;
+		// 			ss << "Nodes not properlyy reassigned node " << i;
+		// 			log->Msg(ss.str());
+		// 		}
 		// 	}
 		// }
-
+		// log->StaticMsg("Sorting nodes by value: complete");
+		
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
 	{
 		// log something
-		log->Msg("ReassignIndices threw exception -- quiting");
+		log->Msg("Reassign-Indices threw exception -- quiting");
 		return OperationResult::FAILURE_EXCEPTION_THROWN;
 	}
 }
