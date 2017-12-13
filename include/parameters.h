@@ -20,14 +20,14 @@
 
 //parameters regarding sample illumination
 //static bool PLANARTOP = true;
-#define SRES	1000	     //--resolution for real to int conversion for gpu storage
-#define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
-#define LRATE	10
-static real SMAX =	0.0;
-static real SMIN =	-1.0;
-static real SRATE_ON =	-0.2;
-static real SRATE_OFF = 0.2;
-static real IANGLE =	80.0;
+//#define SRES	1000	     //--resolution for real to int conversion for gpu storage
+//#define S0		0.0	     //--naturally occuring order parameter (no illuminiation)
+//#define LRATE	10
+//static real SMAX =	0.0;
+//static real SMIN =	-1.0;
+//static real SRATE_ON =	-0.2;
+//static real SRATE_OFF = 0.2;
+//static real IANGLE =	80.0;
 
 //Elasticity constants (Lame' Coefficients)
 //  -there is a factor of two off here from
@@ -58,8 +58,8 @@ static real IANGLE =	80.0;
 
 //x and y dimensions of n profile
 //input arrays
-#define inX 200
-#define inY 200
+//#define inX 200
+//#define inY 200
 
 //Threads per block to exicute
 //100 seems pretty optimal on GTX275
@@ -71,15 +71,15 @@ static real IANGLE =	80.0;
 
 //maximum number of tetrahedra
 //a Node can belone to
-#define MaxNodeRank     90
+//#define MaxNodeRank     90
 
 
 
 //constants declared on the stack for speed
-#define PI		3.14159265359
-#define _2PI	6.28318530718
+//#define PI		3.14159265359
+//#define _2PI	6.28318530718
 //#define dt2o2           (dt*dt)/2.0					    //for speed
 //#define dto2             dt/2.0						    //for speed
-#define DEG2RAD		0.017453293
+//#define DEG2RAD		0.017453293
 
 #endif //__PARAMETERS_H__

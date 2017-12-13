@@ -8,6 +8,7 @@
 #include "node_array.h"
 #include "tet_array.h"
 #include "simulation_parameters.h"
+#include "pointer.h"
 
 ///
 /// Container for all data pointers that point
@@ -31,7 +32,7 @@ struct DevDataBlock
 	real *pe;
 	real *TetVol;
 	int *ThPhi;
-	int *S;
+	float *S;
 	int *L;
 	size_t TetToNodepitch;
 	size_t Apitch;
@@ -42,8 +43,13 @@ struct DevDataBlock
 	size_t drpitch;
 	size_t dFpitch;
 	
-	//cudaEvent_t     start, stop;
-    //	real           totalTime;
+	/// 
+	/// Returns a pointer handle for the S array
+	PointerHandle<real> HandleForS();
+	
+	/// 
+	/// Returns a pointer handle for the theta-phi array
+	PointerHandle<int> HandleForDirector();
 };
 
 ///
@@ -67,7 +73,7 @@ public:
 	real totalVolume;
 	real *TetVol;
 	int *ThPhi;
-	int *S;
+	float *S;
 
 	real min[3], max[3];
 	
@@ -78,7 +84,7 @@ public:
 	
 	///
 	/// Create a DevDataBlock with corresponding data allocations
-	// as the current HostDataBlock object
+	/// as the current HostDataBlock object
 	DevDataBlock* CreateDevDataBlock();
 };
 

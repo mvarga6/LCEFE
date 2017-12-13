@@ -35,13 +35,30 @@ real dist_point_to_plane(real _r[3], real _n[3], real d){
 	return numer/denom;
 }
 
-//=============================================================
-//  On CPU (every print), calculate and set S for each tet
-
-void calc_S_from_light(real k[3], real *r, int *TetToNode, 
-			int Ntets, int Nnodes, int *S,
-			std::vector<int>* tetsList, 
-			real cell_dx, real cell_dy){
+///
+/// On CPU (every print), calculate and set S for each tet.
+/// Given an incident light vector k, the positions of all nodes r,
+/// the tet-to-node map TetToNode, number of nodes and tets, Ntets
+/// & Nnodes, the current order parameter of each tet S, a list of 
+/// surface tet indices tetsLists, and the size of the pixelation 
+/// grid cell_dx & cell_dy; update the order parameter based on
+/// UV illumination from a far away source.
+///
+void calc_S_from_light(
+	real k[3], 
+	real *r, 
+	int *TetToNode, 
+	int Ntets, 
+	int Nnodes, 
+	real *S,
+	std::vector<int>* tetsList, 
+	real cell_dx, 
+	real cell_dy,
+	real SMIN,
+	real SMAX,
+	real SRATE_ON,
+	real SRATE_OFF
+){
 
 	//.. allocate whats needed
 	int Nsurf = tetsList->size();
@@ -170,14 +187,14 @@ void calc_S_from_light(real k[3], real *r, int *TetToNode,
 		for(int q = 0; q < que_size; q++){
 			tet = queue[q].tet;
 			if(tet == closest_tet) // closed tet lowers
-				S[tet] += int(SRES*SRATE_ON);
+				S[tet] += SRATE_ON;
 			else
-				S[tet] += int(SRES*SRATE_OFF); // all other raise
+				S[tet] += SRATE_OFF; // all other raise
 
-			if(S[tet] > SMAX*SRES) 
-				S[tet] = int(SMAX*SRES); // constrain to S range
-			else if (S[tet] < SMIN*SRES) 
-				S[tet] = int(SMIN*SRES);
+			if(S[tet] > SMAX) 
+				S[tet] = SMAX; // constrain to S range
+			else if (S[tet] < SMIN) 
+				S[tet] = SMIN;
 		}
 	}
 

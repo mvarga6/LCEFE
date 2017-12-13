@@ -33,6 +33,8 @@
 #include "helpers_math.h"
 #include "data_procedures.h"
 #include "simulation_runner.h"
+#include "experiment.h"
+#include "pointer.h"
 
 // these will go away into their own service class
 //#include "rundynamics.h"
@@ -47,13 +49,17 @@
 
 int main(int argc, char *argv[])
 {
-	// Read simulation parameters
-	SimulationParameters parameters;
+	///
+	/// Handle user input
+	///
+
+	// create parameters object
+	SimulationParameters parameters = SimulationParameters::Default();
+
 	ParametersReader * reader = new ParametersReader();
-	ParseResult result;
 	
 	// from cmdline
-	result = reader->ReadFromCmdline(argc, argv, parameters);
+	ParseResult result = reader->ReadFromCmdline(argc, argv, parameters);
 	if (result != SUCCESS)
 	{
 		return (int)result;
@@ -83,7 +89,10 @@ int main(int argc, char *argv[])
 	// for printing to output files
 	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
 	
-	// the mesh object
+	///
+	/// Create a Mesh from file
+	///
+
 	Mesh * mesh = new Mesh(&parameters, log);
 
 	bool cachedMesh;
@@ -92,6 +101,10 @@ int main(int argc, char *argv[])
 		log->Error("Failed to load mesh, exiting");
 		exit(10);
 	}
+
+	///
+	/// Optimize the mesh if need be
+	///
 
 	// we cache an optimized version of the mesh
 	if (!cachedMesh)
@@ -117,58 +130,79 @@ int main(int argc, char *argv[])
 		log->Msg("Mesh Loaded from cache!");
 	}
 	
-	// test rotaition of mesh
-	//mesh->Apply(new EulerRotation(1.0, 1.0, 1.0));
+	///
+	/// Calculate values for mesh
+	///
 
-	// create director field
-	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
-	DirectorField * director = new RadialDirectorField(origin);
-//	DirectorField * director = new RandomDirectorField();
-	
 	mesh->Apply(new CalculateVolumes());
 	mesh->Apply(new CalculateAinv());
+
+	///
+	/// Endow mesh with liquid crystal properities
+	///
+
+	// create director field
+	const float3 origin 	 = make_float3(0.0f, 0.0f, 0.0f);
+	DirectorField * director = new RadialDirectorField(origin);
 	mesh->Apply(new SetDirector(director));
 			
-	
-	//pritn director
+	//print director
 	mesh->Tets->printDirector(parameters.Output.Base);
 
+	///
+	/// Create data management objects
+	///
+
 	// Create Host and Device Data blocks with the mesh
-	HostDataBlock * host = new HostDataBlock(mesh->Nodes, mesh->Tets, &parameters);
-	DevDataBlock * dev = host->CreateDevDataBlock();
-	
-	DataProcedure * setup = new PushAllToGpu();
-	DataProcedure * print = new GetPrintData();
-	DataManager * dataManager = new DataManager(host, dev, setup, print, NULL);
+	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, &parameters);
+	DevDataBlock 	* dev 	= host->CreateDevDataBlock();
+	DataProcedure 	* setup = new PushAllToGpu();
+	DataProcedure 	* print = new GetPrintData();
+	DataManager 	* data 	= new DataManager(host, dev, &parameters, setup, print, NULL);
+
+	///
+	/// Create the experiment to run
+	///
+
+	Experiment * experiment = new Experiment();
+	real start = parameters.Dynamics.ExperimentStart();
+	real stop = parameters.Dynamics.ExperimentStop();
+	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
+	experiment->AddComponent("OrderDynamics", orderDynamics);
+
+	///
+	/// Create the physics model to simulate
+	///
+
+	Physics * physics = new SelingerPhysics();
+
+	///
+	/// Print info before running simulation
+	///
 
 	//Print Simulation Parameters and Such
-	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
-				parameters.Output.FrameRate,
-				host->totalVolume,
-				host->totalVolume * parameters.Material.Density);
+	// printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
+	// 			parameters.Output.FrameRate,
+	// 			host->totalVolume,
+	// 			host->totalVolume * parameters.Material.Density);
 
 
-	// TODO: Move gpu info print somewhere else
-	//Get Device properties
-	cudaDeviceProp prop;
-	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
-	printf( "Code executing on %s\n\n", prop.name );
+	// // TODO: Move gpu info print somewhere else
+	// //Get Device properties
+	// cudaDeviceProp prop;
+	// HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
+	// printf( "Code executing on %s\n\n", prop.name );
 	//displayGPUinfo(prop);
 	 
 	recorder->Stop("init");
 	recorder->Log("init");
 	 
-	// Run the simulation
-	SimulationRunner * sim = new SimulationRunner(
-		&parameters,
-		vtkWriter,
-		dataManager,
-		log,
-		recorder,
-		host,
-		dev
-	);
-	
-	sim->RunDynamics();
+	///
+	/// Run a simulation the experiment with given physics
+	///
+
+	// Create the simulation running environment
+	SimulationRunner * sim = new SimulationRunner(vtkWriter, log, recorder);
+	sim->RunDynamics(data, physics, &parameters, experiment);
     return sim->Exit();
 }

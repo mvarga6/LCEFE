@@ -16,11 +16,9 @@ real sigmoid(const real &x){
 //==============================================
 inline __host__ __device__ 
 void getQ(int myThPhi    //theta and Phi
-					,real (&Q)[9]  //array to store Q in
+					,real (&Q)[9] //array to store Q in
 					,real t       //time
-					//,real t_on 	//total time element has been illuminated in simulation
-					,int &S_in	//previous order parameter to calc/set new
-					,int L		//illumination amount
+					,real S		  //previous order parameter to calc/set new
 					){
 
 
@@ -45,7 +43,7 @@ const real mythphi = real(myThPhi);
 //real S = real((S_in)/real(SRES));//*(t/2.0);
 
 //old calculation
-real S = -1.0 * t / 0.2;
+S = -1.0 * t / 0.2;
 if (S < -1.0){ S = -1.0; }
 
 //convert ThPhi into theta and phi

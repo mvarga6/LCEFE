@@ -7,35 +7,32 @@
 #include "logger.h"
 #include "performance_recorder.h"
 #include "datastruct.h"
+#include "experiment.h"
+#include "physics_model.h"
 
 ///
 /// Class that handles running a simulation.
 /// Constains the simulation MAIN-LOOP
+///
 class SimulationRunner
 {
-	SimulationParameters * parameters;
 	VtkWriter 			 * vtkWriter;
-	DataManager			 * dataManager;
 	Logger 				 * log;
 	PerformanceRecorder	 * recorder;
-	HostDataBlock		 * host;
-	DevDataBlock		 * dev;
 	
 public:
-	SimulationRunner(SimulationParameters*, 
-		VtkWriter*, 
-		DataManager*,
+	SimulationRunner(VtkWriter*, 
 		Logger *log,
-		PerformanceRecorder*,
-		HostDataBlock*,
-		DevDataBlock*);
+		PerformanceRecorder*);
 		
 	///
 	/// Executes the main loop: simulation dynamics
-	void RunDynamics();
+	///
+	void RunDynamics(DataManager*, Physics*, SimulationParameters*, Experiment*);
 
 	///
 	/// Exits the simulation
+	///
 	int Exit();
 };
 

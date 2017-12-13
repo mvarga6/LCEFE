@@ -2,7 +2,7 @@
 #include "parameters.h"
 #include <fstream>
 
-TetArray::TetArray(int N){
+TetArray::TetArray(const int N, const real S0){
 	size = N;
 	TetVolume = new real[size];
 	TetNab = new int[size*4];
@@ -11,14 +11,16 @@ TetArray::TetArray(int N){
 	TetinvA = new real[size*16];
 	TetNodeRank = new int[size*4];
 	ThPhi = new real[size*2];
-	S = new int[size];
+	S = new real[size];
 	totalVolume = 0.0;
 
-	for(int i=0;i<size*4;i++){
-		TetNodeRank[i] =0;
-		if(i<size){
+	for(int i=0;i<size*4;i++)
+	{
+		TetNodeRank[i] = 0;
+		if(i<size)
+		{
 			TetVolume[i] = 0.0;
-			S[i] = S0*SRES; // init S to -1 for debugging
+			S[i] = S0;
 		}//if i
 	}//i
 }
@@ -118,9 +120,9 @@ void TetArray::set_phi(int i ,const real &newval){
 // sets S for ith tet by converting to int with _S_RES factor
 void TetArray::set_S(int i, const real &newval){
 		int ival;
-		if(newval > 1.0f) ival = 1;
-		else if(newval < 0) ival = 0;
-		else ival = int(newval * SRES);
+		if(newval > 1.0) ival = 1;
+		else if(newval < -0.5) ival = -0.5;
+		else ival = newval;
 		this->S[i] = ival;
 }
 
@@ -130,12 +132,8 @@ int TetArray::get_ThPhi(int i){
 	return th*10000+phi;
 }
 
-real TetArray::get_fS(int i){ //returns real
-	return (real(this->S[i]) / SRES); // converts S back to real in [ 0.0 : 1.0 ]
-}
-
-int TetArray::get_iS(int i){
-	return this->S[i]; //returns int w/o converting back to real range
+real TetArray::get_S(int i){ //returns real
+	return this->S[i];
 }
 
 void TetArray::printDirector(std::string outputBase)

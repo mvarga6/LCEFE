@@ -17,11 +17,11 @@ public:
 	real *TetinvA;
 	real *TetVolume;
 	real *ThPhi; // orientation of director in 3D
-	int *S; // value of order parameter inside tet.  map(0 -> SRES == 0.0 -> 1.0)
+	real *S; // value of order parameter inside tet.  map(0 -> SRES == 0.0 -> 1.0)
 	real totalVolume;
 	int size;
 
-	TetArray(int size);
+	TetArray(const int N, const real S0 = 0);
 	~TetArray();
 
 	void set_A(int i, int j, int k,const real &newval);
@@ -46,8 +46,7 @@ public:
 	void set_phi(int i, const real &newval);
 	void set_S(int i, const real &newval);
 	int get_ThPhi(int i);
-	real get_fS(int i);
-	int get_iS(int i);
+	real get_S(int i);
 	real max(int cord);
 	real min(int cord);
 	  void printDirector(std::string);

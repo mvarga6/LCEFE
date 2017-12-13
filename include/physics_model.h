@@ -4,6 +4,8 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "defines.h"
+
+#include "data_manager.h"
 #include "simulation_parameters.h"
 
 ///
@@ -12,6 +14,18 @@
 class Physics
 {
 public:
+
+	/**
+	 * Abstract method that calculates all the forces in the system.
+	 */
+	__host__
+	void virtual CalculateForces(DataManager *data, real time) = 0;
+
+	/**
+	 * Abstract method that moves particles in the system.
+	 */
+	__host__
+	void virtual UpdateSystem(DataManager *data) = 0;
 
 	/**
 	 *	Calculate the epsilon matrix (Strain)
@@ -54,6 +68,13 @@ public:
 	 */
 	__device__
 	static void CalculateForcesAndEnergies(PackedParameters params, real *Ainv,real *r0,real *r,real *Q,real (&F)[12],int *TetNodeRank,real *pe,int mytet,real myVol);
+};
+
+class SelingerPhysics : public Physics
+{
+public:
+	void CalculateForces(DataManager *data, real time);
+	void UpdateSystem(DataManager *data);
 };
 
 #endif

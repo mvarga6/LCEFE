@@ -4,12 +4,14 @@
 
 DataManager::DataManager(HostDataBlock *hostDataBlock, 
 	DevDataBlock *devDataBlock,
+	SimulationParameters *parameters,
 	DataProcedure *setupProcedure,
 	DataProcedure *printProcedure = NULL,
 	DataProcedure *exitProcedure = NULL)
 {
 	this->host = hostDataBlock;
 	this->dev = devDataBlock;
+	this->parameters = parameters;
 	this->setup = setupProcedure;
 	this->print = printProcedure;
 	this->exit = exitProcedure;
@@ -36,6 +38,8 @@ bool DataManager::Execute(DataOperation *operation)
 
 bool DataManager::UpdateSimulationParameters(SimulationParameters *params)
 {
+	this->parameters = params;
+
 	PackedParameters _tmp;
 	_tmp.Alpha = params->Material.Alpha;
 	_tmp.Cxxxx = params->Material.Cxxxx;
@@ -57,9 +61,9 @@ bool DataManager::UpdateSimulationParameters(SimulationParameters *params)
 }
 
 
-bool DataManager::Setup(SimulationParameters * parameters)
+bool DataManager::Setup()
 {
-	bool p_success = this->UpdateSimulationParameters(parameters);	
+	bool p_success = this->UpdateSimulationParameters(this->parameters);	
 	if (this->setup == NULL)
 	{
 		return p_success;
@@ -84,5 +88,49 @@ bool DataManager::Exit()
 	{
 		return true;
 	}
-	return Execute(exit);
+	return Execute(this->exit);
+}
+
+KernelLaunchDimensions DataManager::TetKernelDimensions()
+{
+	static KernelLaunchDimensions dimensions;
+	static bool calculated = false;
+
+	if (!calculated)
+	{
+		const int TPB = this->parameters->Gpu.ThreadsPerBlock;
+		const int blocks = (this->dev->Ntets / TPB) + 1;
+		dimensions.BlockArrangement = dim3(blocks, 1, 1);
+		dimensions.ThreadArrangement = dim3(TPB, 1, 1);
+		calculated = true;
+	}
+	
+	return dimensions;
+}
+
+KernelLaunchDimensions DataManager::NodeKernelDimensions()
+{
+	static KernelLaunchDimensions dimensions;
+	static bool calculated = false;
+
+	if (!calculated)
+	{
+		const int TPB = this->parameters->Gpu.ThreadsPerBlock;
+		const int blocks = (this->dev->Nnodes / TPB) + 1;
+		dimensions.BlockArrangement = dim3(blocks, 1, 1);
+		dimensions.ThreadArrangement = dim3(TPB, 1, 1);
+		calculated = true;
+	}
+	
+	return dimensions;
+}
+
+DevDataBlock* DataManager::DeviceData()
+{
+	return this->dev;
+}
+
+HostDataBlock* DataManager::HostData()
+{
+	return this->host;
 }

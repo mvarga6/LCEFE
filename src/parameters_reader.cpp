@@ -1,7 +1,6 @@
 
 #include "parameters_reader.h"
 #include "simulation_parameters.h"
-//#include "clparse.h"
 #include "extlib/jsmn/jsmn.h"
 #include <fstream>
 #include <string>
@@ -144,17 +143,21 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 				// add to map for known types
 				bool flag;
 				ParameterType type = GetParameterType(key, flag);
-				if (type != Unknown)
+				
+				if (type == Unknown)
 				{
-					// add to map
-					if (flag)
-					{
-						pairs[type];
-					}
-					else
-					{
-						pairs[type] = value;
-					}
+					printf("\n[ WARNING ] Parameter key (%s) not supported", key.c_str());
+					continue;
+				}
+
+				// add to map
+				if (flag)
+				{
+					pairs[type];
+				}
+				else
+				{
+					pairs[type] = value;
 				}
 			}
 		}
@@ -193,7 +196,7 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 		case OutputBase: 	p.Output.Base = v; break;
 		case FrameRate: 	p.Output.FrameRate = ::atoi(v.c_str()); break;
 		case MeshFile:		p.Mesh.File = v; break;
-		case NodeRankMax: 	p.Mesh.NodeRankMax = ::atoi(v.c_str()); break;
+//		case NodeRankMax: 	p.Mesh.NodeRankMax = ::atoi(v.c_str()); break;
 		case MeshScale: 	p.Mesh.Scale = ::atof(v.c_str()); break;
 		case MeshCaching:	p.Mesh.CachingOn = StrToBool(v); break;
 		case PlanarSideUp: 	p.Initalize.PlanarSideUp = true; break;
@@ -207,7 +210,9 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 		case SRateOff: 		p.Actuation.OrderParameter.SRateOff = ::atof(v.c_str()); break;
 		case IncidentAngle: p.Actuation.Optics.IncidentAngle = ::atof(v.c_str()); break;
 		case IterPerIllumRecalc: p.Actuation.Optics.IterPerIllumRecalc = ::atoi(v.c_str()); break;
-		case InitNoise: p.Initalize.Noise = ::atof(v.c_str()); break;
+		case InitNoise: 	p.Initalize.Noise = ::atof(v.c_str()); break;
+		case StartExperiment: p.Dynamics.Start = ::atoi(v.c_str()); break;
+		case StopExperiment: p.Dynamics.Stop = ::atoi(v.c_str()); break;
 		default: break;
 		}
 	} 
@@ -273,33 +278,35 @@ ParameterType ParametersReader::GetParameterType(string& key, bool &flagType)
 	}
 	
 	if (key == "input" || key == "params" || key == "parameters") return ParametersFile;
-	if (key == "alpha" || key == "alph" || key == "a") return Alpha;
-	if (key == "nsteps" || key == "time" || key == "n") return Nsteps;
-	if (key == "dt") return Dt;
-	if (key == "iterperframe" || key == "framerate") return FrameRate;
-	if (key == "cxxxx") return Cxxxx;
-	if (key == "cxxyy") return Cxxyy;
-	if (key == "cxyxy") return Cxyxy;
-	if (key == "density" || key == "rho") return Density;
-	if (key == "damp" || key == "nu") return Damp;
-	if (key == "tpb" || key == "threadsperblock") return ThreadsPerBlock;
-	if (key == "outputbase" || key == "output" || key == "o") return OutputBase;
-	if (key == "meshfile" || key == "mesh") return MeshFile;
-	if (key == "maxnoderank" || key == "maxrank") return NodeRankMax;
-	if (key == "meshscale" || key == "scale") return MeshScale;
-	if (key == "caching" || key == "cache") return MeshCaching;
-	if (key == "planartop") { flagType = true; return PlanarSideUp; }
-	if (key == "homeotop") { flagType = true; return HomeoSideUp; }
-	if (key == "aplitude" || key == "sqzdheight" || key == "sqzamp") return Amplitude;
-	if (key == "ratio" || key == "sqzdlenght" || key == "length" || key == "l") return Ratio;
-	if (key == "smax" || key == "u") return Smax;
-	if (key == "smin" || key == "d") return Smin;
-	if (key == "sinit" || key == "s0" || key == "s") return SInitial;
-	if (key == "sonrate" || key == "onrate" || key == "son") return SRateOn;
-	if (key == "soffrate" || key == "offrate" || key == "soff") return SRateOff;
-	if (key == "phi" || key == "p" || key == "incidentangle") return IncidentAngle;
-	if (key == "iterperillum" || key == "illumrate") return IterPerIllumRecalc;
-	return Unknown;
+	else if (key == "alpha" || key == "alph" || key == "a") return Alpha;
+	else if (key == "nsteps" || key == "time" || key == "n") return Nsteps;
+	else if (key == "dt") return Dt;
+	else if (key == "iterperframe" || key == "framerate") return FrameRate;
+	else if (key == "cxxxx") return Cxxxx;
+	else if (key == "cxxyy") return Cxxyy;
+	else if (key == "cxyxy") return Cxyxy;
+	else if (key == "density" || key == "rho") return Density;
+	else if (key == "damp" || key == "nu") return Damp;
+	else if (key == "tpb" || key == "threadsperblock") return ThreadsPerBlock;
+	else if (key == "outputbase" || key == "output" || key == "o") return OutputBase;
+	else if (key == "meshfile" || key == "mesh") return MeshFile;
+	else if (key == "maxnoderank" || key == "maxrank") return NodeRankMax;
+	else if (key == "meshscale" || key == "scale") return MeshScale;
+	else if (key == "caching" || key == "cache") return MeshCaching;
+	else if (key == "planartop") { flagType = true; return PlanarSideUp; }
+	else if (key == "homeotop") { flagType = true; return HomeoSideUp; }
+	else if (key == "aplitude" || key == "sqzdheight" || key == "sqzamp") return Amplitude;
+	else if (key == "ratio" || key == "sqzdlenght" || key == "length" || key == "l") return Ratio;
+	else if (key == "smax" || key == "u") return Smax;
+	else if (key == "smin" || key == "d") return Smin;
+	else if (key == "sinit" || key == "s0" || key == "s") return SInitial;
+	else if (key == "sonrate" || key == "onrate" || key == "son") return SRateOn;
+	else if (key == "soffrate" || key == "offrate" || key == "soff") return SRateOff;
+	else if (key == "phi" || key == "p" || key == "incidentangle") return IncidentAngle;
+	else if (key == "iterperillum" || key == "illumrate") return IterPerIllumRecalc;
+	else if (key == "startexperiment" || key == "start") return StartExperiment;
+	else if (key == "stopexperiment" || key == "stop") return StopExperiment;
+	else return Unknown;
 }
 
 bool ParametersReader::CleanKey(string &key)

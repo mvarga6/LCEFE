@@ -2,55 +2,63 @@
 #include "anyerrors.h"
 #include "exit_program.h"
 #include "printVTKframe.h"
-#include "physics_kernels.h"
+#include "physics_model.h"
+#include "experiment.h"
 
 SimulationRunner::SimulationRunner(
-	SimulationParameters *parameters, 
-	VtkWriter *vtkWriter, 
-	DataManager *dataManager,
+	VtkWriter *vtkWriter,
 	Logger *log,
-	PerformanceRecorder *recorder,
-	HostDataBlock *host,
-	DevDataBlock *dev)
+	PerformanceRecorder *recorder)
 {
-	this->parameters = parameters;
 	this->vtkWriter = vtkWriter;
-	this->dataManager = dataManager;
 	this->log = log;
 	this->recorder = recorder;
-	this->host = host;
-	this->dev = dev;
 }
 
 
-void SimulationRunner::RunDynamics()
+void SimulationRunner::RunDynamics(DataManager* data, Physics *physics, SimulationParameters* parameters, Experiment* experiment)
 {
 	// Set parameters before running
-	this->dataManager->Setup(parameters);
+	data->Setup();
 	
+	// data blocks
+	DevDataBlock * dev = data->DeviceData();
+	HostDataBlock * host = data->HostData();
+
 	// local variables
-	const real dt 			= this->parameters->Dynamics.Dt;
-	const real meshScale 	= this->parameters->Mesh.Scale;
-	const int iterPerFrame 	= this->parameters->Output.FrameRate;
-	const int nSteps 		= this->parameters->Dynamics.Nsteps;
-	const int Ntets  		= this->dev->Ntets;
-	const int Nnodes  		= this->dev->Nnodes;
+	const real dt 			= parameters->Dynamics.Dt;
+	const real meshScale 	= parameters->Mesh.Scale;
+	const int iterPerFrame 	= parameters->Output.FrameRate;
+	const int nSteps 		= parameters->Dynamics.Nsteps;
+	//const int Ntets  		= dev->Ntets;
+	//const int Nnodes  		= dev->Nnodes;
 	
 	// calculate how to run on gpu
-	const int Threads_Per_Block = this->parameters->Gpu.ThreadsPerBlock;
-	const int BlocksTet = (Ntets + Threads_Per_Block) / Threads_Per_Block;
-	const int BlocksNode = (Nnodes + Threads_Per_Block) / Threads_Per_Block;
-	
+	//const int Threads_Per_Block = parameters->Gpu.ThreadsPerBlock;
+	//const int BlocksTet = (Ntets + Threads_Per_Block) / Threads_Per_Block;
+	//const int BlocksNode = (Nnodes + Threads_Per_Block) / Threads_Per_Block;
+
+	// the lab frame time
+	real t = 0;
+
 	// the main simulation time loop
 	recorder->Create("time-loop")->Start();
 	this->log->Msg("Beginning Dynamics");
 	for(int iKern = 0; iKern < nSteps; iKern++)
 	{
+		// calculate the current time
+		t = dt*real(iKern);
+
 		// calculate force and send force components to be summed
-		ForceKernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*real(iKern));
+		//ForceKernel<<<BlocksTet,Threads_Per_Block>>>(*dev, dt*real(iKern));
+		physics->CalculateForces(data, t);
 
 		// sum forces and update positions	
-		UpdateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev);
+		//UpdateKernel<<<BlocksNode,Threads_Per_Block>>>(*dev);
+		physics->UpdateSystem(data);
+
+		// updates related the the experiment
+		experiment->Update(dt);
 
 		// sync threads before updating
 		cudaThreadSynchronize();
@@ -62,11 +70,12 @@ void SimulationRunner::RunDynamics()
 			printf("\n==============================================");
 			printf("\nKernel: %d of %d", iKern + 1, nSteps);
 			printf("\nTime: %f seconds", real(iKern)*dt);
+
 			recorder->Log("time-loop");
 			
 			// execute procedure using 
 			//dataManager->Execute(getPrintData);
-			this->dataManager->GetPrintData();
+			data->GetPrintData();
 		
 			//print frame
 			printVTKframe(dev
@@ -81,7 +90,7 @@ void SimulationRunner::RunDynamics()
 
 int SimulationRunner::Exit()
 {
-	this->dataManager->Exit();
+	//this->dataManager->Exit();
 	any_errors();
-	exit_program(this->dev);
+	//exit_program(this->dev);
 }

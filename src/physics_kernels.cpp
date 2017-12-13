@@ -61,7 +61,7 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 		// Send S and L to Q calculation and update
 		// S for next calculation.
 		//========================================
-		getQ(data.ThPhi[tid], Q, t, data.S[tid], data.L[tid]); // just for debugging
+		getQ(data.ThPhi[tid], Q, t, data.S[tid]); // just for debugging
 
 		//========================================
 		//calculate the force on each node due

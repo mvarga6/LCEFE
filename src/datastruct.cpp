@@ -1,5 +1,6 @@
 #include "datastruct.h"
 #include "errorhandle.h"
+#include "defines.h"
 
 HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParameters *params)
 {
@@ -25,7 +26,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParamet
 	this->totalVolume = Tets->get_total_volume();
 	this->TetVol 	 = (real*)malloc(Ntets*sizeof(real));
 	this->ThPhi 		 = (int*)malloc(Ntets*sizeof(int));
-	this->S 			 = (int*)malloc(Ntets*sizeof(int));
+	this->S 			 = (real*)malloc(Ntets*sizeof(real));
 	
 	//.. untransformed max's and min's
 	//real L;//, w, h;
@@ -51,7 +52,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParamet
 	{
 		this->TetVol[tet] = Tets->get_volume(tet);
 		this->ThPhi[tet] = Tets->get_ThPhi(tet);
-		this->S[tet] = Tets->get_iS(tet);
+		this->S[tet] = Tets->get_S(tet);
 		for (int sweep = 0; sweep < 4; sweep++)
 		{
 			this->TetToNode[tet+sweep*Ntets] = Tets->get_nab(tet,sweep);
@@ -148,8 +149,18 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->pe, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetVol, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->ThPhi, Ntets*sizeof(int) ) );
-	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
 	
 	return dev;
+}
+
+PointerHandle<real> DevDataBlock::HandleForS()
+{
+	return GpuPointerHandle<real>(this->S, this->Ntets);
+}
+
+PointerHandle<int> DevDataBlock::HandleForDirector()
+{
+	return GpuPointerHandle<int>(this->ThPhi, this->Ntets);
 }
