@@ -41,14 +41,14 @@ int main(int argc, char *argv[])
 	Logger * log = new ConsoleLogger();
 
 	// for timing data
-	PerformanceRecorder * recorder = new PerformanceRecorder();;
+	PerformanceRecorder * recorder = new PerformanceRecorder(log);
 
 	///
 	/// Handle user input
 	///
 
 	// create parameters object
-	ParametersReader * reader = new ParametersReader();
+	ParametersReader * reader = new ParametersReader(log);
 	SimulationParameters * parameters = reader->Read(argc, argv);
 
 	if (!reader->Success())

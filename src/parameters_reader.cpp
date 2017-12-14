@@ -12,6 +12,11 @@
 
 using namespace std;
 
+ParametersReader::ParametersReader(Logger *logger)
+{
+	this->log = logger;
+}
+
 SimulationParameters* ParametersReader::ReadFromFile(const string& fileName)
 {
 	// create new parameters object
@@ -247,7 +252,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 				
 				if (type == Unknown)
 				{
-					printf("\n[ WARNING ] Parameter key (%s) not supported", key.c_str());
+					log->Warning(formatted("Parameter key (%s) not supported", key.c_str()));
 					continue;
 				}
 
@@ -322,26 +327,27 @@ void ParametersReader::UpdateFromTokenMap(tokenMap &map, SimulationParameters *p
 
 bool ParametersReader::HandleParseResult(int result, string& err_msg)
 {
+	bool success = false;
 	switch(result)
 	{
 	case JSMN_ERROR_NOMEM:
 		err_msg = string("JSMN ERROR: Not enough tokens provided");
-		cout << err_msg << endl;		
-		return false;
+		break;
 		
 	case JSMN_ERROR_INVAL:
 		err_msg = string("JSMN ERROR: Invalid character in parameters file");
-		cout << err_msg << endl;	
-		return false;
+		break;
 		
 	case JSMN_ERROR_PART:
 		err_msg = string("JSMN ERROR: Incomplete JSON packet, expected more bytes");
-		cout << err_msg << endl;
-		return false;
+		break;
 		
 	default:
-		return true;
+		success = true;
+		break;
 	}
+	if (!success) log->Error(err_msg);
+	return success;
 }
 
 string ParametersReader::JsmnTokenType(int type)

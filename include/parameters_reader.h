@@ -3,6 +3,7 @@
 
 #include <string>
 #include "simulation_parameters.h"
+#include "logger.h"
 #include <map>
 
 using namespace std;
@@ -35,11 +36,14 @@ public:
 class ParametersReader
 {
 	ParseResult result;
+	Logger *log;
 
 public:
 
 	typedef map<ParameterType, string> tokenMap;
 	typedef map<ParameterType, string>::iterator tokenMapIterator;
+
+	ParametersReader(Logger *logger);
 
 	SimulationParameters* ReadFromFile(const string& fileName);
 	SimulationParameters* ReadFromCmdline(int argc, char* argv[]);
