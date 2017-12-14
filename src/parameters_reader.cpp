@@ -12,35 +12,135 @@
 
 using namespace std;
 
-ParseResult ParametersReader::ReadFromFile(const string& fileName, SimulationParameters& parameters)
+SimulationParameters* ParametersReader::ReadFromFile(const string& fileName)
+{
+	// create new parameters object
+	SimulationParameters * parameters = SimulationParameters::CreateDefault();
+
+	// update it from file
+	UpdateFromFile(fileName, parameters);
+	
+	// confirm success or delete
+	// if (!this->Success())
+	// {
+	// 	delete parameters;
+	// 	return NULL;
+	// }
+
+	// return the ptr
+	return parameters;
+}
+
+SimulationParameters* ParametersReader::ReadFromCmdline(int argc, char* argv[])
+{
+	// create new parameters object
+	SimulationParameters * parameters = SimulationParameters::CreateDefault();
+
+	// update it from cmdline
+	UpdateFromCmdline(argc, argv, parameters);
+	
+	// confirm success or delete
+	// if (!this->Success())
+	// {
+	// 	delete parameters;
+	// 	return NULL;
+	// }
+
+	// return the ptr
+	return parameters;
+}
+
+SimulationParameters* ParametersReader::Read(int argc, char* argv[])
+{
+	// create new parameters object
+	SimulationParameters * parameters = SimulationParameters::CreateDefault();
+
+	// update it from cmdline (so we can get a file to read from)
+	UpdateFromCmdline(argc, argv, parameters);
+
+	//confirm success or delete
+	if (!this->Success())
+	{
+		delete parameters;
+		return NULL;
+	}
+
+	// if we read a file name to read from
+	if (!parameters->File.empty())
+	{
+		// update it from file
+		UpdateFromFile(parameters->File, parameters);
+		
+		//confirm success or delete
+		if (!this->Success())
+		{
+			delete parameters;
+			return NULL;
+		}
+
+		// update it from cmdline again to override whats in file
+		// shouldn't fail if it didn't already
+		//UpdateFromCmdline(argc, argv, parameters);
+	}
+
+	// return the ptr
+	return parameters;
+
+}
+
+ParseResult ParametersReader::Result()
+{
+	return this->result;
+}
+
+ParseStatus ParametersReader::Status()
+{
+	return this->result.Status;
+}
+
+bool ParametersReader::Success()
+{
+	return (this->result.Status == SUCCESS) || (this->result.Status == READY_TO_PARSE);
+}
+
+ParseResult ParametersReader::UpdateFromFile(const string& fileName, SimulationParameters* parameters)
 {
 	if (fileName.empty())
 	{
-		return MESHFILE_NAME_IS_NULL;
+		return (this->result = ParseResult(PARAMETER_FILE_NAME_IS_EMTPY, "The passed file name is empty.  Please specify a file to read from using 'input' option."));
+	}
+
+	if (parameters == NULL)
+	{
+		return (this->result = ParseResult(PARAMETER_OBJ_NULL, "The passed SimulationParameters ptr is null.  Please allocate a new object before trying to update it."));
 	}
 
 	tokenMap map = ParseFileToTokenMap(fileName);
-	ConvertTokenMapToParameters(map, parameters);
-	return this->status;
+	UpdateFromTokenMap(map, parameters);
+	return this->result;
 }
 
-ParseResult ParametersReader::ReadFromCmdline(int argc, char* argv[], SimulationParameters& parameters)
+ParseResult ParametersReader::UpdateFromCmdline(int argc, char* argv[], SimulationParameters* parameters)
 {
 	if (argc < 1)
 	{
-		return ARGS_COUNT_ZERO;
+		return (this->result = ParseResult(ARGS_COUNT_ZERO, "There were no command line argument passed to the program. Please specify at least a parameters file name with 'input' option."));
 	}
 	
 	if (argv == NULL)
 	{
-		return ARGS_MISSING;
+		return (this->result = ParseResult(ARGS_MISSING, "The passed argument array is null.  Please confirm there were command line arguments passed to the program."));
+	}
+
+	if (parameters == NULL)
+	{
+		return (this->result = ParseResult(PARAMETER_OBJ_NULL, "The passed SimulationParameters ptr is null.  Please allocate a new object before trying to update it."));
 	}
 	
 	tokenMap map = ParseCmdlineToTokenMap(argc, argv);
-	ConvertTokenMapToParameters(map, parameters);
-	return this->status;
+	UpdateFromTokenMap(map, parameters);
+	return this->result;
 }
-
 
 
 ParametersReader::tokenMap ParametersReader::ParseCmdlineToTokenMap(int argc, char* argv[])
@@ -70,7 +170,7 @@ ParametersReader::tokenMap ParametersReader::ParseCmdlineToTokenMap(int argc, ch
 		}
 	}
 	
-	this->status = SUCCESS;
+	this->result = SUCCESS;
 	return pairs;
 }
 
@@ -84,7 +184,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	ifstream fin(fileName.c_str());
 	if (!fin.is_open())
 	{
-		this->status = CRITICAL_FAILURE;
+		this->result = ParseResult(CRITICAL_FAILURE, "Could not open file '" + fileName + "'.  Confirm the path the parameters file.");
 		return pairs;
 	}
 	
@@ -103,9 +203,10 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	int num_tokens = jsmn_parse(&parser, js, strlen(js), NULL, 0);
 	
 	// check result
-	if (!HandleParseResult(num_tokens))
+	string err_message;
+	if (!HandleParseResult(num_tokens, err_message))
 	{
-		this->status = CRITICAL_FAILURE;
+		this->result = ParseResult(CRITICAL_FAILURE, err_message);
 		return pairs;
 	}
 	
@@ -117,9 +218,9 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	int result = jsmn_parse(&parser, js, strlen(js), tokens, num_tokens);
 	
 	// check result
-	if (!HandleParseResult(result))
+	if (!HandleParseResult(result, err_message))
 	{
-		this->status = CRITICAL_FAILURE;
+		this->result = ParseResult(CRITICAL_FAILURE, err_message);
 		return pairs;
 	}
 
@@ -165,12 +266,12 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	
 	fin.close();
 	
-	this->status = SUCCESS;
+	this->result = ParseResult(SUCCESS);
 	return pairs;
 }
 
 
-void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationParameters &p)
+void ParametersReader::UpdateFromTokenMap(tokenMap &map, SimulationParameters *p)
 {
 	tokenMapIterator begin = map.begin();
 	tokenMapIterator end = map.end();
@@ -183,56 +284,59 @@ void ParametersReader::ConvertTokenMapToParameters(tokenMap &map, SimulationPara
 		switch(it->first)
 		{
 		case Unknown: 	break;
-		case ParametersFile: p.File = v; break;
-		case Cxxxx: 	p.Material.Cxxxx = ::atof(v.c_str()); break;
-		case Cxxyy: 	p.Material.Cxxyy = ::atof(v.c_str()); break;
-		case Cxyxy: 	p.Material.Cxyxy = ::atof(v.c_str()); break;
-		case Alpha: 	p.Material.Alpha = ::atof(v.c_str()); break;
-		case Density: 	p.Material.Density = ::atof(v.c_str()); break;
-		case Nsteps:	p.Dynamics.Nsteps = ::atoi(v.c_str()); break;
-		case Dt: 		p.Dynamics.Dt = ::atof(v.c_str()); break;
-		case Damp: 		p.Dynamics.Damp = ::atof(v.c_str()); break;
-		case ThreadsPerBlock:		p.Gpu.ThreadsPerBlock = ::atoi(v.c_str()); break;
-		case OutputBase: 	p.Output.Base = v; break;
-		case FrameRate: 	p.Output.FrameRate = ::atoi(v.c_str()); break;
-		case MeshFile:		p.Mesh.File = v; break;
-//		case NodeRankMax: 	p.Mesh.NodeRankMax = ::atoi(v.c_str()); break;
-		case MeshScale: 	p.Mesh.Scale = ::atof(v.c_str()); break;
-		case MeshCaching:	p.Mesh.CachingOn = StrToBool(v); break;
-		case PlanarSideUp: 	p.Initalize.PlanarSideUp = true; break;
-		case HomeoSideUp: 	p.Initalize.PlanarSideUp = false; break;
-		case Amplitude: 	p.Initalize.SqueezeAmplitude = ::atof(v.c_str()); break;
-		case Ratio: 		p.Initalize.SqueezeRatio = ::atof(v.c_str()); break;
-		case SInitial: 		p.Actuation.OrderParameter.SInitial = ::atof(v.c_str()); break;
-		case Smax: 			p.Actuation.OrderParameter.Smax = ::atof(v.c_str()); break;
-		case Smin: 			p.Actuation.OrderParameter.Smin = ::atof(v.c_str()); break;
-		case SRateOn: 		p.Actuation.OrderParameter.SRateOn = ::atof(v.c_str()); break;
-		case SRateOff: 		p.Actuation.OrderParameter.SRateOff = ::atof(v.c_str()); break;
-		case IncidentAngle: p.Actuation.Optics.IncidentAngle = ::atof(v.c_str()); break;
-		case IterPerIllumRecalc: p.Actuation.Optics.IterPerIllumRecalc = ::atoi(v.c_str()); break;
-		case InitNoise: 	p.Initalize.Noise = ::atof(v.c_str()); break;
-		case StartExperiment: p.Dynamics.Start = ::atoi(v.c_str()); break;
-		case StopExperiment: p.Dynamics.Stop = ::atoi(v.c_str()); break;
+		case ParametersFile: p->File = v; break;
+		case Cxxxx: 	p->Material.Cxxxx = ::atof(v.c_str()); break;
+		case Cxxyy: 	p->Material.Cxxyy = ::atof(v.c_str()); break;
+		case Cxyxy: 	p->Material.Cxyxy = ::atof(v.c_str()); break;
+		case Alpha: 	p->Material.Alpha = ::atof(v.c_str()); break;
+		case Density: 	p->Material.Density = ::atof(v.c_str()); break;
+		case Nsteps:	p->Dynamics.Nsteps = ::atoi(v.c_str()); break;
+		case Dt: 		p->Dynamics.Dt = ::atof(v.c_str()); break;
+		case Damp: 		p->Dynamics.Damp = ::atof(v.c_str()); break;
+		case ThreadsPerBlock:		p->Gpu.ThreadsPerBlock = ::atoi(v.c_str()); break;
+		case OutputBase: 	p->Output.Base = v; break;
+		case FrameRate: 	p->Output.FrameRate = ::atoi(v.c_str()); break;
+		case MeshFile:		p->Mesh.File = v; break;
+//		case NodeRankMax: 	p->Mesh.NodeRankMax = ::atoi(v.c_str()); break;
+		case MeshScale: 	p->Mesh.Scale = ::atof(v.c_str()); break;
+		case MeshCaching:	p->Mesh.CachingOn = StrToBool(v); break;
+		case PlanarSideUp: 	p->Initalize.PlanarSideUp = true; break;
+		case HomeoSideUp: 	p->Initalize.PlanarSideUp = false; break;
+		case Amplitude: 	p->Initalize.SqueezeAmplitude = ::atof(v.c_str()); break;
+		case Ratio: 		p->Initalize.SqueezeRatio = ::atof(v.c_str()); break;
+		case SInitial: 		p->Actuation.OrderParameter.SInitial = ::atof(v.c_str()); break;
+		case Smax: 			p->Actuation.OrderParameter.Smax = ::atof(v.c_str()); break;
+		case Smin: 			p->Actuation.OrderParameter.Smin = ::atof(v.c_str()); break;
+		case SRateOn: 		p->Actuation.OrderParameter.SRateOn = ::atof(v.c_str()); break;
+		case SRateOff: 		p->Actuation.OrderParameter.SRateOff = ::atof(v.c_str()); break;
+		case IncidentAngle: p->Actuation.Optics.IncidentAngle = ::atof(v.c_str()); break;
+		case IterPerIllumRecalc: p->Actuation.Optics.IterPerIllumRecalc = ::atoi(v.c_str()); break;
+		case InitNoise: 	p->Initalize.Noise = ::atof(v.c_str()); break;
+		case StartExperiment: p->Dynamics.Start = ::atoi(v.c_str()); break;
+		case StopExperiment: p->Dynamics.Stop = ::atoi(v.c_str()); break;
 		default: break;
 		}
 	} 
 }
 
 
-bool ParametersReader::HandleParseResult(int result)
+bool ParametersReader::HandleParseResult(int result, string& err_msg)
 {
 	switch(result)
 	{
 	case JSMN_ERROR_NOMEM:
-		cout << "JSMN ERROR: Not enough tokens provided" << endl;
+		err_msg = string("JSMN ERROR: Not enough tokens provided");
+		cout << err_msg << endl;		
 		return false;
 		
 	case JSMN_ERROR_INVAL:
-		cout << "JSMN ERROR: Invalid character in parameters file" << endl;	
+		err_msg = string("JSMN ERROR: Invalid character in parameters file");
+		cout << err_msg << endl;	
 		return false;
 		
 	case JSMN_ERROR_PART:
-		cout << "JSMN ERROR: Incomplete JSON packet, expected more bytes" << endl;
+		err_msg = string("JSMN ERROR: Incomplete JSON packet, expected more bytes");
+		cout << err_msg << endl;
 		return false;
 		
 	default:

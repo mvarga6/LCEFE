@@ -49,51 +49,58 @@
 
 int main(int argc, char *argv[])
 {
+	// create a console logger
+	Logger * log = new ConsoleLogger();
+
 	///
 	/// Handle user input
 	///
 
 	// create parameters object
-	SimulationParameters parameters = SimulationParameters::Default();
-
 	ParametersReader * reader = new ParametersReader();
+	SimulationParameters * parameters = reader->Read(argc, argv);
+
+	if (!reader->Success())
+	{
+		printf("%s\n", reader->Result().Message.c_str());
+		return reader->Status();
+	}
+
+	// SimulationParameters parameters = SimulationParameters::Default();
 	
-	// from cmdline
-	ParseResult result = reader->ReadFromCmdline(argc, argv, parameters);
-	if (result != SUCCESS)
-	{
-		return (int)result;
-	}
+	// // from cmdline
+	// ParseResult result = reader->ReadFromCmdline(argc, argv, parameters);
+	// if (result != SUCCESS)
+	// {
+	// 	return (int)result;
+	// }
 		
-	// from file if given
-	if (!parameters.File.empty())
-	{
-		result = reader->ReadFromFile(parameters.File, parameters);
-		if (result != SUCCESS)
-		{
-			return (int)result;
-		}
-	}
+	// // from file if given
+	// if (!parameters.File.empty())
+	// {
+	// 	result = reader->ReadFromFile(parameters.File, parameters);
+	// 	if (result != SUCCESS)
+	// 	{
+	// 		return (int)result;
+	// 	}
+	// }
 	
 	// to write the parameters to console
 	ParametersWriter * writer = new ConsoleWriter();
 	writer->Write(parameters);
-		
-	// create a console logger
-	Logger * log = new ConsoleLogger();
 	
 	// for timing data
 	PerformanceRecorder * recorder = new PerformanceRecorder();;
 	recorder->Create("init")->Start();
 	
 	// for printing to output files
-	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
+	VtkWriter * vtkWriter = new VtkWriter(parameters->Output.Base);
 	
 	///
 	/// Create a Mesh from file
 	///
 
-	Mesh * mesh = new Mesh(&parameters, log);
+	Mesh * mesh = new Mesh(parameters, log);
 
 	bool cachedMesh;
 	if (!mesh->Load(&cachedMesh))
@@ -147,26 +154,26 @@ int main(int argc, char *argv[])
 	mesh->Apply(new SetDirector(director));
 			
 	//print director
-	mesh->Tets->printDirector(parameters.Output.Base);
+	mesh->Tets->printDirector(parameters->Output.Base);
 
 	///
 	/// Create data management objects
 	///
 
 	// Create Host and Device Data blocks with the mesh
-	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, &parameters);
+	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, parameters);
 	DevDataBlock 	* dev 	= host->CreateDevDataBlock();
 	DataProcedure 	* setup = new PushAllToGpu();
 	DataProcedure 	* print = new GetPrintData();
-	DataManager 	* data 	= new DataManager(host, dev, &parameters, setup, print, NULL);
+	DataManager 	* data 	= new DataManager(host, dev, parameters, setup, print, NULL);
 
 	///
 	/// Create the experiment to run
 	///
 
 	Experiment * experiment = new Experiment();
-	real start = parameters.Dynamics.ExperimentStart();
-	real stop = parameters.Dynamics.ExperimentStop();
+	real start = parameters->Dynamics.ExperimentStart();
+	real stop = parameters->Dynamics.ExperimentStop();
 	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
 	experiment->AddComponent("OrderDynamics", orderDynamics);
 
@@ -203,6 +210,6 @@ int main(int argc, char *argv[])
 
 	// Create the simulation running environment
 	SimulationRunner * sim = new SimulationRunner(vtkWriter, log, recorder);
-	sim->RunDynamics(data, physics, &parameters, experiment);
+	sim->RunDynamics(data, physics, parameters, experiment);
     return sim->Exit();
 }

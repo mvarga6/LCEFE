@@ -272,7 +272,7 @@ struct SimulationParameters
 	static SimulationParameters Default() 
 	{
 		SimulationParameters defaults;
-		defaults.File = "params.json";
+		//defaults.File = "params.json";
 		defaults.Material  = MaterialConstants::Default();
 		defaults.Dynamics  = DynamicsParameters::Default();
 		defaults.Gpu 	  = GpuParameters::Default();
@@ -282,6 +282,21 @@ struct SimulationParameters
 		defaults.Actuation = ActuationParameters::Default();
 		return defaults;
 	};
+
+	__host__
+	static SimulationParameters* CreateDefault()
+	{
+		SimulationParameters * defaults = new SimulationParameters();
+		//defaults->File = "params.json";
+		defaults->Material  = MaterialConstants::Default();
+		defaults->Dynamics  = DynamicsParameters::Default();
+		defaults->Gpu 	  = GpuParameters::Default();
+		defaults->Output 	  = OutputParameters::Default();
+		defaults->Mesh	  = MeshParameters::Default();
+		defaults->Initalize = InitialState::Default();
+		defaults->Actuation = ActuationParameters::Default();
+		return defaults;
+	}
 
 	/// Name of the file with parameters 
 	std::string File;

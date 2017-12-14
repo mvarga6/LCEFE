@@ -9,7 +9,7 @@ using namespace std;
 class ParametersWriter
 {
 public:
-	virtual bool Write(SimulationParameters&) = 0;
+	virtual bool Write(SimulationParameters*) = 0;
 };
 
 class JsonWriter : public ParametersWriter
@@ -18,14 +18,14 @@ class JsonWriter : public ParametersWriter
 public:
 
 	JsonWriter(const string&);
-	bool Write(SimulationParameters&);
+	bool Write(SimulationParameters*);
 };
 
 class ConsoleWriter : public ParametersWriter
 {
 	string file;
 public:
-	bool Write(SimulationParameters&);
+	bool Write(SimulationParameters*);
 };
 
 #endif
