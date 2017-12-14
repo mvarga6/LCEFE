@@ -7,7 +7,7 @@
 
 using namespace std;
 
-enum ParseStatus : int
+enum class ParseStatus : int
 {
 	SUCCESS = 0,
 	CRITICAL_FAILURE = 1,
@@ -24,21 +24,12 @@ public:
 	string Message;
 	ParseStatus Status;
 
-	ParseResult()
-	{
-		Status = READY_TO_PARSE;
-	}
+	ParseResult();
+	ParseResult(ParseStatus Status);
+	ParseResult(ParseStatus Status, string message);
+	ParseResult(const ParseResult& copy);
 
-	ParseResult(ParseStatus Status)
-	{
-		Status = Status;
-	}
-
-	ParseResult(ParseStatus Status, string message)
-	{
-		Status = Status;
-		Message = message;
-	}
+	ParseResult& operator=(const ParseResult& rhs);
 };
 
 class ParametersReader

@@ -17,8 +17,6 @@
 //                                                             //
 //=============================================================//
 
-
-//#include "mainhead.h"
 #include "simulation_parameters.h"
 #include "parameters_reader.h"
 #include "parameters_writer.h"
@@ -35,22 +33,15 @@
 #include "simulation_runner.h"
 #include "experiment.h"
 #include "pointer.h"
-
-// these will go away into their own service class
-//#include "rundynamics.h"
-//#include "getAs.h"
-//#include "setn.h"
-//#include "printmeshorder.h"
-//#include "packdata.h"
 #include "errorhandle.h"
-//#include "datatodevice.h"
-//#include "anyerrors.h"
-//#include "exit_program.h"
 
 int main(int argc, char *argv[])
 {
 	// create a console logger
 	Logger * log = new ConsoleLogger();
+
+	// for timing data
+	PerformanceRecorder * recorder = new PerformanceRecorder();;
 
 	///
 	/// Handle user input
@@ -63,42 +54,18 @@ int main(int argc, char *argv[])
 	if (!reader->Success())
 	{
 		printf("%s\n", reader->Result().Message.c_str());
-		return reader->Status();
+		return (int)reader->Status();
 	}
-
-	// SimulationParameters parameters = SimulationParameters::Default();
-	
-	// // from cmdline
-	// ParseResult result = reader->ReadFromCmdline(argc, argv, parameters);
-	// if (result != SUCCESS)
-	// {
-	// 	return (int)result;
-	// }
-		
-	// // from file if given
-	// if (!parameters.File.empty())
-	// {
-	// 	result = reader->ReadFromFile(parameters.File, parameters);
-	// 	if (result != SUCCESS)
-	// 	{
-	// 		return (int)result;
-	// 	}
-	// }
 	
 	// to write the parameters to console
-	ParametersWriter * writer = new ConsoleWriter();
+	ParametersWriter * writer = new LogWriter(log);
 	writer->Write(parameters);
-	
-	// for timing data
-	PerformanceRecorder * recorder = new PerformanceRecorder();;
-	recorder->Create("init")->Start();
-	
-	// for printing to output files
-	VtkWriter * vtkWriter = new VtkWriter(parameters->Output.Base);
 	
 	///
 	/// Create a Mesh from file
 	///
+
+	recorder->Create("init")->Start();
 
 	Mesh * mesh = new Mesh(parameters, log);
 
@@ -207,6 +174,9 @@ int main(int argc, char *argv[])
 	///
 	/// Run a simulation the experiment with given physics
 	///
+
+	// for printing to output files
+	VtkWriter * vtkWriter = new VtkWriter(parameters->Output.Base);
 
 	// Create the simulation running environment
 	SimulationRunner * sim = new SimulationRunner(vtkWriter, log, recorder);

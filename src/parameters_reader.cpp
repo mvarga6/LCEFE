@@ -100,19 +100,19 @@ ParseStatus ParametersReader::Status()
 
 bool ParametersReader::Success()
 {
-	return (this->result.Status == SUCCESS) || (this->result.Status == READY_TO_PARSE);
+	return (this->result.Status == ParseStatus::SUCCESS) || (this->result.Status == ParseStatus::READY_TO_PARSE);
 }
 
 ParseResult ParametersReader::UpdateFromFile(const string& fileName, SimulationParameters* parameters)
 {
 	if (fileName.empty())
 	{
-		return (this->result = ParseResult(PARAMETER_FILE_NAME_IS_EMTPY, "The passed file name is empty.  Please specify a file to read from using 'input' option."));
+		return (this->result = ParseResult(ParseStatus::PARAMETER_FILE_NAME_IS_EMTPY, "The passed file name is empty.  Please specify a file to read from using 'input' option."));
 	}
 
 	if (parameters == NULL)
 	{
-		return (this->result = ParseResult(PARAMETER_OBJ_NULL, "The passed SimulationParameters ptr is null.  Please allocate a new object before trying to update it."));
+		return (this->result = ParseResult(ParseStatus::PARAMETER_OBJ_NULL, "The passed SimulationParameters ptr is null.  Please allocate a new object before trying to update it."));
 	}
 
 	tokenMap map = ParseFileToTokenMap(fileName);
@@ -124,17 +124,17 @@ ParseResult ParametersReader::UpdateFromCmdline(int argc, char* argv[], Simulati
 {
 	if (argc < 1)
 	{
-		return (this->result = ParseResult(ARGS_COUNT_ZERO, "There were no command line argument passed to the program. Please specify at least a parameters file name with 'input' option."));
+		return (this->result = ParseResult(ParseStatus::ARGS_COUNT_ZERO, "There were no command line argument passed to the program. Please specify at least a parameters file name with 'input' option."));
 	}
 	
 	if (argv == NULL)
 	{
-		return (this->result = ParseResult(ARGS_MISSING, "The passed argument array is null.  Please confirm there were command line arguments passed to the program."));
+		return (this->result = ParseResult(ParseStatus::ARGS_MISSING, "The passed argument array is null.  Please confirm there were command line arguments passed to the program."));
 	}
 
 	if (parameters == NULL)
 	{
-		return (this->result = ParseResult(PARAMETER_OBJ_NULL, "The passed SimulationParameters ptr is null.  Please allocate a new object before trying to update it."));
+		return (this->result = ParseResult(ParseStatus::PARAMETER_OBJ_NULL, "The passed SimulationParameters ptr is null.  Please allocate a new object before trying to update it."));
 	}
 	
 	tokenMap map = ParseCmdlineToTokenMap(argc, argv);
@@ -170,7 +170,7 @@ ParametersReader::tokenMap ParametersReader::ParseCmdlineToTokenMap(int argc, ch
 		}
 	}
 	
-	this->result = SUCCESS;
+	this->result = ParseResult(ParseStatus::SUCCESS);
 	return pairs;
 }
 
@@ -184,7 +184,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	ifstream fin(fileName.c_str());
 	if (!fin.is_open())
 	{
-		this->result = ParseResult(CRITICAL_FAILURE, "Could not open file '" + fileName + "'.  Confirm the path the parameters file.");
+		this->result = ParseResult(ParseStatus::CRITICAL_FAILURE, "Could not open file '" + fileName + "'.  Confirm the path the parameters file.");
 		return pairs;
 	}
 	
@@ -206,7 +206,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	string err_message;
 	if (!HandleParseResult(num_tokens, err_message))
 	{
-		this->result = ParseResult(CRITICAL_FAILURE, err_message);
+		this->result = ParseResult(ParseStatus::CRITICAL_FAILURE, err_message);
 		return pairs;
 	}
 	
@@ -220,7 +220,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	// check result
 	if (!HandleParseResult(result, err_message))
 	{
-		this->result = ParseResult(CRITICAL_FAILURE, err_message);
+		this->result = ParseResult(ParseStatus::CRITICAL_FAILURE, err_message);
 		return pairs;
 	}
 
@@ -266,7 +266,7 @@ ParametersReader::tokenMap ParametersReader::ParseFileToTokenMap(const string& f
 	
 	fin.close();
 	
-	this->result = ParseResult(SUCCESS);
+	this->result = ParseResult(ParseStatus::SUCCESS);
 	return pairs;
 }
 
@@ -451,3 +451,36 @@ bool ParametersReader::StrToBool(const string& str)
 	else return false;
 }
 
+
+///
+/// PARSE RESULT CLASS
+///
+
+ParseResult::ParseResult()
+{
+	this->Status = ParseStatus::READY_TO_PARSE;
+}
+
+ParseResult::ParseResult(ParseStatus status)
+{
+	this->Status = status;
+}
+
+ParseResult::ParseResult(ParseStatus status, string message)
+{
+	this->Status = status;
+	this->Message = message;
+}
+
+ParseResult::ParseResult(const ParseResult& copy)
+{
+	this->Message = copy.Message;
+	this->Status = copy.Status;
+}
+
+ParseResult& ParseResult::operator=(const ParseResult& rhs)
+{
+	this->Status = rhs.Status;
+	this->Message = rhs.Message;
+	return (*this);
+}

@@ -2,6 +2,7 @@
 #define __PARAMETERS_WRITER_H__
 
 #include <string>
+#include "logger.h"
 #include "simulation_parameters.h"
 
 using namespace std;
@@ -25,6 +26,14 @@ class ConsoleWriter : public ParametersWriter
 {
 	string file;
 public:
+	bool Write(SimulationParameters*);
+};
+
+class LogWriter : public ParametersWriter
+{
+	Logger * log;
+public:
+	LogWriter(Logger* logger);
 	bool Write(SimulationParameters*);
 };
 
