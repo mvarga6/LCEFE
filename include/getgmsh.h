@@ -13,6 +13,7 @@
 #include "extlib/gmsh_io/gmsh_io.hpp"
 #include "classstruct.h"
 #include "tri_array.h"
+#include "element_array.h"
 #include "parameters.h"
 
 using namespace std;
@@ -223,8 +224,16 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 	}
 
 	// Read elements (actually tets and triangle only)
+
 	
-	int type, tet, tri;
+	
+	//
+	// TODO: Use 'ntags' once TetArray and TriArray
+	// are properly implementing MeshElementArray
+	//
+	// int ntags;
+
+	int type, ntags, tet, tri;
 	level = 0;
 	for( ; ; )
 	{
@@ -253,10 +262,24 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 				type = s_to_i4(text, length, ierror); //read type
 				text.erase(0, length);
 
-				for (k = 0; k < 3; k++){ //read garbage
-					s_to_i4(text, length, ierror); // read indx
+				for (k = 0; k < 3; k++){ //read tags
+					s_to_i4(text, length, ierror); // read tag
 					text.erase(0, length);
 				}
+
+				//
+				// TODO: Use this block once TetArray and TriArray
+				// are properly implementing MeshElementArray
+				//
+				// ntags = s_to_i4(text, length, ierror); //read # of tags
+				// text.erase(0, length);
+				//
+				// int * tags = new int[ntags];
+				// for (int t = 0; t < ntags; t++) // read tags
+				// {
+				// 	tags[t] = s_to_i4(text, length, ierror);
+				// 	text.erase(0, length);
+				// }
 
 				if (type == (int)TETRAHEDRON) //if it is a tet
 				{ 
@@ -280,6 +303,24 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 					}
 					tri++; // next tri
 				}
+				//
+				// TODO: Use this block once TetArray and TriArray
+				// are properly implementing MeshElementArray
+				//
+				// else if ((ElementType)type == TriTest->type)
+				// {
+				// 	int node_idx[3]; // container for node indices
+				// 	for (int k = 0; k < 3; k++) // read node indices
+				// 	{
+				// 		node_idx[k] = s_to_i4(text, length, ierror);
+				// 		text.erase(0, length);
+				// 	}
+				//
+				// 	// add an element to array
+				// 	TriTest->add_element(node_idx, ntags, tags);
+				// 	delete[] tags; // clear tmp memory
+				// 	tri++;
+				// }
 			}
 		}
 	}
