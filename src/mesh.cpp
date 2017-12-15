@@ -106,16 +106,18 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	{
 		delete this->Tets;
 		delete this->Nodes;
+		delete this->Tris;
 	}
 	
 	// allocate the containers for nodes and tets
 	this->Tets = new TetArray(dimensions->Ntets);
-	this->Nodes = new NodeArray(dimensions->Nnodes);	
+	this->Nodes = new NodeArray(dimensions->Nnodes);
+	this->Tris = new TriArray(dimensions->Ntris);	
 	
 	// read the positions of nodes and tet indices
 	try
 	{
-		(*dimensions) = get_gmsh(meshFile, *Nodes, *Tets, this->params->Mesh.Scale);
+		(*dimensions) = get_gmsh(meshFile, *Nodes, *Tets, *Tris,this->params->Mesh.Scale);
 	}
 	catch (const std::exception& e)
 	{

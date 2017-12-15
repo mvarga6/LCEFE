@@ -49,7 +49,7 @@ public:
 	real get_S(int i);
 	real max(int cord);
 	real min(int cord);
-	  void printDirector(std::string);
+	void printDirector(std::string);
 	  
 	///
 	/// Method to reorder the tets
