@@ -17,18 +17,6 @@
 
 using namespace std;
 
-enum ElementType : int
-{
-	LINE = 1,
-	TRIANGLE = 2,
-	QUADRANGLE = 3,
-	TETRAHEDRON = 4,
-	HEXAHEDRON = 5,
-	PRISM = 6,
-	PYRAMID = 7,
-	POINT = 15
-};
-
 struct MeshDimensions
 {
 	int Ntets, Nnodes, Ntris;
@@ -148,8 +136,8 @@ static MeshDimensions get_gmsh_dim(string fileName)
 				type = s_to_i4(text, length, ierror); //read type
 				text.erase(0, length);
 
-				if (type == TRIANGLE) tri_num++;
-				if (type == TETRAHEDRON) tet_num++; //count a tet
+				if (type == (int)TRIANGLE) tri_num++;
+				if (type == (int)TETRAHEDRON) tet_num++; //count a tet
 			}
 		}
 	}
@@ -270,7 +258,7 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 					text.erase(0, length);
 				}
 
-				if (type == TETRAHEDRON) //if it is a tet
+				if (type == (int)TETRAHEDRON) //if it is a tet
 				{ 
 					for (k = 0; k < 4; k++)
 					{ 
@@ -281,7 +269,7 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 					}
 					tet++; // next tet
 				}
-				else if (type == TRIANGLE)
+				else if (type == (int)TRIANGLE)
 				{
 					for (k = 0; k < 3; k++)
 					{
