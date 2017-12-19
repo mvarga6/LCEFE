@@ -16,9 +16,13 @@ enum ElementType : int
 template<size_t DoF>
 class MeshElementArray
 {
+private:
+    static const size_t Ntags = 2;
+
 protected:
     int add_idx;        // the idx of the next add
-    void assert_add_access(int idx); // makes sure we're not adding beyond size
+    virtual void assert_idx_access(int idx); // makes sure we're not adding beyond size
+    void reset_element(int idx);
 
 public:
     int **Elements;     // size x DoF
@@ -31,16 +35,28 @@ public:
     ///
 
     MeshElementArray(const int N, ElementType type);
+    ~MeshElementArray();
 
     ///
     /// Allocated the element data dimension and assigns values to it
     ///
 
     // just with element node indices
-    virtual bool add_element(int node_idx[DoF]);
+    void push_back(int node_idx[DoF]);
 
     // with element node indices and group tags
-    bool add_element(int node_idx[DoF], int ntags, int *tags);
+    void push_back(int node_idx[DoF], int ntags, int *tags);
+
+    // remove the last element
+    void pull_back();
+
+    // returns pointer to nodes of element idx
+    const int* element_at(int idx);
+
+    // return tags for element idx
+    const int* tags_for(int idx);
+
+    virtual void swap(int A_idx, int B_idx);
 };
 
 ///
@@ -60,56 +76,138 @@ MeshElementArray<DoF>::MeshElementArray(const int N, ElementType type)
     this->type = type;
     this->add_idx = 0;
 
-    // allocate outer dimensions only
+    // allocate outer
     this->Elements = new int*[size];
     this->Tags     = new int*[size];
+    for (int i = 0; i < size; i++)
+    {
+        // allocate DoF inner elements
+        this->Elements[i] = new int[DoF];
+        this->Tags[i] = new int[Ntags]; // assume two tags per item
+        reset_element(i);
+    }    
 }
 
 
 template<size_t DoF>
-bool MeshElementArray<DoF>::add_element(int node_idx[DoF])
+MeshElementArray<DoF>::~MeshElementArray()
 {
-    assert_add_access(add_idx);
+    // clear inner
+    for (int i = 0; i < size; i++)
+    {
+        delete[] this->Elements[i];
+        delete[] this->Tags[i];
+    }
+
+    // clear outer
+    delete[] this->Elements;
+    delete[] this->Tags;
+}
+
+
+template<size_t DoF>
+void MeshElementArray<DoF>::push_back(int node_idx[DoF])
+{
+    assert_idx_access(add_idx);
     
-    // alloc and assign elements
-    this->Elements[add_idx] = new int[DoF];
+    // assign elements
     for (int j = 0; j < DoF; j++)
     {
         this->Elements[add_idx][j] = node_idx[j];
     }
     add_idx++; // increment for next add
-    return true;
 }
 
 
 template<size_t DoF>
-bool MeshElementArray<DoF>::add_element(int node_idx[DoF], int ntags, int *tags)
+void MeshElementArray<DoF>::push_back(int node_idx[DoF], int ntags, int *tags)
 {
-    assert_add_access(add_idx);
+    assert_idx_access(add_idx);
 
-    // alloc and assign elements
-    this->Elements[add_idx] = new int[DoF];
+    // assign elements
     for (int j = 0; j < DoF; j++)
     {
         this->Elements[add_idx][j] = node_idx[j];
     }
 
-    // alloc and assign tags
-    this->Tags[add_idx] = new int[ntags];
-    for (int j = 0; j < ntags; j++)
+    // assign tags
+    for (int j = 0; j < std::min((size_t)ntags, Ntags); j++)
     {
         this->Tags[add_idx][j] = tags[j];
     }
 
     add_idx++; // increment for next add
-    return true;
 }
 
 
 template<size_t DoF>
-void MeshElementArray<DoF>::assert_add_access(int idx)
+void MeshElementArray<DoF>::pull_back()
 {
-    if (idx >= this-> size)
+    add_idx--; // ptr to last element
+    reset_element(add_idx); // reset it
+}
+
+
+template<size_t DoF>
+const int* MeshElementArray<DoF>::element_at(int idx)
+{
+    assert_idx_access(idx);
+    return this->Elements[idx];
+}
+
+
+template<size_t DoF>
+const int* MeshElementArray<DoF>::tags_for(int idx)
+{
+    assert_idx_access(idx);
+    return this->Tags[idx];
+}
+
+
+template<size_t DoF>
+void MeshElementArray<DoF>::swap(int A_idx, int B_idx)
+{
+    assert_idx_access(A_idx);
+    assert_idx_access(B_idx);
+
+    // swap by swapping pointer values
+    int* _tmp = this->Elements[A_idx];
+    this->Elements[A_idx] = this->Elements[B_idx];
+    this->Elements[B_idx] = _tmp;
+
+    _tmp = this->Tags[A_idx];
+    this->Tags[A_idx] = this->Tags[B_idx];
+    this->Tags[B_idx] = _tmp;
+}
+
+
+///
+/// PROTECTED METHODS
+///
+
+template<size_t DoF>
+void MeshElementArray<DoF>::reset_element(int idx)
+{
+    assert_idx_access(idx);
+
+    // -1 is signature of unitizalized
+    for (int j = 0; j < DoF; j++)
+    {
+        this->Elements[idx][j] = -1;
+    }
+
+    // Max # of tags is set by static const int
+    for (int j = 0; j < Ntags; j++)
+    {
+        this->Tags[idx][j] = -1;
+    }
+}
+
+
+template<size_t DoF>
+void MeshElementArray<DoF>::assert_idx_access(int idx)
+{
+    if (idx >= this->size)
         throw std::runtime_error("MeshElementArray size is too small to add another element.");
 }
 

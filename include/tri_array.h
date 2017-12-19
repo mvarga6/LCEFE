@@ -3,8 +3,9 @@
 
 #include "defines.h"
 #include "node_array.h"
+#include "element_array.h"
 
-class TriArray
+class TriArray : public MeshElementArray<3>
 {
 
 public:
@@ -12,7 +13,7 @@ public:
     real **Com;
     real **Normal;
     real *Area;
-    size_t size;
+    //size_t size;
     real TotalArea;
 
     TriArray(const int N);
@@ -22,39 +23,39 @@ public:
     /// Setters/Getters for node indices
     ///
 
-    void set_nodes(int tri_idx, int n1_idx, int n2_idx, int n3_idx);
-    void set_node_idx(int tri_idx, int n_i, int node_idx);
-    int& node_idx(int tri_idx, int n_i);
+    void set_nodes(int idx, int n1_idx, int n2_idx, int n3_idx, int tag = 1);
+    void set_node_idx(int idx, int n_i, int node_idx);
+    int& node_idx(int idx, int n_i);
 
     ///
     /// Setters/Getters for triangle positions
     ///
 
-    void set_com(int tri_idx, real comx, real comy, real comz);
-    void set_com(int tri_idx, int dim, real com_d);
-    real& com(int tri_idx, int dim);
+    void set_com(int idx, real comx, real comy, real comz);
+    void set_com(int idx, int dim, real com_d);
+    real& com(int idx, int dim);
 
     ///
     /// Setters/Getters for triangle normals
     ///
 
-    void set_normal(int tri_idx, real N_x, real N_y, real N_z);
-    void set_normal(int tri_idx, int dim, real N_d);
-    real& normal(int tri_idx, int dim);
+    void set_normal(int idx, real N_x, real N_y, real N_z);
+    void set_normal(int idx, int dim, real N_d);
+    real& normal(int idx, int dim);
 
     ///
     /// Setters/Getters for triangle areas
     ///
 
-    void set_area(int tri_idx, real area);
-    real& area(int tri_idx);
+    void set_area(int idx, real area);
+    real& area(int idx);
 
     ///
     /// Helper methods
     ///
 
-    real dist(int triA_idx, int triB_idx);
-    void swap(int triA_idx, int triB_idx);
+    real dist(int A_idx, int B_idx);
+    void swap(int A_idx, int B_idx);
     void reorder(std::vector<int> const &order);
 
     ///
@@ -62,8 +63,8 @@ public:
     /// node positions for calculates
     ///
 
-    real update_total_area(real *nodePositions);
-    real update_total_area(NodeArray *nodes);
+    real update_areas(real *nodePositions);
+    real update_areas(NodeArray *nodes);
     void update_normals(real *nodePositions);
     void update_normals(NodeArray *nodes);
     void update_coms(real *nodePositions);

@@ -1446,36 +1446,84 @@ inline __device__ __host__ float4 smoothstep(float4 a, float4 b, float4 x)
     return (y*y*(make_float4(3.0f) - (make_float4(2.0f)*y)));
 }
 
-//====================================================
-// calculate the volume of a tetrahedra
-//====================================================
-inline __device__ __host__
-real tetVolume(real x1, real y1, real z1
-			   ,real x2, real y2, real z2
-			   ,real x3, real y3, real z3
-			   ,real x4, real y4, real z4){
+namespace math
+{
 
-
-real a11=x1-x2;
-real a12=y1-y2;
-real a13=z1-z2;
-
-real a21=x2-x3;
-real a22=y2-y3;
-real a23=z2-z3;
-
-real a31=x3-x4;
-real a32=y3-y4;
-real a33=z3-z4;
-real vol0=a11*a22*a33+a12*a23*a31+a13*a21*a32;
-      vol0=vol0-a13*a22*a31-a11*a23*a32-a12*a21*a33;
-      vol0=vol0/6.0;
-
-return abs(vol0);
-
-	
-
-}//tet volume
+    ///
+    /// calculate the volume of a tetrahedra
+    inline __device__ __host__
+    real tetVolume(real x1, real y1, real z1
+    			   ,real x2, real y2, real z2
+    			   ,real x3, real y3, real z3
+    			   ,real x4, real y4, real z4){
+                
+        real a11=x1-x2;
+        real a12=y1-y2;
+        real a13=z1-z2;
+                
+        real a21=x2-x3;
+        real a22=y2-y3;
+        real a23=z2-z3;
+                
+        real a31=x3-x4;
+        real a32=y3-y4;
+        real a33=z3-z4;
+        real vol0=a11*a22*a33+a12*a23*a31+a13*a21*a32;
+              vol0=vol0-a13*a22*a31-a11*a23*a32-a12*a21*a33;
+              vol0=vol0/6.0;
+                
+        return abs(vol0);
+    }//tet volume
+    
+    inline __device__ __host__
+    real dist(real ax, real ay, real az,
+              real bx, real by, real bz)
+    {
+        const real dx = bx - ax;
+        const real dy = by - ay;
+        const real dz = bz - az;
+        return (real)sqrt(dx*dx + dy*dy + dz*dz);
+    }
+    
+    inline __device__ __host__
+    void disp(real ax, real ay, real az,
+              real bx, real by, real bz,
+              real r[3])
+    {
+        r[0] = bx - ax;
+        r[1] = by - ay;
+        r[2] = bz - az;
+    }
+    
+    inline __device__ __host__ 
+    real triangle_area(real ax, real ay, real az,
+                       real bx, real by, real bz,
+                       real cx, real cy, real cz)
+    {
+        real rab = dist(ax, ay, az, bx, by, bz);
+        real rbc = dist(bx, by, bz, cx, cy, cz);
+        real rac = dist(ax, ay, az, cx, cy, cz);
+        real P = (rab + rbc + rac) / (real)2;
+        return sqrt(P*(P-rab)*(P-rbc)*(P-rac));
+    }
+    
+    inline __device__ __host__
+    void triangle_normal(real ax, real ay, real az,
+                         real bx, real by, real bz,
+                         real cx, real cy, real cz,
+                         real N[3])
+    {
+        real rab[3], rac[3];
+        disp(ax, ay, az, bx, by, bz, rab);
+        disp(ax, ay, az, cx, cy, cz, rac);
+        float3 R1 = make_float3(rab[0], rab[1], rab[2]);
+        float3 R2 = make_float3(rac[0], rac[1], rac[2]);
+        float3 _N = normalize(cross(R1, R2));
+        N[0] = _N.x;
+        N[1] = _N.y;
+        N[2] = _N.z;
+    }
+}
 
 #endif
 

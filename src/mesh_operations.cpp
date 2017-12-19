@@ -335,7 +335,7 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 			n1 = Tets->get_nab(t,1);
 			n2 = Tets->get_nab(t,2);
 			n3 = Tets->get_nab(t,3);
-			tempVol = tetVolume( Nodes->get_pos(n0,0)
+			tempVol = math::tetVolume( Nodes->get_pos(n0,0)
 								,Nodes->get_pos(n0,1)
 								,Nodes->get_pos(n0,2)
 								,Nodes->get_pos(n1,0)

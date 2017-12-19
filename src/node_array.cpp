@@ -1,4 +1,5 @@
 #include "node_array.h"
+#include "helpers_math.h"
 #include <stdio.h>
 
 NodeArray::NodeArray(int l){
@@ -239,4 +240,27 @@ void NodeArray::deform(const real lambda[3]){
 			MyPos[n*3+c] = shifted_scaled;
 		}
 	}
+}
+
+
+real NodeArray::dist(int i, int j)
+{
+	const real dx = MyPos[j*3 + 0] - MyPos[i*3 + 0];
+	const real dy = MyPos[j*3 + 1] - MyPos[i*3 + 1];
+	const real dz = MyPos[j*3 + 2] - MyPos[i*3 + 2];
+	return (real)sqrt(dx*dx + dy*dy + dz*dz);
+	//return math::dist(MyPos[i*3 + 0], MyPos[i*3 + 1], MyPos[i*3 + 2],
+	//	MyPos[j*3 + 0], MyPos[j*3 + 1], MyPos[j*3 + 2]);
+}
+
+
+void NodeArray::disp(int i, int j, real r[3])
+{
+	r[0] = MyPos[j*3 + 0] - MyPos[i*3 + 0];
+	r[1] = MyPos[j*3 + 1] - MyPos[i*3 + 1];
+	r[2] = MyPos[j*3 + 2] - MyPos[i*3 + 2];
+	real mag = (real)sqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);
+	r[0] /= mag; r[1] /= mag; r[2] /= mag;
+	//return math::disp(MyPos[i*3 + 0], MyPos[i*3 + 1], MyPos[i*3 + 2],
+	//	MyPos[j*3 + 0], MyPos[j*3 + 1], MyPos[j*3 + 2], r);
 }

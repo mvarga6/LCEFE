@@ -57,6 +57,15 @@ public:
 	///
 	/// Method to reorder the nodes
 	void reorder(std::vector<int> const &order);
+
+	///
+	/// Distance between two nodes
+	real dist(int i, int j);
+
+	///
+	/// Displacement vector between two nodes
+	void disp(int i, int j, real r[3]);
+
 };
 
 #endif
