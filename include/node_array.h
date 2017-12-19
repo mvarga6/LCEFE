@@ -16,6 +16,7 @@ public:
 	real *MyForce;
 	int *NewNum;
 	int *totalRank;
+	int *rankInTris;
 	real *volume;
 	int size;
 
@@ -41,6 +42,24 @@ public:
 	void normalize_volume(real realVolume);
 	real max_point(int cord);
 	real min_point(int cord);
+
+	///
+	/// Increment rank of ith node for tets its in
+	void increment_rank_wrt_tets(int i);
+
+	///
+	/// Increment rank of ith node for tris its in
+	void increment_rank_wrt_tris(int i);
+
+	///
+	/// returns the rank of ith node w.r.t. tetrahedra
+	/// that contain it
+	int get_rank_wrt_tets(int i);
+
+	///
+	/// returns the rank of ith node w.r.t. triangles
+	/// that contain it
+	int get_rank_wrt_tris(int i);
 
 	///
 	/// Method to translate the nodes in Euclidean space

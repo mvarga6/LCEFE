@@ -7,15 +7,18 @@
 #include "kernel_constants.h"
 #include "update_r.h"
 #include "physics_model.h"
+#include "texdef.h"
+#include "helpers_math.h"
 
 __constant__ PackedParameters Parameters;
 
-__global__ void ForceKernel(DevDataBlock data, real t)
+__global__ void BulkForceKernel(DevDataBlock data, real t)
 {
 	int Ashift = data.Apitch/sizeof(real);
 	int dFshift = data.dFpitch/sizeof(real);
 	int vshift = data.vpitch/sizeof(real);
 	int TTNshift = data.TetToNodepitch/sizeof(int);
+	int TNRshift = data.TetNodeRankpitch/sizeof(int);
 	real Ainv[16];
 	real r[12];
 	real r0[12];
@@ -32,7 +35,13 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 	//if thread executed has a tetrahedra
 	if(tid < data.Ntets)
 	{ 
-
+#ifdef __DEBUG_FORCE__
+		if (tid == __DEBUG_FORCE__)
+		{
+			printf("\n -- force_kernel --");
+			printf("\n\tTTNshift: %d TNRshift: %d", TTNshift, TNRshift);
+		}
+#endif
 
 		//========================================
 		//read in all the data that will not change 
@@ -48,7 +57,7 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 			Ainv, r0, r, vlocal,
 			data.A, Ashift,
 			data.v, vshift,
-			data.TetNodeRank,
+			data.TetNodeRank, TNRshift,
 			data.TetToNode, TTNshift,
 			data.Ntets
 		);
@@ -75,14 +84,13 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 		//update kernal
 		//========================================
 		//sendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
-		DeviceHelpers::SendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol, tid);
+		DeviceHelpers::SendTetForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol, tid);
 
 #ifdef __DEBUG_FORCE__
 		
 		// debugging info
 		if (tid == __DEBUG_FORCE__)
 		{
-			printf("\n -- force_kernel --")
 			printf("\n\tTime = %f", t);
 			printf("\n\tMyVol = %f", myVol);
 			printf("\n\n\tF[] = ");
@@ -100,6 +108,79 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 	}
 
 }
+
+
+__global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
+{
+	//int dFshift = data.dFpitch/sizeof(real);
+	int TTNshift = data.TriToNodepitch/sizeof(int);
+	int NormShift = data.TriNormalpitch/sizeof(real);
+	//int TNRshift = data.TriNodeRankpitch/sizeof(int);
+	real r[3][3]; // positions of the 3 nodes in triangle
+	//real F[9]={0.0}; // forces on those nodes
+	int node_idx[3]; // indices of the 3 nodes in triangle
+	//int node_rank[3]; // rank of those 3 nodes (to write forces)
+	//real area; // area of triangle
+	//real normal[3]; // normal vector of triangle
+
+	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	if (tid < data.Ntris)
+	{
+		///
+		/// Read global to local
+		///
+
+		// read global to local
+		for (int n = 0; n < 3; n++)
+		{
+			node_idx[n] = data.TriToNode[TTNshift*n + tid];
+			//node_rank[n] = data.TriNodeRank[TNRshift*n + tid];
+			for (int d = 0; d < 3; d++)
+			{
+				r[n][d] = tex2D(texRef_r, node_idx[n], d);
+			}
+		}
+
+		///
+		/// Calculate volume made with triangle and center
+		///
+		real enclosedVolumeContibution =
+		math::tetVolume(
+			r[0][0], r[0][1], r[0][2],
+			r[1][0], r[1][1], r[1][2],
+			r[2][0], r[2][1], r[2][2],
+			center.x, center.y, center.z
+		);
+
+		// calculate area
+		real area =
+		math::triangle_area(
+			r[0][0], r[0][1], r[0][2],
+			r[1][0], r[1][1], r[1][2],
+			r[2][0], r[2][1], r[2][2]
+		);
+		
+		// calculate normal of triangle
+		real normal[3]; // normal vector of triangle
+		math::triangle_normal(
+			r[0][0], r[0][1], r[0][2],
+			r[1][0], r[1][1], r[1][2],
+			r[2][0], r[2][1], r[2][2],
+			normal
+		);
+
+		///
+		/// Set Global Memory
+		///
+
+		data.EnclosedVolume[tid] = enclosedVolumeContibution;
+		data.TriArea[tid] = area;
+		data.TriNormal[tid + 0*NormShift] = normal[0];
+		data.TriNormal[tid + 1*NormShift] = normal[1];
+		data.TriNormal[tid + 2*NormShift] = normal[2];
+	}
+}
+
 
 
 __global__ void UpdateKernel(DevDataBlock data)

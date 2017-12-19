@@ -8,6 +8,7 @@ TriArray::TriArray(const int N) : MeshElementArray(N, TRIANGLE)
     //this->size = N;
     //this->NodeIdx = new int*[size];
     this->NodeIdx = this->Elements; // a TriArray proxy for elments array
+    this->NodeRank = new int*[size];
     this->Com = new real*[size];
     this->Normal = new real*[size];
     this->Area = new real[size];
@@ -16,12 +17,14 @@ TriArray::TriArray(const int N) : MeshElementArray(N, TRIANGLE)
     for (int i = 0; i < size; i++)
     {
         //this->NodeIdx[i] = new int[3];
+        this->NodeRank[i] = new int[3];
         this->Com[i] = new real[3];
         this->Normal[i] = new real[3];
         this->Area[i] = (real)0;
         for(int j = 0; j < 3; j++)
         {
             //this->NodeIdx[i][j] = -1;
+            this->NodeRank[i][j] = 0;
             this->Com[i][j] = (real)0;
             this->Normal[i][j] = (real)0;
         }
@@ -67,6 +70,19 @@ int& TriArray::node_idx(int idx, int n_i)
 {
     assert_property_access(idx, n_i);
     return this->NodeIdx[idx][n_i];
+}
+
+
+void TriArray::set_rank(int idx, int n_i, int rank)
+{
+    assert_property_access(idx, n_i);
+    this->NodeRank[idx][n_i] = rank;
+}
+
+int& TriArray::rank(int idx, int n_i)
+{
+    assert_property_access(idx, n_i);
+    return this->NodeRank[idx][n_i];
 }
 
 

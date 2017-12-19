@@ -66,12 +66,16 @@ public:
 	bool Exit();
 
 	///
-	/// Gets the info required to launch a kernel at the tet level
+	/// Gets the info required to launch a kernel scoped to system tetrahedra
 	KernelLaunchDimensions TetKernelDimensions();
 
 	///
-	/// Gets the info required to launch a kernel at the node level
+	/// Gets the info required to launch a kernel scoped to system nodes
 	KernelLaunchDimensions NodeKernelDimensions();
+
+	///
+	/// Get the info require to launch a kernel scoped to system triangles
+	KernelLaunchDimensions TriKernelDimensions();
 
 	///
 	/// Returns the block of data ptrs on the gpu
@@ -80,6 +84,9 @@ public:
 	///
 	/// Returns the block of data ptr on the cpu
 	HostDataBlock* HostData();
+
+private:
+	KernelLaunchDimensions CalculateDimensions(int threadsNeeded);
 };
 
 #endif

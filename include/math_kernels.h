@@ -12,5 +12,6 @@
 __global__ void Add(real *ptr, const real value, int N);
 __global__ void Add(int *ptr, const int value, int N);
 __global__ void Add(real *ptr, real *values, int N);
+//__global__ void ReduceSum(real * __restrict__ input, real * __restrict__ reduced);
 
 #endif

@@ -11,7 +11,15 @@
 /// -write forces to appropiate location in node
 ///	 force container
 ///================================================
-__global__ void ForceKernel(DevDataBlock data, real t);
+__global__ void BulkForceKernel(DevDataBlock data, real t);
+
+
+///================================================
+/// -calculate all forces and energies on surface nodes
+/// -write forces to appropiate location in node
+///  force container
+///================================================
+__global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center);
 
 ///================================================
 /// -read in all forces on each node and sum them

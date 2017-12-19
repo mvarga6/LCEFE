@@ -10,7 +10,8 @@
 /// Uncomment to get explicit 
 /// debugging information from
 /// within kenel execution
-// #define __DEBUG_FORCE__ 		10
+#define __DEBUG_FORCE__ 		1000
+//#define __DEBUG_READ_GLOBAL_MEMORY__ 10
 // #define __DEBUG_SEND_FORCE__	20
 // #define __DEBUG_SUM_FORCE__ 	10
 // #define __DEBUG_UPDATE_V__ 	10

@@ -9,7 +9,7 @@
 #include "helpers_math.h"
 #include "getgmsh.h"
 
-OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	try
 	{
@@ -65,7 +65,7 @@ MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(c
 	purge();         //free up memory in random number generator
 }
 
-OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	try
 	{
@@ -136,15 +136,15 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 }
 
 
-OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	try
 	{
 		log->Msg("Running Reassign-Indices ...");
 		int Ntets = Tets->size;
 		int Nnodes = Nodes->size;
+		int Ntris = Tris->size;
 
-		int nrank;
 		//set all new node numbers negative so we can 
 		//see when one is replaced and not replace it again
 		//this should account for all the redundancies
@@ -161,41 +161,83 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		//in memory and should keep nodes which share 
 		//tetrahedra also close in memory
 		log->Msg("Setting new node numbers: ");
-		int newi = 0;
-		int i;
+		int new_idx = 0;
+		int node_idx;
+		int node_rank;
 		for(int t = 0; t < Ntets; t++)
 		{
 			for (int tn = 0; tn < 4; tn++)
 			{
-				i = Tets->get_nab(t, tn);
-				if(Nodes->get_newnum(i) < 0)
+				node_idx = Tets->get_nab(t, tn);
+				if (Nodes->get_newnum(node_idx) < 0)
 				{
-					Nodes->set_newnum(i, newi);
-					newi++;
+					Nodes->set_newnum(node_idx, new_idx);
+					new_idx++;
 				}
 			}
 		}
 		log->StaticMsg("Setting new node numbers: complete");
 
 	
-		//now reassign each tetrahedra to neighbors
-		//in the new arrangement of nodes
-		log->Msg("Assigning nodes to tetrahedra: ");
+		// now reassign each tetrahedra to neighbors
+		// in the new arrangement of nodes
+		log->Msg("Assigning new node config to tetrahedra: ");
 		std::vector<int> newOrder(Nnodes);
-		for(int t = 0;t < Ntets; t++)
+		for(int t = 0; t < Ntets; t++)
 		{
-			for (int tn = 0; tn < 4; tn++)
+			for (int n = 0; n < 4; n++)
 			{
-				i = Tets->get_nab(t, tn);
-				nrank = Nodes->get_totalRank(i);
-				Tets->set_nabsRank(t, tn, nrank);
-				Nodes->add_totalRank(i, 1);
-				Tets->set_nabs(t, tn, Nodes->get_newnum(i));
-				newOrder.at(i) = Nodes->get_newnum(i);
+				// get node_idx for tn-th node in tet t
+				node_idx = Tets->get_nab(t, n);
+
+				// get rank of this node wrt tetrhedra
+				node_rank = Nodes->get_rank_wrt_tets(node_idx);
+
+				// set rank in tet array
+				Tets->set_nabsRank(t, n, node_rank);
+
+				// increment the rank of node wrt to tets
+				Nodes->increment_rank_wrt_tets(node_idx);
+
+				// set the node_idx for the n-th node of
+				// the t-th tet as the new node number
+				Tets->set_nabs(t, n, Nodes->get_newnum(node_idx));
+
+				// record the new node_idx for reordering data later
+				newOrder.at(node_idx) = Nodes->get_newnum(node_idx);
 			}
 		}
-		
-		log->StaticMsg("Assigning nodes to tetrahedra: complete");
+		log->StaticMsg("Assigning new node config to tetrahedra: complete");
+
+		// reassign each triangle to neighbors
+		// in the new arrangement of nodes
+		log->Msg("Assigning new node config to triangles: ");
+		for (int t = 0; t < Ntris; t++)
+		{
+			for (int n = 0; n < 3; n++)
+			{
+				// get the node index
+				node_idx = Tris->node_idx(t, n);
+
+				// get the rank of this node wrt triangles
+				node_rank = Nodes->get_rank_wrt_tris(t);
+
+				// set the rank of n-th node in t-th triangle
+				Tris->set_rank(t, n, node_rank);
+
+				// increment the rank of node wrt to triangles
+				Nodes->increment_rank_wrt_tris(node_idx);
+
+				// set the node_idx for the n-th node of
+				// the t-th tri as the new node number
+				Tris->set_node_idx(t, n, Nodes->get_newnum(node_idx));
+			}
+		}
+		log->StaticMsg("Assigning new node config to triangles: complete");
+
+		///
+		/// Now actually reorder the node data into the new order
+		///
 
 		log->Msg("Reordering nodes in this configuration: ");
 		Nodes->reorder(newOrder);
@@ -261,7 +303,7 @@ SetDirector::SetDirector(DirectorField *director)
 }
 
 
-OperationResult SetDirector::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult SetDirector::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	try
 	{
@@ -301,7 +343,7 @@ OperationResult SetDirector::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 }
 
 
-OperationResult CalculateAinv::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult CalculateAinv::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	try
 	{
@@ -318,11 +360,11 @@ OperationResult CalculateAinv::Run(TetArray *Tets, NodeArray *Nodes, Logger *log
 }
 
 
-OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult CalculateProperties::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	try
 	{
-		log->Msg("Calculating tetrahedra volumes...");
+		log->Msg("Calculating tetrahedra volumes: ");
 	
 		real tempVol;
 		int n0, n1, n2, n3;
@@ -335,24 +377,40 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 			n1 = Tets->get_nab(t,1);
 			n2 = Tets->get_nab(t,2);
 			n3 = Tets->get_nab(t,3);
-			tempVol = math::tetVolume( Nodes->get_pos(n0,0)
-								,Nodes->get_pos(n0,1)
-								,Nodes->get_pos(n0,2)
-								,Nodes->get_pos(n1,0)
-								,Nodes->get_pos(n1,1)
-								,Nodes->get_pos(n1,2)
-								,Nodes->get_pos(n2,0)
-								,Nodes->get_pos(n2,1)
-								,Nodes->get_pos(n2,2)
-								,Nodes->get_pos(n3,0)
-								,Nodes->get_pos(n3,1)
-								,Nodes->get_pos(n3,2));
+			tempVol = math::tetVolume( 
+						Nodes->get_pos(n0,0)
+						,Nodes->get_pos(n0,1)
+						,Nodes->get_pos(n0,2)
+						,Nodes->get_pos(n1,0)
+						,Nodes->get_pos(n1,1)
+						,Nodes->get_pos(n1,2)
+						,Nodes->get_pos(n2,0)
+						,Nodes->get_pos(n2,1)
+						,Nodes->get_pos(n2,2)
+						,Nodes->get_pos(n3,0)
+						,Nodes->get_pos(n3,1)
+						,Nodes->get_pos(n3,2));
 
 			Tets->set_volume(t,tempVol);
 		}
-	
-	
-		//calculate effective volume of each node
+
+		//calculate total volume
+		Tets->calc_total_volume();
+
+		log->StaticMsg("Calculating tetrahedra volumes: complete");
+
+		///
+		/// Triangle property calculations
+		///
+		log->Msg("Calculating surface triangles' areas: ");
+		Tris->update_areas(Nodes);
+		log->StaticMsg("alculating surface triangles' areas: complete");
+
+		log->Msg("alculating surface triangles' normals: ");
+		Tris->update_normals(Nodes);
+		log->StaticMsg("alculating surface triangles' normals: complete");
+
+		/// calculate effective volume of each node
 		int i;
 		for(int t = 0; t < Ntets; t++)
 		{
@@ -367,12 +425,12 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 		//normalize volume so that each node
 		//has an average volume of 1
 		//i_Node.normalize_volume(real(Nnodes));
+		
 
-		//calculate total volume
-		Tets->calc_total_volume();
-		
-		log->StaticMsg("Calculating tetrahedra volumes...\t\tcomplete");
-		
+		log->Msg("Calculating tetrahedra shape functions: ");
+		init_As(*Nodes, *Tets);
+		log->StaticMsg("Calculating tetrahedra shape functions: complete");
+
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
@@ -391,7 +449,7 @@ EulerRotation::EulerRotation(const real theta, const real phi, const real rho)
 }
 
 
-OperationResult EulerRotation::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
+OperationResult EulerRotation::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
 	log->Msg("Rotation nodes of mesh.");
 

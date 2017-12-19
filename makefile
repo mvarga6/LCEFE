@@ -3,6 +3,7 @@ BUILDNAME = gafe6
 # Path to external libraries
 EXTLIB = extlib/gmsh_io/libgmsh_io.a extlib/jsmn/libjsmn.a
 INCDIR = include
+#CUBDIR = extlib/cub
 
 # Compiler Flags for Debug and Release
 ifeq ($(DEBUG),true)

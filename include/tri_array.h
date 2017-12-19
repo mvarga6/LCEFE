@@ -9,11 +9,33 @@ class TriArray : public MeshElementArray<3>
 {
 
 public:
+
+    ///
+    /// Each triangle storess idx of 3 nodes
     int **NodeIdx;
+
+    ///
+    /// The rank of the nodes in the triangle
+    /// for writing forces to unique element 
+    /// in force vectors.
+    int **NodeRank;
+
+    ///
+    /// The center of mass of the triangle
     real **Com;
+
+    ///
+    /// The normal vector of the triangle
     real **Normal;
+
+    ///
+    /// The area of the triangle 
     real *Area;
-    //size_t size;
+
+    
+
+    ///
+    /// The total surface area of triangles
     real TotalArea;
 
     TriArray(const int N);
@@ -26,6 +48,13 @@ public:
     void set_nodes(int idx, int n1_idx, int n2_idx, int n3_idx, int tag = 1);
     void set_node_idx(int idx, int n_i, int node_idx);
     int& node_idx(int idx, int n_i);
+
+    ///
+    /// Setters/Getters for the node ranks in these triangles
+    ///
+
+    void set_rank(int idx, int n_i, int rank);
+    int& rank(int idx, int n_i);
 
     ///
     /// Setters/Getters for triangle positions

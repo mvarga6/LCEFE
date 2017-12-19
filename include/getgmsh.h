@@ -149,7 +149,7 @@ static MeshDimensions get_gmsh_dim(string fileName)
 	dims.Nnodes = node_num;
 	dims.Ntets = tet_num;
 	dims.Ntris = tri_num;
-	printf("\n[ INFO ] %d nodes\n[ INFO ] %d tets\n", node_num, tet_num);
+	printf("\n[ INFO ] %d nodes\n[ INFO ] %d tets\n[ INFO ] %d tris", node_num, tet_num, tri_num);
 	input.close();
 	return dims;
 }

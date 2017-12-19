@@ -16,7 +16,7 @@ class Physics
 public:
 
 	/**
-	 * Abstract method that calculates all the forces in the system.
+	 * Abstract method that calculates all the forces from tetrahedra
 	 */
 	__host__
 	void virtual CalculateForces(DataManager *data, real time) = 0;
@@ -62,6 +62,8 @@ public:
 	 */
 	__host__ __device__
 	static void CalculateShapeFunction(real a[4], real b[4], real c[4], const real r[12], const real r0[12], const real Ainv[16]);
+
+	
 
 	/**
 	 *	Calculates all physics Forces

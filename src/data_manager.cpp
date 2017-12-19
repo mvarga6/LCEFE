@@ -98,10 +98,7 @@ KernelLaunchDimensions DataManager::TetKernelDimensions()
 
 	if (!calculated)
 	{
-		const int TPB = this->parameters->Gpu.ThreadsPerBlock;
-		const int blocks = (this->dev->Ntets / TPB) + 1;
-		dimensions.BlockArrangement = dim3(blocks, 1, 1);
-		dimensions.ThreadArrangement = dim3(TPB, 1, 1);
+		dimensions = CalculateDimensions(this->dev->Ntets);
 		calculated = true;
 	}
 	
@@ -115,10 +112,21 @@ KernelLaunchDimensions DataManager::NodeKernelDimensions()
 
 	if (!calculated)
 	{
-		const int TPB = this->parameters->Gpu.ThreadsPerBlock;
-		const int blocks = (this->dev->Nnodes / TPB) + 1;
-		dimensions.BlockArrangement = dim3(blocks, 1, 1);
-		dimensions.ThreadArrangement = dim3(TPB, 1, 1);
+		dimensions = CalculateDimensions(this->dev->Nnodes);
+		calculated = true;
+	}
+	
+	return dimensions;
+}
+
+KernelLaunchDimensions DataManager::TriKernelDimensions()
+{
+	static KernelLaunchDimensions dimensions;
+	static bool calculated = false;
+
+	if (!calculated)
+	{
+		dimensions = CalculateDimensions(this->dev->Ntris);
 		calculated = true;
 	}
 	
@@ -133,4 +141,15 @@ DevDataBlock* DataManager::DeviceData()
 HostDataBlock* DataManager::HostData()
 {
 	return this->host;
+}
+
+
+KernelLaunchDimensions DataManager::CalculateDimensions(int threadsNeeded)
+{
+	KernelLaunchDimensions dims;
+	const int TPB = this->parameters->Gpu.ThreadsPerBlock;
+	const int blocks = (threadsNeeded / TPB) + 1;
+	dims.BlockArrangement = dim3(blocks, 1, 1);
+	dims.ThreadArrangement = dim3(TPB, 1, 1);
+	return dims;
 }

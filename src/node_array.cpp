@@ -9,12 +9,14 @@ NodeArray::NodeArray(int l){
 	MyForce = new real[size*3]; 
 	NewNum = new int[size];
 	totalRank = new int[size];
+	rankInTris = new int[size];
 	volume = new real[size];
 
 
 	for(int i=0;i<size;i++){
 		volume[i] = 0.0;
 		totalRank[i]=0;
+		rankInTris[i]=0;
 		MyForce[3*i] = 0.0;
 		MyForce[3*i+1] = 0.0;
 		MyForce[3*i+2] = 0.0;
@@ -32,6 +34,8 @@ NodeArray::~NodeArray(){
 	NewNum = NULL;
 	delete [] totalRank;
 	totalRank = NULL;
+	delete[] rankInTris;
+	rankInTris = NULL;
 	delete [] volume;
 	volume = NULL;
 }
@@ -66,6 +70,24 @@ void NodeArray::add_totalRank(int i, const int &newval){
 			if(totalRank[i]>=MaxNodeRank){printf("Error: MaxNodeRank to low!\n");}
 }
 
+void NodeArray::increment_rank_wrt_tets(int i)
+{
+	totalRank[i]++;
+	if (totalRank[i] >= MaxNodeRank)
+	{
+		printf("Error: MaxNodeRank to low!\n");
+	}
+}
+
+void NodeArray::increment_rank_wrt_tris(int i)
+{
+	rankInTris[i]++;
+	if (rankInTris[i] >= MaxNodeRank)
+	{
+		printf("Error: MaxNodeRank to low!\n");
+	}
+}
+
 void NodeArray::set_force(int i, int j, const real &newval){	
 			MyForce[i*3+j] = newval;			
 }
@@ -86,6 +108,15 @@ int NodeArray::get_totalRank(int i){
 			return totalRank[i];
 }
 
+int NodeArray::get_rank_wrt_tets(int i)
+{
+	return totalRank[i];
+}
+
+int NodeArray::get_rank_wrt_tris(int i)
+{
+	return rankInTris[i];
+}
 
 real NodeArray::get_force(int i, int j){	
 			return MyForce[i*3+j];			
@@ -100,28 +131,40 @@ void NodeArray::switch_nodes(int i, int j){
 	real buffpos,bufftet,buffF,buffn; 
 	int bufftrank;
 
-		    bufftrank= totalRank[i];
+		    bufftrank = totalRank[i];
 			totalRank[i] = totalRank[j];
 			totalRank[j] = bufftrank;
+
+			bufftrank = rankInTris[i];
+			rankInTris[i] = rankInTris[j];
+			rankInTris[j] = bufftrank;
+
+			bufftet = MyTet[i];
+			MyTet[i] = MyTet[j];
+			MyTet[j] = bufftet;
+
 			buffn = NewNum[i];
 			NewNum[i] = NewNum[j];
 			NewNum[j] = buffn;
-			for(int p = 0;p<3;p++){
+
+			for(int p = 0; p < 3; p++)
+			{
 				
 				//switch force and position
-					buffF = MyForce[i*3+p];
-					MyForce[i*3+p] = MyForce[j*3+p];
-					MyForce[j*3+p] = buffF;
+				buffF = MyForce[i*3+p];
+				MyForce[i*3+p] = MyForce[j*3+p];
+				MyForce[j*3+p] = buffF;
 
-					buffpos = MyPos[i*3+p];
-					MyPos[i*3+p] = MyPos[j*3+p];
-					MyPos[j*3+p] = buffpos;
+				buffpos = MyPos[i*3+p];
+				MyPos[i*3+p] = MyPos[j*3+p];
+				MyPos[j*3+p] = buffpos;
 
-					if(p<1){//switch mytet
-					bufftet = MyTet[i];
-					MyTet[i] = MyTet[j];
-					MyTet[j] = bufftet;
-					}
+				// if (p < 1)
+				// {//switch mytet
+				// 	bufftet = MyTet[i];
+				// 	MyTet[i] = MyTet[j];
+				// 	MyTet[j] = bufftet;
+				// }
 			}	
 }
 
@@ -137,10 +180,16 @@ real NodeArray::get_volume(int i){
 void NodeArray::normalize_volume(real realVolume){
 	real totalVolume = 0.0;
 
-	for(int n=0;n<size;n++){totalVolume+=volume[n];}
+	for (int n = 0; n < size; n++)
+	{
+		totalVolume += volume[n];
+	}
 
-	real norm = realVolume/totalVolume;
-	for(int n=0;n<size;n++){volume[n]=volume[n]*norm;}
+	real norm = realVolume / totalVolume;
+	for(int n = 0; n < size; n++)
+	{
+		volume[n] *= norm;
+	}
 }
 
 real NodeArray::max_point(int cord){

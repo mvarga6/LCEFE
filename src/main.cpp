@@ -108,8 +108,9 @@ int main(int argc, char *argv[])
 	/// Calculate values for mesh
 	///
 
-	mesh->Apply(new CalculateVolumes());
-	mesh->Apply(new CalculateAinv());
+	mesh->Apply(new CalculateProperties());
+	//mesh->Apply(new CalculateVolumes());
+	//mesh->Apply(new CalculateAinv());
 
 	///
 	/// Endow mesh with liquid crystal properities
@@ -128,7 +129,7 @@ int main(int argc, char *argv[])
 	///
 
 	// Create Host and Device Data blocks with the mesh
-	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, parameters);
+	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, mesh->Tris, parameters);
 	DevDataBlock 	* dev 	= host->CreateDevDataBlock();
 	DataProcedure 	* setup = new PushAllToGpu();
 	DataProcedure 	* print = new GetPrintData();

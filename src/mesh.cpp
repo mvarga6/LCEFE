@@ -52,7 +52,7 @@ void Mesh::Apply(MeshOperation *operation)
 	OperationResult result;
 	try
 	{
-		result = operation->Run(this->Tets, this->Nodes, this->log);
+		result = operation->Run(this->Tets, this->Nodes, this->Tris, this->log);
 		switch(result)
 		{
 		case OperationResult::SUCCESS:
