@@ -43,6 +43,18 @@ public:
     bool UpdateGpu(real dt);
 };
 
+class Clamp : public ExperimentComponent
+{
+    PointerHandle<real> f;
+    std::vector<int> nodes;
+public:
+    Clamp(std::vector<int> nodeIdxList, PointerHandle<real> F);
+
+    bool Update(real dt);
+    bool UpdateCpu(real dt);
+    bool UpdateGpu(real dt);
+}
+
 ///
 /// Groups together sets of experiment components
 /// into one container so it can be passed to the simulation
