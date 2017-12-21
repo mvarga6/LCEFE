@@ -2,6 +2,8 @@
 #include "parameters.h"
 #include <fstream>
 
+static const int PrintRankIdx = 14560;
+
 TetArray::TetArray(const int N, const real S0){
 	size = N;
 	TetVolume = new real[size];
@@ -138,6 +140,18 @@ int TetArray::get_ThPhi(int i){
 
 real TetArray::get_S(int i){ //returns real
 	return this->S[i];
+}
+
+void TetArray::print_ranks()
+{
+	const int idx = PrintRankIdx;	
+	printf("\n[ DEBUG ] tet: %d ranks: %d %d %d %d",
+		idx,
+		TetNodeRank[idx*4 + 0],
+		TetNodeRank[idx*4 + 1],
+		TetNodeRank[idx*4 + 2],
+		TetNodeRank[idx*4 + 3]
+	);
 }
 
 void TetArray::printDirector(std::string outputBase)

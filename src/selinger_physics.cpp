@@ -63,20 +63,22 @@ void SelingerPhysics::CalculateForces(DataManager *data, real time)
     //
     // Reduce the enclosed volume array with thrust library
     //
-//
-    //// bind to thrust pointers
-    //static thrust::device_ptr<real> dev_vol_ptr = thrust::device_pointer_cast(dev->EnclosedVolume);
+
+    // bind to thrust pointers
+    static thrust::device_ptr<real> dev_vol_ptr = thrust::device_pointer_cast(dev->EnclosedVolume);
     //static thrust::device_ptr<real> dev_area_ptr = thrust::device_pointer_cast(dev->TriArea);
-    //
-    //// reduce volume contributions
-    //const real V = thrust::reduce(dev_vol_ptr, dev_vol_ptr + dev->Ntris);
-//
-    //// calculate pressure
-    //static const real k_pressure = (real)0.1;
-    //static const real V0 = dev->TargetEnclosedVolume;
-    //real P = k_pressure * (V - V0) * (V - V0);
-//
-    //cudaThreadSynchronize();
+
+    // reduce volume contributions
+    const real V = thrust::reduce(dev_vol_ptr, dev_vol_ptr + dev->Ntris);
+
+    // calculate pressure
+    static const real k_pressure = (real)0.1;
+    static const real V0 = dev->TargetEnclosedVolume;
+    real P = k_pressure * (V - V0) * (V - V0);
+
+    cudaThreadSynchronize();
+
+    //printf("\n[ DEBUG ] Pressure = %f", P);
 
     // add forces to nodes from pressure
 

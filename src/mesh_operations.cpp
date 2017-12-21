@@ -201,10 +201,17 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, TriArray*
 
 				// set the node_idx for the n-th node of
 				// the t-th tet as the new node number
-				Tets->set_nabs(t, n, Nodes->get_newnum(node_idx));
+				int new_idx = Nodes->get_newnum(node_idx);
+				Tets->set_nabs(t, n, new_idx);
 
 				// record the new node_idx for reordering data later
-				newOrder.at(node_idx) = Nodes->get_newnum(node_idx);
+				newOrder.at(node_idx) = new_idx;
+
+				// for debugging
+				//if (t == 13000)
+				//{
+				//	log->Debug(formatted("idx: %d rank: %d new_idx: %d", node_idx, node_rank, new_idx));
+				//}
 			}
 		}
 		log->StaticMsg("Assigning new node config to tetrahedra: complete");
@@ -242,7 +249,6 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, TriArray*
 		log->Msg("Reordering nodes in this configuration: ");
 		Nodes->reorder(newOrder);
 		log->StaticMsg("Reordering nodes in this configuration: complete");
-
 		
 		int outOfOrderCount = 0;
 		for (int i = 0; i < Nnodes; i++)

@@ -58,6 +58,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, TriArray *Tris, S
 	///
 	/// Pack data from tets
 	///
+	
 	for (int tet = 0; tet < Ntets; tet++)
 	{
 		this->TetVol[tet] = Tets->get_volume(tet);

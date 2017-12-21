@@ -85,16 +85,16 @@ int main(int argc, char *argv[])
 	{
 		// optimize the mesh
 		log->Msg(" *** Optimizing mesh *** ");
-		
+
 		// simple sorting based on location in sim space
 		mesh->Apply(new SortOnTetrahedraPosition());
-		
+
 		// re-order using mc simulation
 		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.999999f));
-		
+
 		// re-index the mesh and tet's neighbors
 		mesh->Apply(new ReassignIndices());
-		
+
 		// save the optimized mesh
 		mesh->Cache();
 	}
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	///
 	/// Create data management objects
 	///
-
+	
 	// Create Host and Device Data blocks with the mesh
 	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, mesh->Tris, parameters);
 	DevDataBlock 	* dev 	= host->CreateDevDataBlock();

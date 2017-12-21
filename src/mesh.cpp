@@ -117,7 +117,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	// read the positions of nodes and tet indices
 	try
 	{
-		(*dimensions) = get_gmsh(meshFile, *Nodes, *Tets, *Tris,this->params->Mesh.Scale);
+		(*dimensions) = get_gmsh(meshFile, *Nodes, *Tets, *Tris, this->params->Mesh.Scale);
 	}
 	catch (const std::exception& e)
 	{

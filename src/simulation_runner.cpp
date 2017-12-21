@@ -73,8 +73,7 @@ void SimulationRunner::RunDynamics(DataManager* data, Physics *physics, Simulati
 
 			recorder->Log("time-loop");
 			
-			// execute procedure using 
-			//dataManager->Execute(getPrintData);
+			// execute procedure using
 			data->GetPrintData();
 		
 			//print frame
