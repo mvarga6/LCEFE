@@ -42,6 +42,12 @@ public:
     ~TriArray();
 
     ///
+    /// Creating new TriArrays
+    ///
+
+    TriArray* SelectTag(int tag);
+
+    ///
     /// Setters/Getters for node indices
     ///
 

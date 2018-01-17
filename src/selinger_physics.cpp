@@ -73,64 +73,10 @@ void SelingerPhysics::CalculateForces(DataManager *data, real time)
 
     // calculate pressure
     static const real k_pressure = (real)0.1;
-    static const real V0 = dev->TargetEnclosedVolume;
-    real P = k_pressure * (V - V0) * (V - V0);
+    static const real V0 = dev->InitialEnclosedVolume;
+    real dP = k_pressure * (V - V0);
 
     cudaThreadSynchronize();
-
-    //printf("\n[ DEBUG ] Pressure = %f", P);
-
-    // add forces to nodes from pressure
-
-    // block reduce to get total volume
-    // static const int reduction_TPB = 128;
-    // static int blocks = (dev->Ntris / reduction_TPB) + 1;
-
-    // // allocate gpu memory for reduction stages
-    // static bool reduction_memory_allocated = false;
-    // static std::vector<real*> reduction_input;
-    // static std::vector<real*> reduction_output;
-    // static std::vector<int> reduction_N;
-    // static int reduction_stages = 0;
-    // static real * reduced_volume;
-    // if (!reduction_memory_allocated)
-    // {
-    //     // first reduction is gaurenteed
-    //     reduction_input.push_back(dev->EnclosedVolume);
-    //     reduction_N.push_back(dev->Ntris);
-    //     reduction_stages++;
-
-    //     // alloc on gpu stage 1 output vector
-    //     real *output = new real;
-    //     HANDLE_ERROR(cudaMalloc((void**)&output, blocks*sizeof(real)));
-    //     output->push_back(output); // store ptr to output memory
-
-    //     // alloc the final reduced volume ptr
-    //     HANDLE_ERROR(cudaMalloc((void**)&reduced_volume, sizeof(real)));
-
-    //     // recalcuate blocks
-    //     blocks = (blocks / reduction_TPB) + 1;
-
-    //     // allocate the other stages of reduction
-    //     while (blocks > 1)
-    //     {
-    //         // allocate another stage of reduction
-    //         real *input = new real;
-    //         reduction_input.push_back(input);
-    //         reduction_N.push_back(blocks); // the current size of output
-
-
-
-    //         // recalculate for next iteration
-    //         blocks = (blocks / reduction_TPB) + 1;
-    //         reduction_stages++;
-    //     }
-        
-    //     reduction_memory_allocated = true;
-    // }
-
-    // // set the number of blocks at start of reductions
-    // blocks = (dev->Ntris / reduction_TPB) + 1;
 }
 
 void SelingerPhysics::UpdateSystem(DataManager *data)

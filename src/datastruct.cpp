@@ -29,7 +29,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, TriArray *Tris, S
 	this->TriNodeRank = (int*)malloc(Ntris*3*sizeof(int));
 	this->dr 		 = (real*)malloc(Nnodes*MaxNodeRank*sizeof(real));
 	this->totalVolume = Tets->get_total_volume();
-	this->TargetEnclosedVolume = 0;
+	this->InitialEnclosedVolume = 0;
 	this->TetVol 	 = (real*)malloc(Ntets*sizeof(real));
 	this->TriArea	 = (real*)malloc(Ntris*sizeof(real));
 	this->TriNormal 	= (real*)malloc(Ntris*3*sizeof(real));

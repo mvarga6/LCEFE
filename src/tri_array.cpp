@@ -49,6 +49,65 @@ TriArray::~TriArray()
 }
 
 
+TriArray* TriArray::SelectTag(int tag)
+{
+    const int _size = this->size;
+
+    ///
+    /// Calculate how to make new TriArray
+    ///
+
+    // loop all triangles
+    std::vector<int> idx_to_keep;
+    for (int idx = 0; idx < _size; idx++)
+    {
+        // loop triangle's tags
+        for (int t = 0; t < Ntags; t++)
+        {
+            // grab if it match tag
+            if (tag == Tags[idx][t])
+            {
+                idx_to_keep.push_back(idx);
+            }
+        }
+    }
+
+    // size of the new tri array
+    const int new_size = idx_to_keep.size();
+
+    // stop if we didn't fine anything
+    if (new_size == 0) 
+        return NULL;
+
+    // alloc new
+    TriArray * result = new TriArray(new_size);
+
+    // copy values into new array
+    int this_idx;
+    for (int idx = 0; idx < new_size; idx++)
+    {
+        // get the idx of the old element
+        this_idx = idx_to_keep.at(idx);
+
+        // copy values into new object
+        result->Area[idx] = this->Area[this_idx];
+
+        // vector properties
+        for (int i = 0; i < 3; i++)
+        {
+            result->NodeIdx[idx][i] = this->NodeIdx[this_idx][i];
+            result->NodeRank[idx][i] = this->NodeRank[this_idx][i];
+            result->Com[idx][i] = this->Com[this_idx][i];
+            result->Normal[idx][i] = this->Normal[this_idx][i];
+            if (i < Ntags)
+            {
+                result->Tags[idx][i] = this->Tags[this_idx][i];
+            }
+        }
+    }
+}
+
+
 void TriArray::set_nodes(int idx, int n1_idx, int n2_idx, int n3_idx, int tag)
 {
     assert_idx_access(idx);

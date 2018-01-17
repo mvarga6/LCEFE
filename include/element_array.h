@@ -16,13 +16,12 @@ enum ElementType : int
 template<size_t DoF>
 class MeshElementArray
 {
-private:
-    static const size_t Ntags = 2;
-
 protected:
     int add_idx;        // the idx of the next add
     virtual void assert_idx_access(int idx); // makes sure we're not adding beyond size
-    void reset_element(int idx);
+    void reset_element(int idx); // Resets an element to a default init state
+
+    static const size_t Ntags = 2;
 
 public:
     int **Elements;     // size x DoF
@@ -56,6 +55,7 @@ public:
     // return tags for element idx
     const int* tags_for(int idx);
 
+    // swaps two elements
     virtual void swap(int A_idx, int B_idx);
 };
 

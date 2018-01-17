@@ -128,8 +128,10 @@ int main(int argc, char *argv[])
 	/// Create data management objects
 	///
 
+
+
 	// Create Host and Device Data blocks with the mesh
-	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, mesh->Tris, parameters);
+	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, mesh->Tris->SelectTag(2), parameters);
 	DevDataBlock 	* dev 	= host->CreateDevDataBlock();
 	DataProcedure 	* setup = new PushAllToGpu();
 	DataProcedure 	* print = new GetPrintData();
@@ -143,7 +145,7 @@ int main(int argc, char *argv[])
 	real start = parameters->Dynamics.ExperimentStart();
 	real stop = parameters->Dynamics.ExperimentStop();
 	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
-	
+
 	experiment->AddComponent("OrderDynamics", orderDynamics);
 
 	///

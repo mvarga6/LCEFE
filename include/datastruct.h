@@ -59,7 +59,7 @@ public:
 	real *EnclosedVolume;
 	///
 	/// The total volume enclosed
-	real TargetEnclosedVolume;
+	real InitialEnclosedVolume;
 	///
 	/// Theta and Phi of director in each tet
 	int *ThPhi;
