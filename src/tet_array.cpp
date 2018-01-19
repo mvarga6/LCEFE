@@ -1,5 +1,6 @@
 #include "tet_array.h"
 #include "parameters.h"
+#include <iostream>
 #include <fstream>
 
 static const int PrintRankIdx = 14560;

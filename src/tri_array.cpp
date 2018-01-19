@@ -65,7 +65,8 @@ TriArray* TriArray::SelectTag(int tag)
         for (int t = 0; t < Ntags; t++)
         {
             // grab if it match tag
-            if (tag == Tags[idx][t])
+            int element_tag = Tags[idx][t];
+            if (tag == element_tag)
             {
                 idx_to_keep.push_back(idx);
             }
@@ -105,6 +106,7 @@ TriArray* TriArray::SelectTag(int tag)
             }
         }
     }
+    return result;
 }
 
 
@@ -122,6 +124,12 @@ void TriArray::set_node_idx(int idx, int n_i, int node_idx)
 {
     assert_property_access(idx, n_i);
     this->NodeIdx[idx][n_i] = node_idx;
+}
+
+void TriArray::set_tag(int idx, int tag)
+{
+    assert_idx_access(idx);
+    this->Tags[idx][0] = tag;
 }
 
 
@@ -292,7 +300,7 @@ void TriArray::reorder(std::vector<int> const &order)
 
 real TriArray::update_areas(real *nodePositions)
 {
-    throw std::runtime_error("TriArray::update_total_area() not implemented!");
+    //throw std::runtime_error("TriArray::update_total_area() not implemented!");
     return 0;
 }
 

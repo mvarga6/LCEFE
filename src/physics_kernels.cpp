@@ -115,16 +115,10 @@ __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (tid < data.Ntris)
 	{
-		//int dFshift = data.dFpitch/sizeof(real);
 		int TTNshift = data.TriToNodepitch/sizeof(int);
 		int NormShift = data.TriNormalpitch/sizeof(real);
-		//int TNRshift = data.TriNodeRankpitch/sizeof(int);
 		real r[3][3]; // positions of the 3 nodes in triangle
-		//real F[9]={0.0}; // forces on those nodes
 		int node_idx[3]; // indices of the 3 nodes in triangle
-		//int node_rank[3]; // rank of those 3 nodes (to write forces)
-		//real area; // area of triangle
-		//real normal[3]; // normal vector of triangle
 
 		///
 		/// Read global to local

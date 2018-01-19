@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	mesh->Apply(new SetDirector(director));
 			
 	//print director
-	mesh->Tets->printDirector(parameters->Output.Base);
+	//mesh->Tets->printDirector(parameters->Output.Base);
 
 	///
 	/// Create data management objects
@@ -143,7 +143,6 @@ int main(int argc, char *argv[])
 	real start = parameters->Dynamics.ExperimentStart();
 	real stop = parameters->Dynamics.ExperimentStop();
 	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
-
 	experiment->AddComponent("OrderDynamics", orderDynamics);
 
 	///

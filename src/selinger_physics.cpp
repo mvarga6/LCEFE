@@ -66,15 +66,19 @@ void SelingerPhysics::CalculateForces(DataManager *data, real time)
 
     // bind to thrust pointers
     static thrust::device_ptr<real> dev_vol_ptr = thrust::device_pointer_cast(dev->EnclosedVolume);
-    //static thrust::device_ptr<real> dev_area_ptr = thrust::device_pointer_cast(dev->TriArea);
 
     // reduce volume contributions to total enclosed volume
     const real V = thrust::reduce(dev_vol_ptr, dev_vol_ptr + dev->Ntris);
+    cudaThreadSynchronize();
 
     // calculate pressure
     static const real k_pressure = (real)0.1;
     static const real V0 = dev->InitialEnclosedVolume;
-    real dP = k_pressure * (V - V0);
+
+    // Apply pressure forces based on calculated volume
+    PressureForcesKernel<<<tridims.BlockArrangement,tridims.ThreadArrangement>>>(
+       *dev, V, V0, k_pressure
+    );
 
     cudaThreadSynchronize();
 }

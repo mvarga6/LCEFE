@@ -48,12 +48,13 @@ public:
     TriArray* SelectTag(int tag);
 
     ///
-    /// Setters/Getters for node indices
+    /// Setters/Getters for node indices and tags
     ///
 
     void set_nodes(int idx, int n1_idx, int n2_idx, int n3_idx, int tag = 1);
     void set_node_idx(int idx, int n_i, int node_idx);
     int& node_idx(int idx, int n_i);
+    void set_tag(int idx, int tag);
 
     ///
     /// Setters/Getters for the node ranks in these triangles

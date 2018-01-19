@@ -299,6 +299,9 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 						text.erase(0, length);
 						tris.set_node_idx(tri, k, idx-1);
 					}
+					// tag the triangle
+					tris.set_tag(tri, tags[1]);
+
 					tri++; // next tri
 				}
 				//
