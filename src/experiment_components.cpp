@@ -11,8 +11,7 @@
 /// Experiment Component Implementations
 ///
 
-
-Clamp::Clamp(std::vector<int>, nodeIdxList, PointerHandle<real> F)
+Clamp::Clamp(std::vector<int> nodeIdxList, PointerHandle<real> F)
 {
     this->nodes = nodeIdxList;
     this->f = F;
@@ -23,12 +22,12 @@ bool Clamp::Update(real dt)
     return true;
 }
 
-bool Clamp::Update(real dt)
+bool Clamp::UpdateCpu(real dt)
 {
     return true;
 }
 
-bool Clamp::Update(real dt)
+bool Clamp::UpdateGpu(real dt)
 {
     return true;
 }

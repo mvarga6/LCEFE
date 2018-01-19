@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "pointer.h"
 #include "defines.h"
@@ -24,7 +25,6 @@ public:
 protected:
     bool virtual UpdateCpu(real dt) = 0;
     bool virtual UpdateGpu(real dt) = 0;
-
 };
 
 ///
@@ -53,7 +53,7 @@ public:
     bool Update(real dt);
     bool UpdateCpu(real dt);
     bool UpdateGpu(real dt);
-}
+};
 
 ///
 /// Groups together sets of experiment components

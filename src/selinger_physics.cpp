@@ -68,7 +68,7 @@ void SelingerPhysics::CalculateForces(DataManager *data, real time)
     static thrust::device_ptr<real> dev_vol_ptr = thrust::device_pointer_cast(dev->EnclosedVolume);
     //static thrust::device_ptr<real> dev_area_ptr = thrust::device_pointer_cast(dev->TriArea);
 
-    // reduce volume contributions
+    // reduce volume contributions to total enclosed volume
     const real V = thrust::reduce(dev_vol_ptr, dev_vol_ptr + dev->Ntris);
 
     // calculate pressure

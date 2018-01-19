@@ -128,8 +128,6 @@ int main(int argc, char *argv[])
 	/// Create data management objects
 	///
 
-
-
 	// Create Host and Device Data blocks with the mesh
 	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, mesh->Tris->SelectTag(2), parameters);
 	DevDataBlock 	* dev 	= host->CreateDevDataBlock();

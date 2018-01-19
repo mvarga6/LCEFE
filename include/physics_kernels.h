@@ -15,11 +15,15 @@ __global__ void BulkForceKernel(DevDataBlock data, real t);
 
 
 ///================================================
-/// -calculate all forces and energies on surface nodes
-/// -write forces to appropiate location in node
-///  force container
+/// -calculate the enclosed volumes within given data block
 ///================================================
 __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center);
+
+///================================================
+/// -calculate all forces on surfaces from pressure
+///  given an initial volume and a current volume
+///================================================
+__global__ void PressureForcesKernel(DevDataBlock data, real V, real V0);
 
 ///================================================
 /// -read in all forces on each node and sum them

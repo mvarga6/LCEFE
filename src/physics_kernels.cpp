@@ -112,20 +112,20 @@ __global__ void BulkForceKernel(DevDataBlock data, real t)
 
 __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
 {
-	//int dFshift = data.dFpitch/sizeof(real);
-	int TTNshift = data.TriToNodepitch/sizeof(int);
-	int NormShift = data.TriNormalpitch/sizeof(real);
-	//int TNRshift = data.TriNodeRankpitch/sizeof(int);
-	real r[3][3]; // positions of the 3 nodes in triangle
-	//real F[9]={0.0}; // forces on those nodes
-	int node_idx[3]; // indices of the 3 nodes in triangle
-	//int node_rank[3]; // rank of those 3 nodes (to write forces)
-	//real area; // area of triangle
-	//real normal[3]; // normal vector of triangle
-
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (tid < data.Ntris)
 	{
+		//int dFshift = data.dFpitch/sizeof(real);
+		int TTNshift = data.TriToNodepitch/sizeof(int);
+		int NormShift = data.TriNormalpitch/sizeof(real);
+		//int TNRshift = data.TriNodeRankpitch/sizeof(int);
+		real r[3][3]; // positions of the 3 nodes in triangle
+		//real F[9]={0.0}; // forces on those nodes
+		int node_idx[3]; // indices of the 3 nodes in triangle
+		//int node_rank[3]; // rank of those 3 nodes (to write forces)
+		//real area; // area of triangle
+		//real normal[3]; // normal vector of triangle
+
 		///
 		/// Read global to local
 		///
@@ -179,6 +179,79 @@ __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
 		data.TriNormal[tid + 1*NormShift] = normal[1];
 		data.TriNormal[tid + 2*NormShift] = normal[2];
 	}
+}
+
+__global__ void PressureForcesKernel(DevDataBlock data, const real V, const real V0, const real Kp)
+{
+
+	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	if (tid < data.Ntris)
+	{
+		int TTNshift = data.TriToNodepitch/sizeof(int);
+		int NormShift = data.TriNormalpitch/sizeof(real);
+		int TNRshift = data.TriNodeRankpitch/sizeof(int);
+		int dFshift = data.dFpitch/sizeof(real);
+		real F[9]={0.0}; // forces on those nodes
+		
+		///
+		/// Pull in needed global memory
+		///
+
+		// indices of the 3 nodes in triangle
+		int node_idx[3] = {
+			data.TriToNode[tid + 0*TTNshift],
+			data.TriToNode[tid + 1*TTNshift],
+			data.TriToNode[tid + 2*TTNshift]
+		};
+
+		// rank of the nodes ( so we know where to write forces )
+		int node_rank[3] = {
+			data.TriNodeRank[tid + 0,TNRshift],
+			data.TriNodeRank[tid + 1,TNRshift],
+			data.TriNodeRank[tid + 2,TNRshift]
+		};
+
+		// area of the triangle
+		real A = data.TriArea[tid];
+		
+		// normal of the triangle
+		real normal[3] = {
+			data.TriNormal[tid + 0*NormShift],
+			data.TriNormal[tid + 1*NormShift],
+			data.TriNormal[tid + 2*NormShift]
+		};
+
+		//
+		// The Calculation of pressure forces
+		//
+
+		// The of force on tri area (should into Physics model method)
+		const real f = Kp * (V - V0) * (A / 3.0);
+
+		// apply force evenly across 3 nodes along normal
+		for (int n = 0; n < 3; n++) // for each node
+		{
+			for (int i = 0; i < 3; i++) // each coord
+			{
+				// force component is normal comp scaled by force
+				F[i + n*3] = f * normal[i];
+			}
+			
+		}
+
+		// write forces on nodes to proper
+		// position in dF global memory
+		DeviceHelpers::SendTriForce(
+			data.dF, 
+			dFshift, 
+			F, 
+			node_idx, 
+			node_rank, 
+			tid
+		);
+	}
+
+	
 }
 
 
