@@ -1,6 +1,10 @@
-#include "datastruct.h"
-#include "errorhandle.h"
-#include "defines.h"
+#include "../include/datastruct.h"
+#include "../include/errorhandle.h"
+#include "../include/defines.h"
+#include "../include/node_array.h"
+#include <stdio.h>
+
+#include "cuda.h"
 
 HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, TriArray *Tris, SimulationParameters *params)
 {
@@ -33,6 +37,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, TriArray *Tris, S
 	this->TetVol 	 = (real*)malloc(Ntets*sizeof(real));
 	this->TriArea	 = (real*)malloc(Ntris*sizeof(real));
 	this->TriNormal 	= (real*)malloc(Ntris*3*sizeof(real));
+	this->TriNormalSign = (int*)malloc(Ntris*sizeof(int));
 	this->ThPhi 		 = (int*)malloc(Ntets*sizeof(int));
 	this->S 			 = (real*)malloc(Ntets*sizeof(real));
 	
@@ -84,7 +89,8 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, TriArray *Tris, S
 	for (int tri = 0; tri < Ntris; tri++)
 	{
 		this->TriArea[tri] = Tris->area(tri);
-		
+		this->TriNormalSign[tri] = Tris->NormalSign[tri];
+
 		for (int j = 0; j < 3; j++)
 		{
 			this->TriToNode[tri + j*Ntris] = Tris->node_idx(tri, j);

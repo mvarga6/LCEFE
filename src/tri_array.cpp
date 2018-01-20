@@ -1,5 +1,6 @@
-#include "tri_array.h"
+#include "../include/tri_array.h"
 #include <stdexcept>
+#include "../include/helpers_math.h"
 
 TriArray::TriArray(const int N) : MeshElementArray(N, TRIANGLE)
 {
@@ -20,6 +21,7 @@ TriArray::TriArray(const int N) : MeshElementArray(N, TRIANGLE)
         this->NodeRank[i] = new int[3];
         this->Com[i] = new real[3];
         this->Normal[i] = new real[3];
+        this->NormalSign[i] = 1;
         this->Area[i] = (real)0;
         for(int j = 0; j < 3; j++)
         {
@@ -202,6 +204,12 @@ real& TriArray::normal(int idx, int dim)
     return this->Normal[idx][dim];
 }
 
+int TriArray::normal_sign(int idx, float3 ref)
+{
+    // get position of triangle
+
+}
+
 
 void TriArray::set_area(int idx, real area)
 {
@@ -337,7 +345,7 @@ void TriArray::update_normals(real *nodePositions)
 }
 
 
-void TriArray::update_normals(NodeArray *nodes)
+void TriArray::update_normals(NodeArray *nodes, float3 ref)
 {
     real N[3], r12[3], r13[3];
     int n1, n2, n3;
@@ -358,6 +366,19 @@ void TriArray::update_normals(NodeArray *nodes)
         N[2] = r12[0] * r13[1] - r12[1] * r13[0];
 
         this->set_normal(i, N[0], N[1], N[2]);
+
+        // centor of mass of the triangle
+        float3 CoM = nodes->centroid({n1, n2, n3});
+
+        // position relative to reference
+        float3 Rref = ref - CoM;
+
+        // is normal pointing parallel or antiparallel to R
+        if (dot(Rref, make_float3(N[0], N[1], N[2])) < 0)
+        {
+            this->NormalSign[i] = -1;
+        }
+        else this->NormalSign[i] = 1;
     }
 }
 

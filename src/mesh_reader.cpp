@@ -1,4 +1,4 @@
-#include "mesh_reader.h"
+#include "../include/mesh_reader.h"
 
 using namespace std;
 

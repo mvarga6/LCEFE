@@ -1,5 +1,5 @@
-#include "node_array.h"
-#include "helpers_math.h"
+#include "../include/node_array.h"
+#include "../include/helpers_math.h"
 #include <stdio.h>
 
 NodeArray::NodeArray(int l){
@@ -312,4 +312,49 @@ void NodeArray::disp(int i, int j, real r[3])
 	r[0] /= mag; r[1] /= mag; r[2] /= mag;
 	//return math::disp(MyPos[i*3 + 0], MyPos[i*3 + 1], MyPos[i*3 + 2],
 	//	MyPos[j*3 + 0], MyPos[j*3 + 1], MyPos[j*3 + 2], r);
+}
+
+float3 NodeArray::centroid()
+{
+	float3 _sum = make_float3(0, 0, 0);
+	
+	if (size == 0)
+	{
+		return _sum;
+	}
+
+	// sum all the positions
+	for (int i = 0; i < size; i++)
+	{
+		// update sum
+		_sum.x += MyPos[i*3 + 0];
+		_sum.y += MyPos[i*3 + 1];
+		_sum.z += MyPos[i*3 + 2];
+	}
+
+	// return the average
+	return (_sum / float(size));
+}
+
+float3 NodeArray::centroid(std::vector<int> node_idxs)
+{
+	const int count = node_idxs.size();
+	float3 _sum = make_float3(0, 0, 0);
+	
+	if (size == 0)
+	{
+		return _sum;
+	}
+
+	// sum all the positions
+	for (auto idx : node_idxs)
+	{
+		// update sum
+		_sum.x += MyPos[idx*3 + 0];
+		_sum.y += MyPos[idx*3 + 1];
+		_sum.z += MyPos[idx*3 + 2];
+	}
+
+	// return the average
+	return (_sum / float(count));
 }

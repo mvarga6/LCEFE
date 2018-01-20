@@ -1,6 +1,6 @@
-#include "device_helpers.h"
-#include "texdef.h"
-#include "defines.h"
+#include "../include/device_helpers.h"
+#include "../include/texdef.h"
+#include "../include/defines.h"
 
 __device__
 void DeviceHelpers::ReadGlobalToLocal(

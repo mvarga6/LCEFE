@@ -1,9 +1,9 @@
-#include "clparse.h"
+#include "../include/clparse.h"
 #include <stdio.h>
 #include <string>
 #include <cstdlib>
-#include "simulation_parameters.h"
-#include "defines.h"
+#include "../include/simulation_parameters.h"
+#include "../include/defines.h"
 
 void parseCommandLine(int argc, char* argv[], SimulationParameters *params){
 	

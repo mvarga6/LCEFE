@@ -1,9 +1,9 @@
-#include "simulation_runner.h"
-#include "anyerrors.h"
-#include "exit_program.h"
-#include "printVTKframe.h"
-#include "physics_model.h"
-#include "experiment.h"
+#include "../include/simulation_runner.h"
+#include "../include/anyerrors.h"
+#include "../include/exit_program.h"
+#include "../include/printVTKframe.h"
+#include "../include/physics_model.h"
+#include "../include/experiment.h"
 
 SimulationRunner::SimulationRunner(
 	VtkWriter *vtkWriter,

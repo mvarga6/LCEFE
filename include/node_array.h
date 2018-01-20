@@ -85,6 +85,14 @@ public:
 	/// Displacement vector between two nodes
 	void disp(int i, int j, real r[3]);
 
+	///
+	/// Get the centroid of the whole node array
+	float3 centroid();
+
+	///
+	/// Get the centroid of the give node indices
+	float3 centroid(std::vector<int> node_idxs);
+
 };
 
 #endif

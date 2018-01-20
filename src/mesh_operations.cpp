@@ -1,13 +1,13 @@
-#include "mesh_operations.h"
+#include "../include/mesh_operations.h"
 #include <sstream>
 #include <vector>
 #include <algorithm>
 #include <numeric>
 //#include "getmesh.h"
-#include "genrand.h"
-#include "getAs.h"
-#include "helpers_math.h"
-#include "getgmsh.h"
+#include "../include/genrand.h"
+#include "../include/getAs.h"
+#include "../include/helpers_math.h"
+#include "../include/getgmsh.h"
 
 OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {
@@ -411,7 +411,7 @@ OperationResult CalculateProperties::Run(TetArray *Tets, NodeArray *Nodes, TriAr
 		log->StaticMsg("alculating surface triangles' areas: complete");
 
 		log->Msg("alculating surface triangles' normals: ");
-		Tris->update_normals(Nodes);
+		Tris->update_normals(Nodes, Nodes->centroid());
 		log->StaticMsg("alculating surface triangles' normals: complete");
 
 		/// calculate effective volume of each node

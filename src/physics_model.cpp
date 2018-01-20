@@ -1,7 +1,7 @@
 
-#include "physics_model.h"
+#include "../include/physics_model.h"
 #include "cuda_runtime.h"
-#include "defines.h"
+#include "../include/defines.h"
 
 __host__ __device__
 void Physics::CalculateEpsilon(

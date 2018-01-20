@@ -54,6 +54,9 @@ public:
 	/// Normal vector of each triangle
 	real *TriNormal;
 	///
+	/// The sign of the normal so it can be flipped
+	int *TriNormalSign;
+	///
 	/// Each triangle constibutes a bit of enclosed volume
 	/// (if they are surface triangles)
 	real *EnclosedVolume;
@@ -100,24 +103,6 @@ public:
 class DevDataBlock : public DataBlockBase
 {
 public:
-	/*
-	int Ntets, Nnodes, Ntris;
-	real *A;
-	int *TetToNode;
-	int *TriToNode;
-	real *r0;
-	real *r;
-	real *F;
-	real *v;
-	int *nodeRank;
-	int *TetNodeRank;
-	int *TriNodeRank;
-	real *dr;
-	real *m;
-	real *pe;
-	real *TetVol;
-	int *ThPhi;
-	real *S; */
 
 	///
 	/// Each node stores forces on it from each 
@@ -142,9 +127,6 @@ public:
 	size_t vpitch;
 	size_t drpitch;
 	size_t dFpitch;
-
-	//real *F_tri;
-	//size_t Ftripitch;
 	
 	/// 
 	/// Returns a pointer handle for the S array
@@ -161,26 +143,6 @@ public:
 class HostDataBlock : public DataBlockBase
 {
 public:
-	//int Ntets, Nnodes, Ntris;
-	//real *A;
-	//int *TetToNode;
-	//int *TriToNode;
-	//real *r0;
-	//real *r;
-	//real *F;
-	//real *v;
-	//int *nodeRank;
-	//int *TetNodeRank;
-	//int *TriNodeRank;
-	//real *dr;
-	//real *m;
-	//real *pe;
-	//real totalVolume;
-	//real *TetVol;
-	//real *TriArea;
-	//real *TriNormal;
-	//int *ThPhi;
-	//real *S;
 
 	real min[3], max[3];
 	

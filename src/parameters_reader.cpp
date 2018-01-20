@@ -1,7 +1,7 @@
 
-#include "parameters_reader.h"
-#include "simulation_parameters.h"
-#include "extlib/jsmn/jsmn.h"
+#include "../include/parameters_reader.h"
+#include "../include/simulation_parameters.h"
+#include "../extlib/jsmn/jsmn.h"
 #include <fstream>
 #include <string>
 #include <sstream>

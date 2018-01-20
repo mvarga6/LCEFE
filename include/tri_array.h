@@ -2,6 +2,7 @@
 #define __TRI_ARRAY_H__
 
 #include "defines.h"
+#include <vector>
 #include "node_array.h"
 #include "element_array.h"
 
@@ -27,12 +28,11 @@ public:
     ///
     /// The normal vector of the triangle
     real **Normal;
+    int *NormalSign;
 
     ///
     /// The area of the triangle 
     real *Area;
-
-    
 
     ///
     /// The total surface area of triangles
@@ -78,6 +78,7 @@ public:
     void set_normal(int idx, real N_x, real N_y, real N_z);
     void set_normal(int idx, int dim, real N_d);
     real& normal(int idx, int dim);
+    int normal_sign(int idx, float3 ref);
 
     ///
     /// Setters/Getters for triangle areas
@@ -102,7 +103,7 @@ public:
     real update_areas(real *nodePositions);
     real update_areas(NodeArray *nodes);
     void update_normals(real *nodePositions);
-    void update_normals(NodeArray *nodes);
+    void update_normals(NodeArray *nodes, float3 ref);
     void update_coms(real *nodePositions);
     void update_coms(NodeArray *nodes);
 

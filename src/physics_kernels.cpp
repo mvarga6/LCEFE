@@ -1,14 +1,14 @@
-#include "physics_kernels.h"
+#include "../include/physics_kernels.h"
 //#include "sendForce.h"
 //#include "read_dev_data.h"
-#include "getQ.h"
-#include "device_helpers.h"
-#include "sumForce.h"
-#include "kernel_constants.h"
-#include "update_r.h"
-#include "physics_model.h"
-#include "texdef.h"
-#include "helpers_math.h"
+#include "../include/getQ.h"
+#include "../include/device_helpers.h"
+#include "../include/sumForce.h"
+#include "../include/kernel_constants.h"
+#include "../include/update_r.h"
+#include "../include/physics_model.h"
+#include "../include/texdef.h"
+#include "../include/helpers_math.h"
 
 __constant__ PackedParameters Parameters;
 
@@ -120,6 +120,7 @@ __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
 		int NormShift = data.TriNormalpitch/sizeof(real);
 		real r[3][3]; // positions of the 3 nodes in triangle
 		int node_idx[3]; // indices of the 3 nodes in triangle
+		int normal_sign = data.TriNormalSign[tid];
 
 		///
 		/// Read global to local
@@ -170,9 +171,9 @@ __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
 
 		data.EnclosedVolume[tid] = enclosedVolumeContibution;
 		data.TriArea[tid] = area;
-		data.TriNormal[tid + 0*NormShift] = normal[0];
-		data.TriNormal[tid + 1*NormShift] = normal[1];
-		data.TriNormal[tid + 2*NormShift] = normal[2];
+		data.TriNormal[tid + 0*NormShift] = normal_sign + normal[0];
+		data.TriNormal[tid + 1*NormShift] = normal_sign + normal[1];
+		data.TriNormal[tid + 2*NormShift] = normal_sign + normal[2];
 	}
 }
 

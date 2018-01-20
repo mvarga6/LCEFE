@@ -1,8 +1,8 @@
-#include "data_operations.h"
-#include "errorhandle.h"
+#include "../include/data_operations.h"
+#include "../include/errorhandle.h"
 #include "cuda.h"
 #include "cuda_runtime.h"
-#include "texdef.h"
+#include "../include/texdef.h"
 
 size_t global_texture_offset = 0;
 texture<real, 2, cudaReadModeElementType> texRef_r0;
@@ -284,6 +284,14 @@ bool PushTriNormalToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
         , 3
 		, cudaMemcpyHostToDevice ) 
 	);
+
+	HANDLE_ERROR( 
+		cudaMemcpy( dev->TriNormalSign
+		, host->TriNormalSign
+		, host->Ntris*sizeof(int)
+		, cudaMemcpyHostToDevice ) 
+	);
+
 	return true;
 }
 

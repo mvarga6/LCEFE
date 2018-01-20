@@ -1,4 +1,4 @@
-#include "math_kernels.h"
+#include "../include/math_kernels.h"
 //#include "cub.cuh"
 
 __global__ void Add(real *ptr, const real value, int N)
