@@ -73,48 +73,13 @@ void DeviceHelpers::SendTetForce(
 		//find real node number
 		n_glob = NodeNum[n];    
 		NodeRank = TetNodeRank[n];
-
-		dF[dFshift*(0+3*NodeRank) + n_glob] = F[0+3*n] * TetVol;
-		dF[dFshift*(1+3*NodeRank) + n_glob] = F[1+3*n] * TetVol;
-		dF[dFshift*(2+3*NodeRank) + n_glob] = F[2+3*n] * TetVol;
-	}
-	
-#ifdef __DEBUG_SEND_FORCE__
-		if (tid == __DEBUG_SEND_FORCE__)
+		for (int i = 0; i < 3; i++)
 		{
-			printf("\n\n -- DeviceHelpers::SendForce --");
-			printf("\n\tNode ids:\t[%d %d %d %d]", NodeNum[0], NodeNum[1], NodeNum[2], NodeNum[3]);
-			printf("\n\tNode ranks:\t[%d %d %d %d]", TetNodeRank[0], TetNodeRank[1], TetNodeRank[2], TetNodeRank[3]);
-			for (int n = 0; n < 4; n++)
-			{
-				printf("\n\tF[%d] = { %f, %f, %f }", n, F[0+3*n], F[1+3*n], F[2+3*n]);
-			}
+			dF[dFshift*(i+3*NodeRank) + n_glob] = F[i+3*n] * TetVol;
 		}
-#endif
-}
-
-__device__
-void DeviceHelpers::SendTriForce(
-	real *dF
-	,int dFshift
-	,real F[9]
-	,int node_idx[3]
-	,int tri_node_rank[3]
-	,int tid
-)
-{
-	int n_glob, NodeRank;  
-
-	//loop over each node in triangle
-	for (int n = 0; n < 3; n++)
-	{ 
-		//find real node number
-		n_glob = node_idx[n];    
-		NodeRank = tri_node_rank[n];
-
-		dF[dFshift*(0+3*NodeRank) + n_glob] += F[0+3*n];
-		dF[dFshift*(1+3*NodeRank) + n_glob] += F[1+3*n];
-		dF[dFshift*(2+3*NodeRank) + n_glob] += F[2+3*n];
+		// dF[dFshift*(0+3*NodeRank) + n_glob] = F[0+3*n] * TetVol;
+		// dF[dFshift*(1+3*NodeRank) + n_glob] = F[1+3*n] * TetVol;
+		// dF[dFshift*(2+3*NodeRank) + n_glob] = F[2+3*n] * TetVol;
 	}
 	
 // #ifdef __DEBUG_SEND_FORCE__
@@ -124,6 +89,55 @@ void DeviceHelpers::SendTriForce(
 // 			printf("\n\tNode ids:\t[%d %d %d %d]", NodeNum[0], NodeNum[1], NodeNum[2], NodeNum[3]);
 // 			printf("\n\tNode ranks:\t[%d %d %d %d]", TetNodeRank[0], TetNodeRank[1], TetNodeRank[2], TetNodeRank[3]);
 // 			for (int n = 0; n < 4; n++)
+// 			{
+// 				printf("\n\tF[%d] = { %f, %f, %f }", n, F[0+3*n], F[1+3*n], F[2+3*n]);
+// 			}
+// 		}
+// #endif
+}
+
+__device__
+void DeviceHelpers::SendTriForce(
+	real *dF
+	,int dFshift
+	,real F[9]
+	,int node_idx[3]
+	,int node_rank[3]
+	,int tid
+)
+{
+	int idx, NodeRank;  
+
+	//loop over each node in triangle
+	for (int n = 0; n < 3; n++)
+	{ 
+		//find real node number
+		idx = node_idx[n];    
+		NodeRank = node_rank[n];
+		for (int i = 0; i < 3; i++)
+		{
+			real before = dF[dFshift*(i+3*NodeRank) + idx];
+			dF[dFshift*(i+3*NodeRank) + idx] += F[i+3*n];
+
+#ifdef __DEBUG_SEND_FORCE__
+			if (tid == __DEBUG_SEND_FORCE__)
+			{
+				printf("\n%d[%d][%d]:%f --> %f",idx, NodeRank, i, before, dF[dFshift*(i+3*NodeRank) + idx]);
+			}
+#endif
+		}
+		// dF[dFshift*(0+3*NodeRank) + n_glob] += F[0+3*n];
+		// dF[dFshift*(1+3*NodeRank) + n_glob] += F[1+3*n];
+		// dF[dFshift*(2+3*NodeRank) + n_glob] += F[2+3*n];
+	}
+	
+// #ifdef __DEBUG_SEND_FORCE__
+// 		if (tid == __DEBUG_SEND_FORCE__)
+// 		{
+// 			printf("\n\n -- DeviceHelpers::SendForce --");
+// 			printf("\n\tNode ids:\t[%d %d %d]", node_idx[0], node_idx[1], node_idx[2]);
+// 			printf("\n\tNode ranks:\t[%d %d %d]", node_rank[0], node_rank[1], node_rank[2]);
+// 			for (int n = 0; n < 3; n++)
 // 			{
 // 				printf("\n\tF[%d] = { %f, %f, %f }", n, F[0+3*n], F[1+3*n], F[2+3*n]);
 // 			}

@@ -18,8 +18,11 @@ SimulationRunner::SimulationRunner(
 
 void SimulationRunner::RunDynamics(DataManager* data, Physics *physics, SimulationParameters* parameters, Experiment* experiment)
 {
-	// Set parameters before running
+	// setup on data
 	data->Setup();
+
+	// initalize data to specific physics
+	physics->Initialize(data);
 	
 	// data blocks
 	DevDataBlock * dev = data->DeviceData();
@@ -30,13 +33,6 @@ void SimulationRunner::RunDynamics(DataManager* data, Physics *physics, Simulati
 	const real meshScale 	= parameters->Mesh.Scale;
 	const int iterPerFrame 	= parameters->Output.FrameRate;
 	const int nSteps 		= parameters->Dynamics.Nsteps;
-	//const int Ntets  		= dev->Ntets;
-	//const int Nnodes  		= dev->Nnodes;
-	
-	// calculate how to run on gpu
-	//const int Threads_Per_Block = parameters->Gpu.ThreadsPerBlock;
-	//const int BlocksTet = (Ntets + Threads_Per_Block) / Threads_Per_Block;
-	//const int BlocksNode = (Nnodes + Threads_Per_Block) / Threads_Per_Block;
 
 	// the lab frame time
 	real t = 0;

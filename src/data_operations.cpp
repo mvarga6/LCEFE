@@ -83,6 +83,20 @@ bool PushTetNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 	return true;
 }
 
+bool PushTriNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	HANDLE_ERROR( 
+		cudaMemcpy2D( dev->TriNodeRank
+		, dev->TriNodeRankpitch
+		, host->TriNodeRank
+		, host->Ntris*sizeof(int)
+		, host->Ntris*sizeof(int)
+        , 3
+		, cudaMemcpyHostToDevice ) 
+	);
+	return true;
+}
+
 
 bool PushThetaPhiToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
@@ -173,6 +187,19 @@ bool PushTetToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 	return true;	
 }
 
+bool PushTriToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	HANDLE_ERROR( 
+		cudaMemcpy2D( dev->TriToNode
+		, dev->TriToNodepitch
+		, host->TriToNode
+		, host->Ntris*sizeof(int)
+		, host->Ntris*sizeof(int)
+        , 3
+		, cudaMemcpyHostToDevice ) 
+	);
+	return true;
+}
 
 bool PushPostionToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
@@ -241,35 +268,6 @@ bool PushTriAreaToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 		,host->TriArea
 		,host->Ntris*sizeof(real)
 		,cudaMemcpyHostToDevice) 
-	);
-	return true;
-}
-
-bool PushTriToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
-{
-	HANDLE_ERROR( 
-		cudaMemcpy2D( dev->TriToNode
-		, dev->TriToNodepitch
-		, host->TriToNode
-		, host->Ntris*sizeof(int)
-		, host->Ntris*sizeof(int)
-        , 3
-		, cudaMemcpyHostToDevice ) 
-	);
-	return true;
-}
-
-
-bool PushTriNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
-{
-	HANDLE_ERROR( 
-		cudaMemcpy2D( dev->TriNodeRank
-		, dev->TriNodeRankpitch
-		, host->TriNodeRank
-		, host->Ntris*sizeof(int)
-		, host->Ntris*sizeof(int)
-        , 3
-		, cudaMemcpyHostToDevice ) 
 	);
 	return true;
 }

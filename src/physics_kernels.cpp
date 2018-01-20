@@ -14,27 +14,28 @@ __constant__ PackedParameters Parameters;
 
 __global__ void BulkForceKernel(DevDataBlock data, real t)
 {
-	int Ashift = data.Apitch/sizeof(real);
-	int dFshift = data.dFpitch/sizeof(real);
-	int vshift = data.vpitch/sizeof(real);
-	int TTNshift = data.TetToNodepitch/sizeof(int);
-	int TNRshift = data.TetNodeRankpitch/sizeof(int);
-	real Ainv[16];
-	real r[12];
-	real r0[12];
-	real F[12]={0.0};
-	real vlocal[12];
-	int NodeNum[4];
-	int TetNodeRank[4];
-	real Q[9] = {0.0};
-	real myVol;
-
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
 	//if thread executed has a tetrahedra
 	if(tid < data.Ntets)
 	{ 
+		int Ashift = data.Apitch/sizeof(real);
+		int dFshift = data.dFpitch/sizeof(real);
+		int vshift = data.vpitch/sizeof(real);
+		int TTNshift = data.TetToNodepitch/sizeof(int);
+		int TNRshift = data.TetNodeRankpitch/sizeof(int);
+		real Ainv[16];
+		real r[12];
+		real r0[12];
+		real F[12]={0.0};
+		real vlocal[12];
+		int NodeNum[4];
+		int TetNodeRank[4];
+		real Q[9] = {0.0};
+		real myVol;
+
+
 #ifdef __DEBUG_FORCE__
 		if (tid == __DEBUG_FORCE__)
 		{
@@ -70,7 +71,7 @@ __global__ void BulkForceKernel(DevDataBlock data, real t)
 		// Send S and L to Q calculation and update
 		// S for next calculation.
 		//========================================
-		getQ(data.ThPhi[tid], Q, t, data.S[tid]); // just for debugging
+		//getQ(data.ThPhi[tid], Q, t, data.S[tid]); // just for debugging
 
 		//========================================
 		//calculate the force on each node due
@@ -177,7 +178,6 @@ __global__ void CalculateClosedVolumesKernel(DevDataBlock data, float3 center)
 
 __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real V0, const real Kp)
 {
-
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (tid < data.Ntris)
 	{
@@ -185,7 +185,7 @@ __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real
 		int NormShift = data.TriNormalpitch/sizeof(real);
 		int TNRshift = data.TriNodeRankpitch/sizeof(int);
 		int dFshift = data.dFpitch/sizeof(real);
-		real F[9]={0.0}; // forces on those nodes
+		real F[9] = { 0.0 }; // forces on those nodes
 		
 		///
 		/// Pull in needed global memory
@@ -200,9 +200,9 @@ __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real
 
 		// rank of the nodes ( so we know where to write forces )
 		int node_rank[3] = {
-			data.TriNodeRank[tid + 0,TNRshift],
-			data.TriNodeRank[tid + 1,TNRshift],
-			data.TriNodeRank[tid + 2,TNRshift]
+			data.TriNodeRank[tid + 0*TNRshift],
+			data.TriNodeRank[tid + 1*TNRshift],
+			data.TriNodeRank[tid + 2*TNRshift]
 		};
 
 		// area of the triangle
@@ -220,7 +220,7 @@ __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real
 		//
 
 		// The of force on tri area (should into Physics model method)
-		const real f = Kp * (V - V0) * (A / 3.0);
+		const real _f = Kp * (V - V0) * (A / 3.0);
 
 		// apply force evenly across 3 nodes along normal
 		for (int n = 0; n < 3; n++) // for each node
@@ -228,10 +228,20 @@ __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real
 			for (int i = 0; i < 3; i++) // each coord
 			{
 				// force component is normal comp scaled by force
-				F[i + n*3] = f * normal[i];
-			}
-			
+				F[i + n*3] = -_f * normal[i];
+			}		
 		}
+
+#ifdef __DEBUG_PRESSURE__
+		if (tid == __DEBUG_PRESSURE__)
+		{
+			printf("\n\tnode_idx:  [%d %d %d]", node_idx[0], node_idx[1], node_idx[2]);
+			printf("\n\tnode_rank: [%d %d %d]", node_rank[0], node_rank[1], node_rank[2]);
+			printf("\n\tnormal:    [%f.3 %f.3 %f.3]", normal[0], normal[1], normal[2]);
+			printf("\n\tarea:	   %f", A);
+			printf("\n\tF on node  %f", _f);
+		}
+#endif
 
 		// write forces on nodes to proper
 		// position in dF global memory
@@ -243,31 +253,27 @@ __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real
 			node_rank, 
 			tid
 		);
-	}
-
-	
+	}	
 }
-
-
 
 __global__ void UpdateKernel(DevDataBlock data)
 {	
-	int dFshift = data.dFpitch/sizeof(real);
-	int Fshift = data.Fpitch/sizeof(real);
-	int vshift = data.vpitch/sizeof(real);
-	int rshift = data.rpitch/sizeof(real);
-	int myNode;
-	int myNodeRank;
-	real Fnew[3]={0.0};
-	real Fold[3];
-	real vold[3];
-	real vnew[3];
-	real localMass;
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-
 	if (tid < data.Nnodes) //if a node is here
 	{  
+		int dFshift = data.dFpitch/sizeof(real);
+		int Fshift = data.Fpitch/sizeof(real);
+		int vshift = data.vpitch/sizeof(real);
+		int rshift = data.rpitch/sizeof(real);
+		int myNode;
+		int myNodeRank;
+		real Fnew[3]={0.0};
+		real Fold[3];
+		real vold[3];
+		real vnew[3];
+		real localMass;
+
 		myNode = tid;
 		myNodeRank = data.nodeRank[myNode];
 		localMass = data.m[myNode];

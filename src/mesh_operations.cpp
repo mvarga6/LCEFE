@@ -59,8 +59,11 @@ MonteCarloMinimizeDistanceBetweenPairs::MonteCarloMinimizeDistanceBetweenPairs(c
 	this->kbt_start = kBTStart;
 	this->kbt_end = kBTEnd;
 	this->anneal_factor = annealFactor;
-
+#ifdef __DEBUG__
+	srand(0);
+#else
 	srand(time(NULL));    //seed random number generator
+#endif
 	mt_init();       //initialize random number generator
 	purge();         //free up memory in random number generator
 }
@@ -206,18 +209,13 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, TriArray*
 
 				// record the new node_idx for reordering data later
 				newOrder.at(node_idx) = new_idx;
-
-				// for debugging
-				//if (t == 13000)
-				//{
-				//	log->Debug(formatted("idx: %d rank: %d new_idx: %d", node_idx, node_rank, new_idx));
-				//}
 			}
 		}
 		log->StaticMsg("Assigning new node config to tetrahedra: complete");
 
 		// reassign each triangle to neighbors
 		// in the new arrangement of nodes
+		// TODO: Check that this is assigning working
 		log->Msg("Assigning new node config to triangles: ");
 		for (int t = 0; t < Ntris; t++)
 		{
@@ -227,7 +225,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, TriArray*
 				node_idx = Tris->node_idx(t, n);
 
 				// get the rank of this node wrt triangles
-				node_rank = Nodes->get_rank_wrt_tris(t);
+				node_rank = Nodes->get_rank_wrt_tris(node_idx);
 
 				// set the rank of n-th node in t-th triangle
 				Tris->set_rank(t, n, node_rank);

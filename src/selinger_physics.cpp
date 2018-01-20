@@ -33,13 +33,42 @@
 //     }
 // };
 
+void SelingerPhysics::Initialize(DataManager *data)
+{
+    // get data block from manager
+    DevDataBlock * dev = data->DeviceData();
+
+    // calculate constributes to enclosed volume
+    auto tridims = data->TriKernelDimensions();
+    CalculateClosedVolumesKernel<<<tridims.BlockArrangement, tridims.ThreadArrangement>>>(
+        *dev, make_float3((real)0.0, (real)0.0, (real)0.0)
+    );
+    cudaThreadSynchronize();
+    HANDLE_ERROR(cudaGetLastError());
+
+    //
+    // Reduce the enclosed volume array with thrust library
+    //
+
+    // bind to thrust pointers
+    static thrust::device_ptr<real> dev_vol_ptr = thrust::device_pointer_cast(dev->EnclosedVolume);
+
+    // reduce volume contributions to total enclosed volume
+    const real V = thrust::reduce(dev_vol_ptr, dev_vol_ptr + dev->Ntris);
+    cudaThreadSynchronize();
+
+    dev->InitialEnclosedVolume = V;
+}
+
 
 void SelingerPhysics::CalculateForces(DataManager *data, real time)
 {
+    // get data block from manager
+    DevDataBlock * dev = data->DeviceData();
+
     ///
     /// Calculates Elastic and LC forces
     ///
-    DevDataBlock * dev = data->DeviceData();
 
     auto tetdims = data->TetKernelDimensions();
     BulkForceKernel<<<tetdims.BlockArrangement, tetdims.ThreadArrangement>>>(
@@ -70,10 +99,11 @@ void SelingerPhysics::CalculateForces(DataManager *data, real time)
     // reduce volume contributions to total enclosed volume
     const real V = thrust::reduce(dev_vol_ptr, dev_vol_ptr + dev->Ntris);
     cudaThreadSynchronize();
+    HANDLE_ERROR(cudaGetLastError());
 
     // calculate pressure
-    static const real k_pressure = (real)0.1;
-    static const real V0 = dev->InitialEnclosedVolume;
+    static const real k_pressure = (real)1.0;
+    static const real V0 = 0;//dev->InitialEnclosedVolume;
 
     // Apply pressure forces based on calculated volume
     PressureForcesKernel<<<tridims.BlockArrangement,tridims.ThreadArrangement>>>(
@@ -81,6 +111,7 @@ void SelingerPhysics::CalculateForces(DataManager *data, real time)
     );
 
     cudaThreadSynchronize();
+    HANDLE_ERROR(cudaGetLastError());
 }
 
 void SelingerPhysics::UpdateSystem(DataManager *data)

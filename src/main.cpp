@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 	real start = parameters->Dynamics.ExperimentStart();
 	real stop = parameters->Dynamics.ExperimentStop();
 	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
-	experiment->AddComponent("OrderDynamics", orderDynamics);
+	//experiment->AddComponent("OrderDynamics", orderDynamics);
 
 	///
 	/// Create the physics model to simulate

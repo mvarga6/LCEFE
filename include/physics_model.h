@@ -16,6 +16,13 @@ class Physics
 public:
 
 	/**
+	 * Pass in the data manager and do anything physics required
+	 * to calculate initial conditions 
+	 */
+	__host__
+	void virtual Initialize(DataManager * data) = 0;
+
+	/**
 	 * Abstract method that calculates all the forces from tetrahedra
 	 */
 	__host__
@@ -63,8 +70,6 @@ public:
 	__host__ __device__
 	static void CalculateShapeFunction(real a[4], real b[4], real c[4], const real r[12], const real r0[12], const real Ainv[16]);
 
-	
-
 	/**
 	 *	Calculates all physics Forces
 	 */
@@ -75,6 +80,7 @@ public:
 class SelingerPhysics : public Physics
 {
 public:
+	void Initialize(DataManager *data);
 	void CalculateForces(DataManager *data, real time);
 	void UpdateSystem(DataManager *data);
 };
