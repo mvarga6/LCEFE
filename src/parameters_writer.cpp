@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "../include/parameters_writer.h"
+#include "parameters_writer.h"
 
 
 using namespace std;

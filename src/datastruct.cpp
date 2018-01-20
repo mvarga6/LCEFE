@@ -1,7 +1,7 @@
-#include "../include/datastruct.h"
-#include "../include/errorhandle.h"
-#include "../include/defines.h"
-#include "../include/node_array.h"
+#include "datastruct.h"
+#include "errorhandle.h"
+#include "defines.h"
+#include "node_array.h"
 #include <stdio.h>
 
 #include "cuda.h"

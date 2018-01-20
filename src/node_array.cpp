@@ -1,5 +1,5 @@
-#include "../include/node_array.h"
-#include "../include/helpers_math.h"
+#include "node_array.h"
+#include "helpers_math.h"
 #include <stdio.h>
 
 NodeArray::NodeArray(int l){

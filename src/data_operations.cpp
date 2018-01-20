@@ -1,8 +1,8 @@
-#include "../include/data_operations.h"
-#include "../include/errorhandle.h"
+#include "data_operations.h"
+#include "errorhandle.h"
 #include "cuda.h"
 #include "cuda_runtime.h"
-#include "../include/texdef.h"
+#include "texdef.h"
 
 size_t global_texture_offset = 0;
 texture<real, 2, cudaReadModeElementType> texRef_r0;

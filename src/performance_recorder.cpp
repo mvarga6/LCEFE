@@ -1,5 +1,5 @@
-#include "../include/performance_recorder.h"
-#include "../include/errorhandle.h"
+#include "performance_recorder.h"
+#include "errorhandle.h"
 #include <sstream>
 
 using namespace std;

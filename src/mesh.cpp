@@ -1,7 +1,7 @@
-#include "../include/mesh.h"
-#include "../include/getgmsh.h"
-//#include "../include/getmesh.h"
-#include "../include/getAs.h"
+#include "mesh.h"
+#include "getgmsh.h"
+//#include "getmesh.h"
+#include "getAs.h"
 
 #include "file_operations.hpp"
 

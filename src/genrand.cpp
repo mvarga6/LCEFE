@@ -1,5 +1,5 @@
-#include "../include/genrand.h"
-#include "../include/defines.h"
+#include "genrand.h"
+#include "defines.h"
 
 int mt_index;
 unsigned long mt_buffer[MT_LEN];

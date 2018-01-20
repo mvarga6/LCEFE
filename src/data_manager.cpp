@@ -1,6 +1,6 @@
-#include "../include/data_manager.h"
-#include "../include/errorhandle.h"
-#include "../include/kernel_constants.h"
+#include "data_manager.h"
+#include "errorhandle.h"
+#include "kernel_constants.h"
 
 DataManager::DataManager(HostDataBlock *hostDataBlock, 
 	DevDataBlock *devDataBlock,

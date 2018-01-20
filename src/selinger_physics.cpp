@@ -1,7 +1,7 @@
-#include "../include/physics_model.h"
-#include "../include/physics_kernels.h"
-#include "../include/errorhandle.h"
-#include "../include/helpers_math.h"
+#include "physics_model.h"
+#include "physics_kernels.h"
+#include "errorhandle.h"
+#include "helpers_math.h"
 //#include <vector>
 #include <thrust/device_vector.h>
 #include <thrust/device_ptr.h>

@@ -1,4 +1,4 @@
-#include "../include/experiment.h"
+#include "experiment.h"
 
 ///
 /// Experiment Class

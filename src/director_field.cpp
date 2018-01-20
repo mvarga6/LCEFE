@@ -1,5 +1,5 @@
-#include "../include/director_field.h"
-#include "../include/genrand.h"
+#include "director_field.h"
+#include "genrand.h"
 #include <stdio.h>
 #include <math.h>
 #include <time.h>

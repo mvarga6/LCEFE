@@ -1,5 +1,5 @@
-#include "../include/tet_array.h"
-#include "../include/parameters.h"
+#include "tet_array.h"
+#include "parameters.h"
 #include <iostream>
 #include <fstream>
 

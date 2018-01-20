@@ -1,8 +1,8 @@
-#include "../include/experiment.h"
+#include "experiment.h"
 #include <exception>
-#include "../include/errorhandle.h"
-#include "../include/defines.h"
-#include "../include/math_kernels.h"
+#include "errorhandle.h"
+#include "defines.h"
+#include "math_kernels.h"
 
 #include "cuda.h"
 #include "cuda_runtime.h"

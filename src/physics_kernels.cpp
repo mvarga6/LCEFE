@@ -1,14 +1,14 @@
-#include "../include/physics_kernels.h"
+#include "physics_kernels.h"
 //#include "sendForce.h"
 //#include "read_dev_data.h"
-#include "../include/getQ.h"
-#include "../include/device_helpers.h"
-#include "../include/sumForce.h"
-#include "../include/kernel_constants.h"
-#include "../include/update_r.h"
-#include "../include/physics_model.h"
-#include "../include/texdef.h"
-#include "../include/helpers_math.h"
+#include "getQ.h"
+#include "device_helpers.h"
+#include "sumForce.h"
+#include "kernel_constants.h"
+#include "update_r.h"
+#include "physics_model.h"
+#include "texdef.h"
+#include "helpers_math.h"
 
 __constant__ PackedParameters Parameters;
 

@@ -1,13 +1,14 @@
-#include "../include/mesh_operations.h"
+
 #include <sstream>
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include "mesh_operations.h"
 //#include "getmesh.h"
-#include "../include/genrand.h"
-#include "../include/getAs.h"
-#include "../include/helpers_math.h"
-#include "../include/getgmsh.h"
+#include "genrand.h"
+#include "getAs.h"
+#include "helpers_math.h"
+#include "getgmsh.h"
 
 OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, TriArray* Tris, Logger *log)
 {

@@ -1,6 +1,6 @@
-#include "../include/tri_array.h"
+#include "tri_array.h"
 #include <stdexcept>
-#include "../include/helpers_math.h"
+#include "helpers_math.h"
 
 TriArray::TriArray(const int N) : MeshElementArray(N, TRIANGLE)
 {

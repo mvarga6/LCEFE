@@ -1,4 +1,4 @@
-#include "../include/output_writer.h"
+#include "output_writer.h"
 #include <fstream>
 
 using namespace std;
