@@ -12,6 +12,7 @@ TriArray::TriArray(const int N) : MeshElementArray(N, TRIANGLE)
     this->NodeRank = new int*[size];
     this->Com = new real*[size];
     this->Normal = new real*[size];
+    this->NormalSign = new int[size];
     this->Area = new real[size];
     this->TotalArea = 0;
 
@@ -207,7 +208,7 @@ real& TriArray::normal(int idx, int dim)
 int TriArray::normal_sign(int idx, float3 ref)
 {
     // get position of triangle
-
+    return this->NormalSign[idx];
 }
 
 
@@ -372,13 +373,14 @@ void TriArray::update_normals(NodeArray *nodes, float3 ref)
 
         // position relative to reference
         float3 Rref = ref - CoM;
+        real _dot = dot(Rref, make_float3(N[0], N[1], N[2]));
 
         // is normal pointing parallel or antiparallel to R
-        if (dot(Rref, make_float3(N[0], N[1], N[2])) < 0)
+        if (_dot < 0)
         {
-            this->NormalSign[i] = -1;
+            this->NormalSign[i] = 1;
         }
-        else this->NormalSign[i] = 1;
+        else this->NormalSign[i] = -1;
     }
 }
 

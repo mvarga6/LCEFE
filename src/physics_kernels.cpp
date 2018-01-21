@@ -229,7 +229,7 @@ __global__ void PressureForcesKernel(DevDataBlock data, const real V, const real
 			for (int i = 0; i < 3; i++) // each coord
 			{
 				// force component is normal comp scaled by force
-				F[i + n*3] = -_f * normal[i];
+				F[i + n*3] = _f * normal[i];
 			}		
 		}
 

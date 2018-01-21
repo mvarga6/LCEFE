@@ -116,7 +116,7 @@ void DeviceHelpers::SendTriForce(
 		NodeRank = node_rank[n];
 		for (int i = 0; i < 3; i++)
 		{
-			real before = dF[dFshift*(i+3*NodeRank) + idx];
+			//real before = dF[dFshift*(i+3*NodeRank) + idx];
 			dF[dFshift*(i+3*NodeRank) + idx] += F[i+3*n];
 
 #ifdef __DEBUG_SEND_FORCE__

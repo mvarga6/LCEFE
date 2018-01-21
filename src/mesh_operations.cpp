@@ -467,4 +467,6 @@ OperationResult EulerRotation::Run(TetArray *Tets, NodeArray *Nodes, TriArray* T
 	get_tet_pos(Nodes, Tets);
 
 	log->Msg("Complete");
+
+	return OperationResult::SUCCESS;
 }

@@ -246,6 +246,8 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 									, Ntris*sizeof(real)
 									, 3 ) );
 
+	HANDLE_ERROR( cudaMalloc((void**) &dev->TriNormalSign, Ntris*sizeof(int) ) );
+
 	printf("\n[ INFO ] TriToNodepitch = %d", dev->TriToNodepitch);
 	printf("\n[ INFO ] TriNodeRankpitch = %d", dev->TriNodeRankpitch);
 	printf("\n[ INFO ] TetNormalpitch = %d", dev->TriNormalpitch);

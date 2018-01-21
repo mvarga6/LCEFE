@@ -30,7 +30,7 @@ void SimulationRunner::RunDynamics(DataManager* data, Physics *physics, Simulati
 
 	// local variables
 	const real dt 			= parameters->Dynamics.Dt;
-	const real meshScale 	= parameters->Mesh.Scale;
+//	const real meshScale 	= parameters->Mesh.Scale;
 	const int iterPerFrame 	= parameters->Output.FrameRate;
 	const int nSteps 		= parameters->Dynamics.Nsteps;
 
@@ -88,4 +88,5 @@ int SimulationRunner::Exit()
 	//this->dataManager->Exit();
 	any_errors();
 	//exit_program(this->dev);
+	return 0;
 }
