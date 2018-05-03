@@ -26,6 +26,8 @@ public:
 		,real (&v_local)[12]
 		,real *Ainv_global
 		,int Ashift
+		,real *r0_global
+		,real *r_global
 		,real *v_global
 		,int vshift
 		,int *tet_node_rank_global
@@ -33,6 +35,7 @@ public:
 		,int *tet_to_node_global
 		,int TTNshift
 		,int Ntets
+		,int Nnodes
 	);
 	
 	///

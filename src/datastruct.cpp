@@ -150,107 +150,33 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	//set offset to be 0
 	//size_t offset = 0;
 
-	//used pitch linear memory on device for fast access
-	//allocate memory on device for pitched linear memory
+	//used all linear memory on device to patch memcpy
+	// of patched memory limit.
 
-	///
-	/// NODES
-	///
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->A, 16 * widthTETS*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->dF, heightMR * widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetToNode, 4*widthTETS*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->r0, 3*widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->r, 3*widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->v, 3*widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->F, 3*widthNODE*sizeof(real) ) );
 
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r0 
-		, &dev->r0pitch  
-		, widthNODE*sizeof(real) 
-		, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r 
-		, &dev->rpitch 
-		, widthNODE*sizeof(real) 
-		, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->v 
-		, &dev->vpitch 
-		, widthNODE*sizeof(real) 
-		, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->F
-		, &dev->Fpitch
-		, widthNODE*sizeof(real) 
-		, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->dF 
-		, &dev->dFpitch 
-		, widthNODE*sizeof(real) 
-		, heightMR ) );
-
-	printf("\n[ INFO ] r0pitch = %d", dev->r0pitch);
-	printf("\n[ INFO ] rpitch = %d", dev->rpitch);
-	printf("\n[ INFO ] vpitch = %d", dev->vpitch);
-	printf("\n[ INFO ] Fpitch = %d", dev->Fpitch);
-	printf("\n[ INFO ] dFpitch = %d", dev->dFpitch);
-
-	
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRankWrtTris, Nnodes*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetNodeRank, Ntets*4*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRank, Nnodes*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->m, Nnodes*sizeof(real) ) );
 
-	///
-	/// TETRAHEDRA
-	///
-
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->A 
-									, &dev->Apitch 
-									, widthTETS*sizeof(real) 
-									, height16 ) );
-
-	
-
-	// HANDLE_ERROR( cudaMallocPitch( (void**) &dev->F_tri 
-	// 								, &dev->Ftripitch 
-	// 								, widthNODE*sizeof(real) 
-	// 								, heightMR ) );
-
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->TetToNode 
-									, &dev->TetToNodepitch 
-									, widthTETS*sizeof(int) 
-									, height4 ) );
-
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TetNodeRank
-									, &dev->TetNodeRankpitch
-									, widthTETS*sizeof(int)
-									, height4 ) );
-
-	printf("\n[ INFO ] Apitch = %d", dev->Apitch);
-	printf("\n[ INFO ] TetToNodepitch = %d", dev->TetToNodepitch);
-	printf("\n[ INFO ] TetNodeRankpitch = %d", dev->TetNodeRankpitch);
-	
-	//HANDLE_ERROR( cudaMalloc( (void**) &dev->TetNodeRank, Ntets*4*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->pe, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetVol, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->ThPhi, Ntets*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
 	
-
-	///
-	/// TRIANGLES
-	///
-
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriToNode
-									, &dev->TriToNodepitch
-									, Ntris * sizeof(int)
-									, 3) );
-
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriNodeRank
-									, &dev->TriNodeRankpitch
-									, Ntris*sizeof(int)
-									, 3 ) );
-
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriNormal
-									, &dev->TriNormalpitch
-									, Ntris*sizeof(real)
-									, 3 ) );
-
+	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriToNode, 3*Ntris * sizeof(int)) );
+	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriNodeRank, 3*Ntris*sizeof(int) ) );
+	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriNormal, 3*Ntris*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc((void**) &dev->TriNormalSign, Ntris*sizeof(int) ) );
-
-	printf("\n[ INFO ] TriToNodepitch = %d", dev->TriToNodepitch);
-	printf("\n[ INFO ] TriNodeRankpitch = %d", dev->TriNodeRankpitch);
-	printf("\n[ INFO ] TetNormalpitch = %d", dev->TriNormalpitch);
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRankWrtTris, Nnodes*sizeof(int) ) );
 
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->EnclosedVolume, Ntris * sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->TriArea, Ntris * sizeof(real) ) );
