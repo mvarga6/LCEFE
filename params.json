@@ -3,8 +3,8 @@ dt: 0.000005
 framerate: 100
 meshfile: "Mesh/SphericalShell4.msh"
 meshScale: 1.0
-outputBase: "VTKOUT/test"
-cxxxx: 29140000
+outputBase: "VTKOUT/SphereShell4_test"
+cxxxx: 29400000
 cxxyy: 28000000
 cxyxy: 570000
 alpha: 150000

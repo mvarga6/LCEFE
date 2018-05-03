@@ -176,13 +176,11 @@ bool PushTetToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 
 bool PushTriToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
-		cudaMemcpy2D( dev->TriToNode
+	size_t size = host->Ntris*3*sizeof(int);
+	HANDLE_ERROR(
+		cudaMemcpy( dev->TriToNode
 		, dev->TriToNodepitch
-		, host->TriToNode
-		, host->Ntris*sizeof(int)
-		, host->Ntris*sizeof(int)
-        , 3
+		, size
 		, cudaMemcpyHostToDevice ) 
 	);
 	return true;
@@ -254,13 +252,11 @@ bool PushTriAreaToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 
 bool PushTriNormalToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
+	size_t size = host->Ntris*3*sizeof(real);
 	HANDLE_ERROR( 
-		cudaMemcpy2D( dev->TriNormal
-		, dev->TriNormalpitch
+		cudaMemcpy( dev->TriNormal
 		, host->TriNormal
-		, host->Ntris*sizeof(real)
-		, host->Ntris*sizeof(real)
-        , 3
+		, size
 		, cudaMemcpyHostToDevice ) 
 	);
 
@@ -275,35 +271,31 @@ bool PushTriNormalToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 }
 
 
-bool BindPositionTexture::operator()(DevDataBlock *dev, HostDataBlock *host)
-{
-	HANDLE_ERROR( 
-		cudaBindTexture2D( &global_texture_offset 
-		, texRef_r
-		, dev->r
-		, texRef_r.channelDesc
-		, host->Nnodes
-		, 3
-		, dev->rpitch) );
-	texRef_r.normalized = false;
-	return true;	
-}
+// bool BindPositionTexture::operator()(DevDataBlock *dev, HostDataBlock *host)
+// {
+// 	HANDLE_ERROR( 
+// 		cudaBindTexture2D( &global_texture_offset 
+// 		, texRef_r
+// 		, dev->r
+// 		, texRef_r.channelDesc
+// 		, host->Nnodes
+// 		, 3
+// 		, dev->rpitch) );
+// 	texRef_r.normalized = false;
+// 	return true;	
+// }
 
 
-bool BindReferencePositionTexture::operator()(DevDataBlock *dev, HostDataBlock *host)
-{
-	HANDLE_ERROR( 
-		cudaBindTexture2D( &global_texture_offset 
-		, texRef_r0
-		, dev->r0
-		, texRef_r0.channelDesc
-		, host->Nnodes
-		, 3
-		, dev->r0pitch) );
-	texRef_r0.normalized = false;
-	return true;	
-}
-
-
-
-
+// bool BindReferencePositionTexture::operator()(DevDataBlock *dev, HostDataBlock *host)
+// {
+// 	HANDLE_ERROR( 
+// 		cudaBindTexture2D( &global_texture_offset 
+// 		, texRef_r0
+// 		, dev->r0
+// 		, texRef_r0.channelDesc
+// 		, host->Nnodes
+// 		, 3
+// 		, dev->r0pitch) );
+// 	texRef_r0.normalized = false;
+// 	return true;	
+// }
