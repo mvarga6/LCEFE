@@ -35,9 +35,9 @@ void DeviceHelpers::ReadGlobalToLocal(
 			if(cord < 3)
 			{
 				//get orignal positions
-				r0_local[cord+n*3] = tex2D(texRef_r0, node_idx, cord);
-				r_local[cord+n*3]  = tex2D(texRef_r, node_idx, cord);
-				v_local[cord+n*3]  = v_global[vshift*(cord+n*3) + node_idx];
+				r0_local[cord+n*3] = r0_global[Nnodes*cord + node_idx];
+				r_local[cord+n*3]  = r_global[Nnodes*cord + node_idx]
+				v_local[cord+n*3]  = v_global[Nnodes*cord + node_idx];
 			}//cord<3
 					//get values of Ainv
 			Ainv_local[cord+n*4] = Ainv_global[Ashift*(cord+n*4) + tid];

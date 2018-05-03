@@ -12,10 +12,20 @@ __constant__ PackedParameters Parameters;
 
 __global__ void ForceKernel(DevDataBlock data, real t)
 {
-	int Ashift = data.Apitch/sizeof(real);
-	int dFshift = data.dFpitch/sizeof(real);
-	int vshift = data.vpitch/sizeof(real);
-	int TTNshift = data.TetToNodepitch/sizeof(int);
+	// ** NOTE **
+	// Not using pitched memory anymore
+	// so shift values are just equal to
+	// to either the # of tets or nodes
+	// based on what the array is.
+	// Assigning the same values here so not
+	// every function definition and parameters
+	// need to change.
+	const int Ntets = data.Ntets;
+	const int Nnodes = data.Nnodes;
+	const int Ashift = Ntets;
+	const int dFshift = Nnodes;
+	const int vshift = Nnodes;
+	const int TTNshift = Ntets;
 	real Ainv[16];
 	real r[12];
 	real r0[12];

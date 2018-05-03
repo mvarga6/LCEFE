@@ -112,36 +112,16 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	//set offset to be 0
 	//size_t offset = 0;
 
-	//used pitch linear memory on device for fast access
-	//allocate memory on device for pitched linear memory
+	//used all linear memory on device to patch memcpy
+	// of patched memory limit.
 
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->A 
-									, &dev->Apitch 
-									, widthTETS*sizeof(real) 
-									, height16 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->dF 
-									, &dev->dFpitch 
-									, widthNODE*sizeof(real) 
-									, heightMR ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->TetToNode 
-									, &dev->TetToNodepitch 
-									, widthTETS*sizeof(real) 
-									, height4 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r0 
-									, &dev->r0pitch  
-									, widthNODE*sizeof(real) 
-									, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->r 
-									, &dev->rpitch 
-									, widthNODE*sizeof(real) 
-									, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->v 
-									, &dev->vpitch 
-									, widthNODE*sizeof(real) 
-									, height3 ) );
-	HANDLE_ERROR( cudaMallocPitch( (void**) &dev->F, &dev->Fpitch
-									, widthNODE*sizeof(real) 
-									, height3 ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->A, 16 * widthTETS*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->dF, heightMR * widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetToNode, 4*widthTETS*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->r0, 3*widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->r, 3*widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->v, 3*widthNODE*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc( (void**) &dev->F, 3*widthNODE*sizeof(real) ) );
 
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->TetNodeRank, Ntets*4*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRank, Nnodes*sizeof(int) ) );
