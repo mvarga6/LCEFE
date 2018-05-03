@@ -17,86 +17,68 @@
 //                                                             //
 //=============================================================//
 
-
-//#include "mainhead.h"
 #include "simulation_parameters.h"
 #include "parameters_reader.h"
 #include "parameters_writer.h"
 #include "output_writer.h"
 #include "data_manager.h"
-//#include "constant_cuda_defs.h"
 #include "performance_recorder.h"
-#include "mesh_optimizer.h"
+#include "mesh_operations.h"
 #include "director_field.h"
 #include "mesh.h"
 #include "functions.hpp"
 #include "logger.h"
 #include "helpers_math.h"
-
-// these will go away into their own service class
-#include "getAs.h"
-#include "setn.h"
-#include "printmeshorder.h"
-#include "packdata.h"
+#include "data_procedures.h"
+#include "simulation_runner.h"
+#include "experiment.h"
+#include "pointer.h"
 #include "errorhandle.h"
-#include "datatodevice.h"
-#include "anyerrors.h"
-#include "exit_program.h"
 
 int main(int argc, char *argv[])
 {
-	// Move this somewhere else
-	//Get Device properties
-	cudaDeviceProp prop;
-	HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
-	printf( "Code executing on %s\n\n", prop.name );
-	//displayGPUinfo(prop);
+	// create a console logger
+	Logger * log = new ConsoleLogger();
 
-	// Read simulation parameters
-	SimulationParameters parameters;
-	ParametersReader * reader = new ParametersReader();
-	ParseResult result;
-	
-	// from cmdline
-	result = reader->ReadFromCmdline(argc, argv, parameters);
-	if (result != SUCCESS)
+	// for timing data
+	PerformanceRecorder * recorder = new PerformanceRecorder(log);
+
+	///
+	/// Handle user input
+	///
+
+	// create parameters object
+	ParametersReader * reader = new ParametersReader(log);
+	SimulationParameters * parameters = reader->Read(argc, argv);
+
+	if (!reader->Success())
 	{
-		return (int)result;
-	}
-		
-	// from file if given
-	if (!parameters.File.empty())
-	{
-		result = reader->ReadFromFile(parameters.File, parameters);
-		if (result != SUCCESS)
-		{
-			return (int)result;
-		}
+		printf("%s\n", reader->Result().Message.c_str());
+		return (int)reader->Status();
 	}
 	
 	// to write the parameters to console
-	ParametersWriter * writer = new ConsoleWriter();
+	ParametersWriter * writer = new LogWriter(log);
 	writer->Write(parameters);
-		
-	// create a console logger
-	Logger * log = new ConsoleLogger();
 	
-	// for timing data
-	PerformanceRecorder * recorder = new PerformanceRecorder();;
+	///
+	/// Create a Mesh from file
+	///
+
 	recorder->Create("init")->Start();
-	
-	// for printing to output files
-	VtkWriter * vtkWriter = new VtkWriter(parameters.Output.Base);
-	
-	// the mesh object
-	Mesh * mesh = new Mesh(&parameters, log);
+
+	Mesh * mesh = new Mesh(parameters, log);
 
 	bool cachedMesh;
 	if (!mesh->Load(&cachedMesh))
 	{
-		// TODO: log failure
+		log->Error("Failed to load mesh, exiting");
 		exit(10);
 	}
+
+	///
+	/// Optimize the mesh if need be
+	///
 
 	// we cache an optimized version of the mesh
 	if (!cachedMesh)
@@ -105,126 +87,99 @@ int main(int argc, char *argv[])
 		log->Msg(" *** Optimizing mesh *** ");
 		
 		// simple sorting based on location in sim space
-		MeshOptimizer * simpleSort = new SortOnTetrahedraPosition(log);
-		mesh->Apply(simpleSort);
+		mesh->Apply(new SortOnTetrahedraPosition());
 		
 		// re-order using mc simulation
-		MeshOptimizer * mcReorder = new MonteCarloMinimizeDistanceBetweenPairs(300.0f, 0.01f, 0.9999995f, log);
-		mesh->Apply(mcReorder);
+		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.999999f));
 		
 		// re-index the mesh and tet's neighbors
-		MeshOptimizer * reIndex = new ReassignIndices(log);
-		mesh->Apply(reIndex);
+		mesh->Apply(new ReassignIndices());
 		
 		// save the optimized mesh
 		mesh->Cache();
 	}
 	else
 	{
-		// TODO: Index assignment should happen when reading mesh automatically
-		MeshOptimizer * reIndex = new ReassignIndices(log);
-		mesh->Apply(reIndex);
-		
+		mesh->Apply(new ReassignIndices());
 		log->Msg("Mesh Loaded from cache!");
 	}
 	
-	
-	
-	//set director n for each tetrahedra
-	//set_n(*mesh->Tets, &parameters);
-	
-	// Get the director field (default for now)
-	//DirectorField * director = new UniformField(PI / 2, 0.0f);
-	
-	//UnivariableFunction *theta_of_x = new Linear({1.0f});
-	//UnivariableFunction *phi_of_y = new Sinusoinal(/* some simulation length */);	
-	//ScalerField3D * theta = new MultiplicativeField3D(theta_of_x);
-	//ScalerField3D * phi = new AdditiveField3D(NULL, phi_of_y);	
-	
-	//UnivariableFunction *phi_of_z = new Linear({(PI / 6)}, PI / 4.0f);
-	//ScalerField3D * theta 		  = new ConstantField3D(PI / 4.0f);
-	//ScalerField3D * phi 	 	  = new AdditiveField3D(NULL, NULL, phi_of_z);
-	//DirectorField * director 	  = new CartesianDirectorField(theta, phi);
-	
-	if (!(mesh->CalculateVolumes() 
-		&& mesh->CalculateAinv()))
-	{
-		// failed to calculate necessary things on mesh
-		exit(11);
-	}
-	
-			
-	const float3 origin = make_float3(0.0f, 0.0f, 0.0f);
+	///
+	/// Calculate values for mesh
+	///
+
+	mesh->Apply(new CalculateVolumes());
+	mesh->Apply(new CalculateAinv());
+
+	///
+	/// Endow mesh with liquid crystal properities
+	///
+
+	// create director field
+	const float3 origin 	 = make_float3(0.0f, 0.0f, 0.0f);
 	DirectorField * director = new RadialDirectorField(origin);
-	mesh->SetDirector(director);
-	
-	//pritn director
-	mesh->Tets->printDirector(parameters.Output.Base);
+	mesh->Apply(new SetDirector(director));
+			
+	//print director
+	mesh->Tets->printDirector(parameters->Output.Base);
 
-	//now ready to prepare for dyanmics
-	//delcare data stuctures for data on device
-	//and host
-	DevDataBlock dev;
-	HostDataBlock host;
-	DataManager * dataManager = new DataManager(&host, &dev);
-	
-	std::vector<int> surfTets;
+	///
+	/// Create data management objects
+	///
 
-	//Pack data to send to device
-	packdata(*mesh->Nodes, *mesh->Tets, &host, &surfTets, &parameters);
-	
-	//send data to device
-	data_to_device(&dev, &host, &parameters, dataManager);
+	// Create Host and Device Data blocks with the mesh
+	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, parameters);
+	DevDataBlock 	* dev 	= host->CreateDevDataBlock();
+	DataProcedure 	* setup = new PushAllToGpu();
+	DataProcedure 	* print = new GetPrintData();
+	DataManager 	* data 	= new DataManager(host, dev, parameters, setup, print, NULL);
+
+	///
+	/// Create the experiment to run
+	///
+
+	Experiment * experiment = new Experiment();
+	real start = parameters->Dynamics.ExperimentStart();
+	real stop = parameters->Dynamics.ExperimentStop();
+	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
+	experiment->AddComponent("OrderDynamics", orderDynamics);
+
+	///
+	/// Create the physics model to simulate
+	///
+
+	Physics * physics = new SelingerPhysics();
+
+	///
+	/// Print info before running simulation
+	///
 
 	//Print Simulation Parameters and Such
-	printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
-				parameters.Output.FrameRate,
-				host.totalVolume,
-				host.totalVolume * parameters.Material.Density);
+	// printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
+	// 			parameters.Output.FrameRate,
+	// 			host->totalVolume,
+	// 			host->totalVolume * parameters.Material.Density);
 
 
-	//=================================================================
-	//initillize GPU syncronization arrays
-	//will store syncronization information
-	//=================================================================
-	int Threads_Per_Block = parameters.Gpu.ThreadsPerBlock;
-	int Blocks = (mesh->Tets->size + Threads_Per_Block) / Threads_Per_Block;
-	int *Syncin,*Syncout,*g_mutex, *SyncZeros;
-	//allocate memory on device for Syncin and Syncoutd
-	
-	HANDLE_ERROR( cudaMalloc( (void**)&Syncin, Blocks*sizeof(int) ) );
-	HANDLE_ERROR( cudaMalloc( (void**)&Syncout, Blocks*sizeof(int) ) );
-	SyncZeros = (int*)malloc(Blocks*sizeof(int));
-	
-	for (int i = 0; i < Blocks; i++)
-	{
-		SyncZeros[i]=0;
-	}
-	
-	HANDLE_ERROR( cudaMemcpy(Syncin, SyncZeros, Blocks*sizeof(int), cudaMemcpyHostToDevice ) );
-	//allocate global mutex and set =0 
-	HANDLE_ERROR( cudaMalloc( (void**)&g_mutex, sizeof(int) ) );
-	HANDLE_ERROR( cudaMemset( g_mutex, 0, sizeof(int) ) );
+	// // TODO: Move gpu info print somewhere else
+	// //Get Device properties
+	// cudaDeviceProp prop;
+	// HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
+	// printf( "Code executing on %s\n\n", prop.name );
+	//displayGPUinfo(prop);
 	 
 	recorder->Stop("init");
 	recorder->Log("init");
 	 
-	//=================================================================
-	//run dynamics
-	//=================================================================
-	run_dynamics(&dev, &host, &parameters, Syncin, Syncout, g_mutex, &surfTets, vtkWriter, dataManager, recorder);
+	///
+	/// Run a simulation the experiment with given physics
+	///
 
-	//check for CUDA erros
-	any_errors();
+	// for printing to output files
+	VtkWriter * vtkWriter = new VtkWriter(parameters->Output.Base);
 
-	//exit program
-
-	HANDLE_ERROR(cudaFree( Syncin ) );
-	HANDLE_ERROR(cudaFree( Syncout ) );
-	HANDLE_ERROR(cudaFree( g_mutex ) );
-	exit_program(&dev);
-
-	//*/
-
-    return 0;
+	// Create the simulation running environment
+	SimulationRunner * sim = new SimulationRunner(vtkWriter, log, recorder);
+	sim->RunDynamics(data, physics, parameters, experiment);
+    return sim->Exit();
 }

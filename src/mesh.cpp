@@ -1,6 +1,6 @@
 #include "mesh.h"
 #include "getgmsh.h"
-#include "getmesh.h"
+//#include "getmesh.h"
 #include "getAs.h"
 
 #include "file_operations.hpp"
@@ -46,50 +46,24 @@ bool Mesh::Cache()
 }
 
 
-void Mesh::SetDirector(DirectorField *field)
+
+void Mesh::Apply(MeshOperation *operation)
 {
-	int Ntets = this->Tets->size;
-	
-	DirectorOrientation dir;
-	real x, y, z;
-	
-	for (int t = 0; t < Ntets; t++)
-	{
-		// the position of this tet
-		x = this->Tets->get_pos(t, 0);
-		y = this->Tets->get_pos(t, 1);
-		z = this->Tets->get_pos(t, 2);
-	
-		// get the director there
-		// done this way so it could be read
-		// from file or hardcoded etc
-		dir = field->GetDirectorAt(x, y, z);
-		
-		// assign 
-		this->Tets->set_theta(t, dir.theta);
-		this->Tets->set_phi(t, dir.phi);
-	}
-}
-
-
-
-void Mesh::Apply(MeshOptimizer *optimizer)
-{
-	OptimizationResult result;
+	OperationResult result;
 	try
 	{
-		result = optimizer->Run(this->Tets, this->Nodes);
+		result = operation->Run(this->Tets, this->Nodes, this->log);
 		switch(result)
 		{
-		case OptimizationResult::SUCCESS:
+		case OperationResult::SUCCESS:
 			// log success
 			return;
 		
-		case OptimizationResult::FAILURE_NO_OPTIMATION:
+		case OperationResult::FAILURE_NO_OPTIMATION:
 			// log no optimization
 			return;
 		
-		case OptimizationResult::FAILURE_EXCEPTION_THROWN:
+		case OperationResult::FAILURE_EXCEPTION_THROWN:
 			// log exception
 			exit(101);
 		
@@ -105,81 +79,6 @@ void Mesh::Apply(MeshOptimizer *optimizer)
 	}
 }
 
-
-
-bool Mesh::CalculateVolumes()
-{
-	try
-	{
-		real tempVol;
-		int n0, n1, n2, n3;
-		int Ntets = this->Tets->size;
-	
-		//calculate volume of each tetrahedra
-		for(int t = 0;t < Ntets; t++)
-		{
-			n0 = Tets->get_nab(t,0);
-			n1 = Tets->get_nab(t,1);
-			n2 = Tets->get_nab(t,2);
-			n3 = Tets->get_nab(t,3);
-			tempVol = tetVolume( Nodes->get_pos(n0,0)
-								,Nodes->get_pos(n0,1)
-								,Nodes->get_pos(n0,2)
-								,Nodes->get_pos(n1,0)
-								,Nodes->get_pos(n1,1)
-								,Nodes->get_pos(n1,2)
-								,Nodes->get_pos(n2,0)
-								,Nodes->get_pos(n2,1)
-								,Nodes->get_pos(n2,2)
-								,Nodes->get_pos(n3,0)
-								,Nodes->get_pos(n3,1)
-								,Nodes->get_pos(n3,2));
-
-			Tets->set_volume(t,tempVol);
-		}
-	
-	
-		//calculate effective volume of each node
-		int i;
-		for(int t = 0; t < Ntets; t++)
-		{
-			tempVol = 0.25 * Tets->get_volume(t);
-			for (int tn = 0; tn < 4; tn++)
-			{
-				i = Tets->get_nab(t,tn);
-				Nodes->add_volume(i,tempVol);
-			}
-		}
-
-		//normalize volume so that each node
-		//has an average volume of 1
-		//i_Node.normalize_volume(real(Nnodes));
-
-		//calculate total volume
-		Tets->calc_total_volume();
-		
-		return true;
-	}
-	catch (const std::exception& e)
-	{
-		this->log->Error(e.what());
-		return false;
-	}
-}
-
-bool Mesh::CalculateAinv()
-{
-	try
-	{
-		init_As(*Nodes, *Tets);
-		return true;
-	}
-	catch (const std::exception& e)
-	{
-		this->log->Error(e.what());
-		return false;
-	}
-}
 
 
 bool Mesh::LoadMesh(const std::string &meshFile)
@@ -227,7 +126,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	// read the positions of nodes and tet indices
 	try
 	{
-		get_tet_pos(*Nodes, *Tets);
+		get_tet_pos(Nodes, Tets);
 	}
 	catch (const std::exception& e)
 	{

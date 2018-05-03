@@ -1,0 +1,41 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.cpp": "cuda",
+			"*.h": "cuda"
+		},
+		"editor.tokenColorCustomizations": {
+			"textMateRules": [
+				{
+					"scope": "support.function.cuda-cpp",
+					"settings":{
+						"foreground": "#1a4dbb"
+					}
+				},
+				{
+					"scope": "keyword.function.qualifier.cuda-cpp",
+					"settings":{
+						"foreground": "#f33131f6"
+					}
+				},
+				{
+					"scope": "meta.kernel-call.cuda-cpp entity.name.function.c",
+					"settings": {
+						"foreground": "#cc092a"
+					}
+				},
+				{
+					"scope": "punctuation.section.kernel",
+					"settings":{
+						"foreground": "#a3d48f"
+					}
+				}
+			]
+		}
+	}
+}

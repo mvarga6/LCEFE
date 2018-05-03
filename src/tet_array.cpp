@@ -1,7 +1,8 @@
 #include "tet_array.h"
 #include "parameters.h"
+#include <fstream>
 
-TetArray::TetArray(int N){
+TetArray::TetArray(const int N, const real S0){
 	size = N;
 	TetVolume = new real[size];
 	TetNab = new int[size*4];
@@ -10,14 +11,16 @@ TetArray::TetArray(int N){
 	TetinvA = new real[size*16];
 	TetNodeRank = new int[size*4];
 	ThPhi = new real[size*2];
-	S = new int[size];
+	S = new real[size];
 	totalVolume = 0.0;
 
-	for(int i=0;i<size*4;i++){
-		TetNodeRank[i] =0;
-		if(i<size){
+	for(int i=0;i<size*4;i++)
+	{
+		TetNodeRank[i] = 0;
+		if(i<size)
+		{
 			TetVolume[i] = 0.0;
-			S[i] = S0*SRES; // init S to -1 for debugging
+			S[i] = S0;
 		}//if i
 	}//i
 }
@@ -117,9 +120,9 @@ void TetArray::set_phi(int i ,const real &newval){
 // sets S for ith tet by converting to int with _S_RES factor
 void TetArray::set_S(int i, const real &newval){
 		int ival;
-		if(newval > 1.0f) ival = 1;
-		else if(newval < 0) ival = 0;
-		else ival = int(newval * SRES);
+		if(newval > 1.0) ival = 1;
+		else if(newval < -0.5) ival = -0.5;
+		else ival = newval;
 		this->S[i] = ival;
 }
 
@@ -129,68 +132,98 @@ int TetArray::get_ThPhi(int i){
 	return th*10000+phi;
 }
 
-real TetArray::get_fS(int i){ //returns real
-	return (real(this->S[i]) / SRES); // converts S back to real in [ 0.0 : 1.0 ]
-}
-
-int TetArray::get_iS(int i){
-	return this->S[i]; //returns int w/o converting back to real range
+real TetArray::get_S(int i){ //returns real
+	return this->S[i];
 }
 
 void TetArray::printDirector(std::string outputBase)
 {
-  real th, ph;
-  char fout[128];
-  sprintf(fout, "%s_dir.vtk", outputBase.c_str());
-  FILE * out;
-//  out = fopen("Output//dir.vtk","w");
-  out = fopen(fout,"w");
-  fprintf(out,"# vtk DataFile Version 3.1\n");
-  fprintf(out,"director profile\n");
-  fprintf(out,"ASCII\n");
-  fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
-  fprintf(out,"\n");
-  fprintf(out,"POINTS %d float\n",size);
-  
-  //loop over tetrahedras to get positons
-  for (int i = 0; i < size; i++)
-  {
-    fprintf(out,"%f %f %f\n",TetPos[i*4],TetPos[i*4+1],TetPos[i*4+2]);
-  }//i
-  fprintf(out,"\n");
+	std::string fileName(outputBase + "_dir.xyzv");
 
-  //cells
-  fprintf(out,"CELLS %d %d\n",size,size*2);
-  for(int i = 0; i < size; i++)
-  {
-    fprintf(out,"1 %d\n",i);
-  }//i
-  fprintf(out,"\n");
-  
-  //cell types
-  fprintf(out,"CELL_TYPES %d\n",size);
-  for(int i = 0; i < size; i++)
-  {
-    fprintf(out,"1\n");
-  }//i
-  fprintf(out,"\n");
+	std::ofstream fout(fileName.c_str());
+	if (!fout.is_open())
+	{
+		printf("\n[ Error ] Failed to open director print file: %s", outputBase.c_str());
+	}
 
-  //vector data
-  fprintf(out,"POINT_DATA %d\n",size);
-  fprintf(out,"VECTORS director float\n");
-  real nx, ny, nz;
-  for(int i = 0; i < size; i++)
-  {
-    th = ThPhi[i*2];
-    ph = ThPhi[i*2+1];
-    nx = sinf(th)*cosf(ph);
-    ny = sinf(th)*sinf(ph);
-    nz = cosf(th);
-    fprintf(out,"%f %f %f\n", nx, ny, nz);
-  }//i
-  fprintf(out,"\n");
+	
+	// variables
+	real nx, ny, nz, th, ph, x, y, z;
+	
+	// write file header
+	printf("\n[ INFO ] Writing director file: %s", fileName.c_str());
+	fout << this->size << std::endl << "LCE director" << std::endl;
+	for(int i = 0; i < size; i++)
+	{
+		th = ThPhi[i*2];
+    	ph = ThPhi[i*2+1];
+	
+		nx = sinf(th)*cosf(ph);
+    	ny = sinf(th)*sinf(ph);
+    	nz = cosf(th);
+    	
+    	x = this->get_pos(i, 0);
+    	y = this->get_pos(i, 1);
+    	z = this->get_pos(i, 2);
+    	
+    	fout << "A " << x << " " << y << " " << z << " "
+    		 << nx << " " << ny << " " << nz << std::endl;
+	}
+	fout.close();
+	printf("\n[ INFO ] Complete");
+	
+//  real th, ph;
+//  char fout[128];
+//  sprintf(fout, "%s_dir.vtk", outputBase.c_str());
+//  FILE * out;
+////  out = fopen("Output//dir.vtk","w");
+//  out = fopen(fout,"w");
+//  fprintf(out,"# vtk DataFile Version 3.1\n");
+//  fprintf(out,"director profile\n");
+//  fprintf(out,"ASCII\n");
+//  fprintf(out,"DATASET UNSTRUCTURED_GRID\n");
+//  fprintf(out,"\n");
+//  fprintf(out,"POINTS %d float\n",size);
+//  
+//  //loop over tetrahedras to get positons
+//  for (int i = 0; i < size; i++)
+//  {
+//    fprintf(out,"%f %f %f\n",TetPos[i*4],TetPos[i*4+1],TetPos[i*4+2]);
+//  }//i
+//  fprintf(out,"\n");
 
-  fclose(out); 
+//  //cells
+//  fprintf(out,"CELLS %d %d\n",size,size*2);
+//  for(int i = 0; i < size; i++)
+//  {
+//    fprintf(out,"1 %d\n",i);
+//  }//i
+//  fprintf(out,"\n");
+//  
+//  //cell types
+//  fprintf(out,"CELL_TYPES %d\n",size);
+//  for(int i = 0; i < size; i++)
+//  {
+//    fprintf(out,"1\n");
+//  }//i
+//  fprintf(out,"\n");
+
+//  //vector data
+//  fprintf(out,"POINT_DATA %d\n",size);
+//  fprintf(out,"VECTORS director float\n");
+//  real nx, ny, nz;
+//  for(int i = 0; i < size; i++)
+//  {
+//    th = ThPhi[i*2];
+//    ph = ThPhi[i*2+1];
+//    nx = sinf(th)*cosf(ph);
+//    ny = sinf(th)*sinf(ph);
+//    nz = cosf(th);
+//    fprintf(out,"%f %f %f\n", nx, ny, nz);
+//  }//i
+//  fprintf(out,"\n");
+
+//  fclose(out); 
 
 }//print director
 

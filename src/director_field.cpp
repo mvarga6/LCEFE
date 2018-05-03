@@ -1,6 +1,8 @@
 #include "director_field.h"
-
+#include "genrand.h"
 #include <stdio.h>
+#include <math.h>
+#include <time.h>
 
 UniformField::UniformField(const real theta, const real phi)
 {
@@ -57,6 +59,23 @@ DirectorOrientation RadialDirectorField::GetDirectorAt(
 	const real dz = z - origin.z;
 	result.theta = atan2(sqrt(dx*dx + dy*dy), dz);
 	result.phi = atan2(dy, dx);
-	//printf("\n%.2f %.2f %.2f %.2f %.2f", dx, dy, dz, result.theta, result.phi);
+	return result;
+}
+
+RandomDirectorField::RandomDirectorField()
+{ 
+	srand(time(NULL));    //seed random number generator
+	mt_init();       //initialize random number generator
+	purge();         //free up memory in random number generator
+}
+
+DirectorOrientation RandomDirectorField::GetDirectorAt(
+	const real x,
+	const real y, 
+	const real z)
+{
+	DirectorOrientation result;
+	result.theta = genrand() * M_PI;
+	result.phi = genrand() * 2.0 * M_PI;
 	return result;
 }

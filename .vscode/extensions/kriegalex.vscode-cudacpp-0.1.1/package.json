@@ -1,0 +1,58 @@
+{
+	"name": "vscode-cudacpp",
+	"displayName": "vscode-cudacpp",
+	"author": {
+		"name": "Marco Lourenço",
+		"email": "kriegalex@outlook.com"
+	},
+	"icon": "images/cudaIcon.png",
+	"description": "CUDA C++ language support for Visual Studio Code",
+	"version": "0.1.1",
+	"publisher": "kriegalex",
+	"engines": {
+		"vscode": "^1.18.0"
+	},
+	"categories": [
+		"Languages",
+		"Snippets"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/kriegalex/vscode-cuda.git"
+	},
+	"contributes": {
+		"languages": [
+			{
+				"id": "cuda",
+				"aliases": [
+					"CUDA C++",
+					"cuda"
+				],
+				"extensions": [
+					".cu",
+					".cuh",
+					"h"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "cuda",
+				"scopeName": "source.cuda-cpp",
+				"path": "./syntaxes/cuda.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "cuda",
+				"path": "./snippets/cuda.json"
+			}
+		]
+	},
+	"__metadata": {
+		"id": "561483af-12d7-46c5-aab0-1e8c1bd28fe0",
+		"publisherId": "13895be2-57aa-4607-b9b1-98a1c5da71ad",
+		"publisherDisplayName": "kriegalex"
+	}
+}
