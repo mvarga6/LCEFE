@@ -57,10 +57,11 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 			NodeNum, TetNodeRank,
 			Ainv, r0, r, vlocal,
 			data.A, Ashift,
+			data.r0, data.r,
 			data.v, vshift,
 			data.TetNodeRank,
 			data.TetToNode, TTNshift,
-			data.Ntets
+			Ntets, Nnodes
 		);
 		
 		//========================================
