@@ -172,9 +172,9 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
 	
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriToNode, 3*Ntris * sizeof(int)) );
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriNodeRank, 3*Ntris*sizeof(int) ) );
-	HANDLE_ERROR( cudaMallocPitch((void**) &dev->TriNormal, 3*Ntris*sizeof(real) ) );
+	HANDLE_ERROR( cudaMalloc((void**) &dev->TriToNode, 3*Ntris * sizeof(int)) );
+	HANDLE_ERROR( cudaMalloc((void**) &dev->TriNodeRank, 3*Ntris*sizeof(int) ) );
+	HANDLE_ERROR( cudaMalloc((void**) &dev->TriNormal, 3*Ntris*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc((void**) &dev->TriNormalSign, Ntris*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->nodeRankWrtTris, Nnodes*sizeof(int) ) );
 
