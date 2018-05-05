@@ -96,4 +96,5 @@ bool LogWriter::Write(SimulationParameters * parameters)
 	log->Info(formatted("meshscale:       %0.2f", parameters->Mesh.Scale));
 	log->Info(formatted("caching:         %s", (parameters->Mesh.CachingOn ? "ON" : "OFF")));
 	log->Info("");
+	return true;
 }
