@@ -36,6 +36,10 @@ clean:
 	rm -f *.a *.so
 	rm -f simple_example
 	rm -f jsondump
+	rm -f test/test_default
+	rm -f test/test_links
+	rm -f test/test_strict
+	rm -f test/test_strict_links
 
 .PHONY: all clean test
 
