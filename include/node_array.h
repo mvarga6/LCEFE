@@ -16,6 +16,7 @@ public:
 	real *MyForce;
 	int *NewNum;
 	int *totalRank;
+	int *rankInTris;
 	real *volume;
 	int size;
 
@@ -43,6 +44,24 @@ public:
 	real min_point(int cord);
 
 	///
+	/// Increment rank of ith node for tets its in
+	void increment_rank_wrt_tets(int i);
+
+	///
+	/// Increment rank of ith node for tris its in
+	void increment_rank_wrt_tris(int i);
+
+	///
+	/// returns the rank of ith node w.r.t. tetrahedra
+	/// that contain it
+	int get_rank_wrt_tets(int i);
+
+	///
+	/// returns the rank of ith node w.r.t. triangles
+	/// that contain it
+	int get_rank_wrt_tris(int i);
+
+	///
 	/// Method to translate the nodes in Euclidean space
 	void translate(const real&, const real &, const real &);
 
@@ -57,6 +76,23 @@ public:
 	///
 	/// Method to reorder the nodes
 	void reorder(std::vector<int> const &order);
+
+	///
+	/// Distance between two nodes
+	real dist(int i, int j);
+
+	///
+	/// Displacement vector between two nodes
+	void disp(int i, int j, real r[3]);
+
+	///
+	/// Get the centroid of the whole node array
+	float3 centroid();
+
+	///
+	/// Get the centroid of the give node indices
+	float3 centroid(std::vector<int> node_idxs);
+
 };
 
 #endif

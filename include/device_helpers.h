@@ -31,6 +31,7 @@ public:
 		,real *v_global
 		,int vshift
 		,int *tet_node_rank_global
+		,int TNRshift
 		,int *tet_to_node_global
 		,int TTNshift
 		,int Ntets
@@ -42,7 +43,7 @@ public:
 	/// memory in the correct rank location
 	/// so it can be summed in node-local thread
 	static __device__
-	void SendForce(
+	void SendTetForce(
 		 real *dF
 		,int dFshift
 		,real F[12]
@@ -50,6 +51,20 @@ public:
 		,int tet_node_rank[4]
 		,real tet_vol,
 		int tid
+	);
+
+	///
+	/// Write forces on 3 nodes to global
+	/// memory in the correct rank location
+	/// so it cacn be summe din node-local thread
+	static __device__
+	void SendTriForce(
+		real *dF
+		,int dFshift
+		,real F[9]
+		,int node_idx[3]
+		,int tri_node_rank[3]
+		,int tid
 	);
 	
 	///

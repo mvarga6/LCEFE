@@ -7,34 +7,119 @@
 #include "defines.h"
 #include "node_array.h"
 #include "tet_array.h"
+#include "tri_array.h"
 #include "simulation_parameters.h"
 #include "pointer.h"
+
+class DataBlockBase
+{
+public:
+	///
+	/// # of tets, nodes, and tris 
+	int Ntets, Nnodes, Ntris; 
+	///
+	/// Reference node positions
+	real *r0;
+	///
+	/// Actual node positions
+	real *r;
+	///
+	/// Summed forces on each node
+	real *F;
+	///
+	/// Velocity of each node
+	real *v;
+	///
+	/// Displacement of each node
+	real *dr;
+	///
+	/// Mass of each node
+	real *m;
+	///
+	/// Potential energy in each tet
+	real *pe;
+	///
+	/// Shape function of each tet
+	real *A;
+	///
+	/// Total volume of mesh
+	real totalVolume;
+	///
+	/// Volume of each tet
+	real *TetVol;
+	///
+	/// Area of each triangle
+	real *TriArea;
+	///
+	/// Normal vector of each triangle
+	real *TriNormal;
+	///
+	/// The sign of the normal so it can be flipped
+	int *TriNormalSign;
+	///
+	/// Each triangle constibutes a bit of enclosed volume
+	/// (if they are surface triangles)
+	real *EnclosedVolume;
+	///
+	/// The total volume enclosed
+	real InitialEnclosedVolume;
+	///
+	/// Theta and Phi of director in each tet
+	int *ThPhi;
+	///
+	/// The order parameter in each tet
+	real *S;
+	///
+	/// Mappings (Nodes <-> Tets & Nodes <-> Tris)
+	/// Could probably be its own data structure
+	///
+	/// Each tet has idx of its 4 nodes
+	int *TetToNode;
+	///
+	/// Each tri has idx of its 3 nodes
+	int *TriToNode;
+	///
+	/// Each node belongs to N tets
+	int *nodeRank;
+	///
+	/// Each node belongs to M tris
+	int *nodeRankWrtTris;
+	///
+	/// Each tet knows the rank of its 4 nodes
+	/// (could be eliminated by using TetToNode then get NodeRank)
+	int *TetNodeRank;
+	///
+	/// Each tri know the rank of its 3 nodes
+	/// (could be eliminated vy using TriToNode then get NodeRank)
+	int *TriNodeRank;
+	
+};
 
 ///
 /// Container for all data pointers that point
 /// to only device (GPU) data. Difference that
 /// HostDataBlock becuase we need to store the memory
 /// pitches when allocation 'pitched gpu memory'
-struct DevDataBlock 
+class DevDataBlock : public DataBlockBase
 {
-	int Ntets, Nnodes;
-	real *A;
-	int *TetToNode;
-	real *r0;
-	real *r;
-	real *F;
+public:
+
+	///
+	/// Each node stores forces on it from each 
+	/// element its a member of
 	real *dF;
-	real *v;
-	int *nodeRank;
-	int *TetNodeRank;
-	real *dr;
-	real *m;
-	real *pe;
-	real *TetVol;
-	int *ThPhi;
-	float *S;
+	///
+	/// (unnused) The 'Illumination' measure at each tet
 	int *L;
+
+	///
+	/// The memory pitches of memory on GPU device 
+	///
 	size_t TetToNodepitch;
+	size_t TetNodeRankpitch;
+	size_t TriToNodepitch;
+	size_t TriNodeRankpitch;
+	size_t TriNormalpitch;
 	size_t Apitch;
 	size_t r0pitch;
 	size_t rpitch;
@@ -55,32 +140,16 @@ struct DevDataBlock
 ///
 /// Container for all data pointers that point
 /// to host (cpu) data
-class HostDataBlock 
+class HostDataBlock : public DataBlockBase
 {
 public:
-	int Ntets, Nnodes;
-	real *A;
-	int *TetToNode;
-	real *r0;
-	real *r;
-	real *F;
-	real *v;
-	int *nodeRank;
-	int *TetNodeRank;
-	real *dr;
-	real *m;
-	real *pe;
-	real totalVolume;
-	real *TetVol;
-	int *ThPhi;
-	float *S;
 
 	real min[3], max[3];
 	
 	///
 	/// Construct with a NodeArray and TetArray (probably coming from
 	/// members of Mesh) and the SimulationParameters object. 
-	HostDataBlock(NodeArray *, TetArray*, SimulationParameters *);
+	HostDataBlock(NodeArray *, TetArray*, TriArray*, SimulationParameters *);
 	
 	///
 	/// Create a DevDataBlock with corresponding data allocations

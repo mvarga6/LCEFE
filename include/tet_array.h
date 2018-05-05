@@ -49,7 +49,11 @@ public:
 	real get_S(int i);
 	real max(int cord);
 	real min(int cord);
-	  void printDirector(std::string);
+	void printDirector(std::string);
+
+	///
+	/// print the ranks of the node at tet idx
+	void print_ranks();
 	  
 	///
 	/// Method to reorder the tets

@@ -28,7 +28,9 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true ,
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/cuda-gdb",
             "preLaunchTask": "build gafe6 (Release)"
         }
     ]

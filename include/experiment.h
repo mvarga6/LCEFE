@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "pointer.h"
 #include "defines.h"
@@ -24,7 +25,6 @@ public:
 protected:
     bool virtual UpdateCpu(real dt) = 0;
     bool virtual UpdateGpu(real dt) = 0;
-
 };
 
 ///
@@ -38,6 +38,18 @@ class NematicToIsotropic : public ExperimentComponent
 public:
     NematicToIsotropic(real tStart, real tStop, PointerHandle<real> S);
     
+    bool Update(real dt);
+    bool UpdateCpu(real dt);
+    bool UpdateGpu(real dt);
+};
+
+class Clamp : public ExperimentComponent
+{
+    PointerHandle<real> f;
+    std::vector<int> nodes;
+public:
+    Clamp(std::vector<int> nodeIdxList, PointerHandle<real> F);
+
     bool Update(real dt);
     bool UpdateCpu(real dt);
     bool UpdateGpu(real dt);

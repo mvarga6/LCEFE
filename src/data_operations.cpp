@@ -54,11 +54,36 @@ bool PullEnergyFromGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 
 bool PushTetNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
+	// HANDLE_ERROR( 
+	// 	cudaMemcpy(dev->TetNodeRank
+	// 	,host->TetNodeRank
+	// 	,host->Ntets*4*sizeof(int)
+	// 	,cudaMemcpyHostToDevice) 
+	// );
+	// return true;
+
 	HANDLE_ERROR( 
-		cudaMemcpy(dev->TetNodeRank
-		,host->TetNodeRank
-		,host->Ntets*4*sizeof(int)
-		,cudaMemcpyHostToDevice) 
+		cudaMemcpy2D( dev->TetNodeRank
+		, dev->TetNodeRankpitch
+		, host->TetNodeRank
+		, host->Ntets*sizeof(int)
+		, host->Ntets*sizeof(int)
+        , 4
+		, cudaMemcpyHostToDevice ) 
+	);
+	return true;
+}
+
+bool PushTriNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	HANDLE_ERROR( 
+		cudaMemcpy2D( dev->TriNodeRank
+		, dev->TriNodeRankpitch
+		, host->TriNodeRank
+		, host->Ntris*sizeof(int)
+		, host->Ntris*sizeof(int)
+        , 3
+		, cudaMemcpyHostToDevice ) 
 	);
 	return true;
 }
@@ -149,6 +174,17 @@ bool PushTetToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 	return true;	
 }
 
+bool PushTriToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	size_t size = host->Ntris*3*sizeof(int);
+	HANDLE_ERROR(
+		cudaMemcpy( dev->TriToNode
+		, host->TriToNode
+		, size
+		, cudaMemcpyHostToDevice ) 
+	);
+	return true;
+}
 
 bool PushPostionToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
@@ -199,6 +235,39 @@ bool PushForceToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 				  , cudaMemcpyHostToDevice ) 
 	);
 	return true;	
+}
+
+
+bool PushTriAreaToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	HANDLE_ERROR( 
+		cudaMemcpy(dev->TriArea
+		,host->TriArea
+		,host->Ntris*sizeof(real)
+		,cudaMemcpyHostToDevice) 
+	);
+	return true;
+}
+
+
+bool PushTriNormalToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	size_t size = host->Ntris*3*sizeof(real);
+	HANDLE_ERROR( 
+		cudaMemcpy( dev->TriNormal
+		, host->TriNormal
+		, size
+		, cudaMemcpyHostToDevice ) 
+	);
+
+	HANDLE_ERROR( 
+		cudaMemcpy( dev->TriNormalSign
+		, host->TriNormalSign
+		, host->Ntris*sizeof(int)
+		, cudaMemcpyHostToDevice ) 
+	);
+
+	return true;
 }
 
 

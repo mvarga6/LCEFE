@@ -2,6 +2,7 @@
 #define __MESH_H__
 
 #include "classstruct.h"
+#include "tri_array.h"
 #include "simulation_parameters.h"
 #include "mesh_operations.h"
 #include "director_field.h"
@@ -22,6 +23,7 @@ public:
 	// temperarily public
 	TetArray *Tets;
 	NodeArray *Nodes;
+	TriArray *Tris;
 	SimulationParameters *params; // a ptr to the simulation parameters
 	MeshDimensions *dimensions;
 

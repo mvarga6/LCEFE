@@ -24,6 +24,11 @@ Institute @ Kent State University, Kent OH
 * An example parameters file `params.json` is provided. It reads standard json or the simplified json found in the example.
 * A list of available cmdline options and parameters are shown below...
 
+## Relationships of constants
+Cxxxx = Lambda + 2Mu
+Cxxyy = Lambda
+Cxyxy = Mu
+
 #### Material Parameters
 
 `{name} : {type} : {description}` 
@@ -31,6 +36,10 @@ Institute @ Kent State University, Kent OH
 `density : float : Sets the material density of the elastomer` 
 
 `alpha : float : Sets the compling stength of nematic order to stress` 
+
+`Lambda : float : Lame's first parameter`
+
+`Mu : float : Shear Modulus`
 
 `cxxxx : float : Primary elastic constant` 
 

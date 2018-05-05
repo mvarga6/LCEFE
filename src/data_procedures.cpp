@@ -22,6 +22,12 @@ PushAllToGpu::PushAllToGpu()
 	Operations.push_back(new PushReferencePositionToGpu());
 	Operations.push_back(new PushVelocityToGpu());
 	Operations.push_back(new PushForceToGpu());
+
+	Operations.push_back(new PushTriAreaToGpu());
+	Operations.push_back(new PushTriToNodeMapToGpu());
+	Operations.push_back(new PushTriNodeRankToGpu());
+	Operations.push_back(new PushTriNormalToGpu());
+
 	//Operations.push_back(new BindReferencePositionTexture());
 	//Operations.push_back(new BindPositionTexture());
 }

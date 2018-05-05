@@ -12,13 +12,15 @@
 #include <string>
 #include "extlib/gmsh_io/gmsh_io.hpp"
 #include "classstruct.h"
+#include "tri_array.h"
+#include "element_array.h"
 #include "parameters.h"
 
 using namespace std;
 
 struct MeshDimensions
 {
-	int Ntets, Nnodes;
+	int Ntets, Nnodes, Ntris;
 	real rmin[3], rmax[3];
 };
 
@@ -40,9 +42,6 @@ static MeshDimensions get_gmsh_dim(string fileName)
 	double y, y_max, y_min;
 	double z, z_max, z_min;
 	int node_num = 0;
-	//int node_dim = 0;
-	//int element_num = 0;
-	//int element_dim = 0;
 
 	x_max = -r8_big;
 	x_min = +r8_big;
@@ -111,31 +110,36 @@ static MeshDimensions get_gmsh_dim(string fileName)
 
 	int type = 0; 
 	int tet_num = 0;
+	int tri_num = 0;
 	level = 0;
 	for( ; ; ){
 		//printf("d\n", level);
 		getline(input, text);
 		if(input.eof()) break;
 
-		if(level == 0){
-			if(text.compare(elemsStart) == 0) level = 1;
+		if(level == 0)
+		{
+			if (text.compare(elemsStart) == 0) level = 1;
 		}
-		else if(level == 1){
+		else if (level == 1)
+		{
 			s_to_i4(text, length, ierror); // get element_num
 			level = 2;
 		}
-		else if(level == 2){
-			if(text.compare(elemsEnd) == 0) break;
-			else {
+		else if (level == 2)
+		{
+			if (text.compare(elemsEnd) == 0) break;
+			else 
+			{
 				s_to_i4(text, length, ierror); //read indx
 				text.erase(0, length);
 
 				type = s_to_i4(text, length, ierror); //read type
 				text.erase(0, length);
 
-				if(type == 4) tet_num++; //count a tet
+				if (type == (int)TRIANGLE) tri_num++;
+				if (type == (int)TETRAHEDRON) tet_num++; //count a tet
 			}
-
 		}
 	}
 
@@ -144,22 +148,24 @@ static MeshDimensions get_gmsh_dim(string fileName)
 	MeshDimensions dims;
 	dims.Nnodes = node_num;
 	dims.Ntets = tet_num;
-	printf("\n[ INFO ] %d nodes\n[ INFO ] %d tets\n", node_num, tet_num);
+	dims.Ntris = tri_num;
+	printf("\n[ INFO ] %d nodes\n[ INFO ] %d tets\n[ INFO ] %d tris", node_num, tet_num, tri_num);
 	input.close();
 	return dims;
 }
 
-static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, real MeshScale){
+static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets, TriArray &tris, real MeshScale){
 	
 	
 	MeshDimensions result;
 	result.Nnodes = nodes.size;
 	result.Ntets = tets.size;
+	result.Ntris = tris.size;
 	
 	real min[3] = {999999.f, 999999.f, 999999.f};
 	real max[3] = {-999999.f, -999999.f, -999999.f};
 	ifstream input;
-	int n, c, k;
+	int idx, c, k;
 	bool ierror;
 	int length; //, igarb;
 	int level;
@@ -171,7 +177,8 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 	double x;
 
 	input.open(fileName.c_str());
-	if(!input){
+	if(!input)
+	{
 		cerr << "\n[*** CRITICAL ***] GMSH_SIZE_READ - Fatal error!\n";
 		exit(1);
 	}
@@ -179,76 +186,142 @@ static MeshDimensions get_gmsh(string fileName, NodeArray &nodes, TetArray &tets
 	// Read nodes positions
 
 	level = 0;
-	for( ; ; ){
+	for( ; ; )
+	{
 		getline(input, text);
 		if(input.eof()) break;
 
-		if(level == 0){
-			if(text.compare(nodesStart) == 0) level = 1;
+		if (level == 0)
+		{
+			if (text.compare(nodesStart) == 0) level = 1;
 		}
-		else if(level == 1){
+		else if (level == 1)
+		{
 			s_to_i4(text, length, ierror); // read node_num
 			level = 2;
-			n = 0;
+			idx = 0;
 		}
-		else if(level == 2){
-			if(text.compare(nodesEnd) == 0) break;
-			else{
+		else if (level == 2)
+		{
+			if (text.compare(nodesEnd) == 0) break;
+			else
+			{
 				s_to_i4(text, length, ierror); // read indx
 				text.erase(0,length);
 				for(c = 0; c < 3; c++)
 				{
 					x = s_to_r8(text, length, ierror);
 					text.erase(0, length);
-					nodes.set_pos(n, c, x * MeshScale);
+					nodes.set_pos(idx, c, x * MeshScale);
 					
 					// set max and mins
 					if (x > max[c]) max[c] = x;
 					if (x < min[c]) min[c] = x;
 				}
-				n++; //next node
+				idx++; //next node
 			}
 		}
 	}
 
-	// Read elements (actually tets only)
-	
-	int type, t;
-	level = 0;
-	for( ; ; ){
-		getline(input, text);
-		if(input.eof()) break;
+	// Read elements (actually tets and triangle only)
 
-		if(level == 0){
-			if(text.compare(elemsStart) == 0) level = 1;
+	
+	
+	//
+	// TODO: Use 'ntags' once TetArray and TriArray
+	// are properly implementing MeshElementArray
+	//
+	int type, ntags, tet, tri;
+	level = 0;
+	for( ; ; )
+	{
+		getline(input, text);
+		if (input.eof()) break;
+
+		if (level == 0)
+		{
+			if (text.compare(elemsStart) == 0) level = 1;
 		}
-		else if(level == 1){
+		else if (level == 1)
+		{
 			s_to_i4(text, length, ierror); // read element_num
 			level = 2;
-			t = 0;
+			tet = 0;
+			tri = 0;
 		}
-		else if(level == 2){
-			if(text.compare(elemsEnd) == 0) break;
-			else {
+		else if (level == 2)
+		{
+			if (text.compare(elemsEnd) == 0) break;
+			else 
+			{
 				s_to_i4(text, length, ierror); //read idx
 				text.erase(0, length);
 
 				type = s_to_i4(text, length, ierror); //read type
 				text.erase(0, length);
 
-				for(k = 0; k < 3; k++){ //read garbage
-					s_to_i4(text, length, ierror); // read indx
+				// for (k = 0; k < 3; k++){ //read tags
+				// 	s_to_i4(text, length, ierror); // read tag
+				// 	text.erase(0, length);
+				// }
+
+				//
+				// TODO: Use this block once TetArray and TriArray
+				// are properly implementing MeshElementArray
+				//
+				ntags = s_to_i4(text, length, ierror); //read # of tags
+				text.erase(0, length);
+				
+				int * tags = new int[ntags];
+				for (int t = 0; t < ntags; t++) // read tags
+				{
+					tags[t] = s_to_i4(text, length, ierror);
 					text.erase(0, length);
 				}
 
-				if(type == 4){ //if it is a tet
-					for(k = 0; k < 4; k++){ //read nodes of tet
-						n = s_to_i4(text, length, ierror);
+				if (type == (int)TETRAHEDRON) //if it is a tet
+				{ 
+					for (k = 0; k < 4; k++)
+					{ 
+						// read nodes of tet
+						idx = s_to_i4(text, length, ierror);
 						text.erase(0, length);
-						tets.set_nabs(t, k, n-1);
+						tets.set_nabs(tet, k, idx-1);
 					}
-					t++; //next tet
+					tet++; // next tet
 				}
+				else if (type == (int)TRIANGLE)
+				{
+					for (k = 0; k < 3; k++)
+					{
+						// read nodes of triangle
+						idx = s_to_i4(text, length, ierror);
+						text.erase(0, length);
+						tris.set_node_idx(tri, k, idx-1);
+					}
+					// tag the triangle
+					tris.set_tag(tri, tags[1]);
+
+					tri++; // next tri
+				}
+				//
+				// TODO: Use this block once TetArray and TriArray
+				// are properly implementing MeshElementArray
+				//
+				// else if ((ElementType)type == TriTest->type)
+				// {
+				// 	int node_idx[3]; // container for node indices
+				// 	for (int k = 0; k < 3; k++) // read node indices
+				// 	{
+				// 		node_idx[k] = s_to_i4(text, length, ierror);
+				// 		text.erase(0, length);
+				// 	}
+				//
+				// 	// add an element to array
+				// 	TriTest->add_element(node_idx, ntags, tags);
+				// 	delete[] tags; // clear tmp memory
+				// 	tri++;
+				// }
 			}
 		}
 	}

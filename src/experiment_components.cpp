@@ -11,6 +11,28 @@
 /// Experiment Component Implementations
 ///
 
+Clamp::Clamp(std::vector<int> nodeIdxList, PointerHandle<real> F)
+{
+    this->nodes = nodeIdxList;
+    this->f = F;
+}
+
+bool Clamp::Update(real dt)
+{
+    return true;
+}
+
+bool Clamp::UpdateCpu(real dt)
+{
+    return true;
+}
+
+bool Clamp::UpdateGpu(real dt)
+{
+    return true;
+}
+
+
 NematicToIsotropic::NematicToIsotropic(
     real tStart, 
     real tStop,

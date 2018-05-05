@@ -43,8 +43,9 @@ const real mythphi = real(myThPhi);
 //real S = real((S_in)/real(SRES));//*(t/2.0);
 
 //old calculation
-S = -1.0 * t / 0.2;
-if (S < -1.0){ S = -1.0; }
+real s = 0;
+//S = -1.0 * t / 0.2;
+//if (S < -1.0){ S = -1.0; }
 
 //convert ThPhi into theta and phi
 real nTh,nPhi,theta,phi;
@@ -61,13 +62,13 @@ ny = sin(theta)*sin(phi);
 nz = cos(theta);
 
 //calculate Q from nx,ny,nz and S
-Q[0*3+0]=S*(nx*nx-oneThird);
-Q[1*3+1]=S*(ny*ny-oneThird);
-Q[2*3+2]=S*(nz*nz-oneThird);
-Q[0*3+1]=S*nx*ny;
-Q[0*3+2]=S*nx*nz;
+Q[0*3+0]=s*(nx*nx-oneThird);
+Q[1*3+1]=s*(ny*ny-oneThird);
+Q[2*3+2]=s*(nz*nz-oneThird);
+Q[0*3+1]=s*nx*ny;
+Q[0*3+2]=s*nx*nz;
 Q[1*3+0]=Q[0*3+1];
-Q[1*3+2]=S*ny*nz;
+Q[1*3+2]=s*ny*nz;
 Q[2*3+1]=Q[1*3+2];
 Q[2*3+0]=Q[0*3+2];
 

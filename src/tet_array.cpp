@@ -1,6 +1,10 @@
 #include "tet_array.h"
 #include "parameters.h"
+#include <iostream>
 #include <fstream>
+#include <stdexcept>
+
+static const int PrintRankIdx = 14560;
 
 TetArray::TetArray(const int N, const real S0){
 	size = N;
@@ -14,10 +18,10 @@ TetArray::TetArray(const int N, const real S0){
 	S = new real[size];
 	totalVolume = 0.0;
 
-	for(int i=0;i<size*4;i++)
+	for (int i = 0; i < size*4; i++)
 	{
 		TetNodeRank[i] = 0;
-		if(i<size)
+		if (i < size)
 		{
 			TetVolume[i] = 0.0;
 			S[i] = S0;
@@ -47,7 +51,11 @@ TetArray::~TetArray(){
 
 void TetArray::reorder(std::vector<int> const &order)
 {   
-    for ( int s = 0, d; s < order.size(); ++s) 
+	int _size = order.size();
+    if (_size != this->size)
+        throw std::runtime_error("The size of the new proposed order does not match the current size.");
+
+    for ( int s = 0, d; s < _size; ++s) 
     {
         for ( d = order[s]; d < s; d = order[d]);
         if (d == s) 
@@ -134,6 +142,18 @@ int TetArray::get_ThPhi(int i){
 
 real TetArray::get_S(int i){ //returns real
 	return this->S[i];
+}
+
+void TetArray::print_ranks()
+{
+	const int idx = PrintRankIdx;	
+	printf("\n[ DEBUG ] tet: %d ranks: %d %d %d %d",
+		idx,
+		TetNodeRank[idx*4 + 0],
+		TetNodeRank[idx*4 + 1],
+		TetNodeRank[idx*4 + 2],
+		TetNodeRank[idx*4 + 3]
+	);
 }
 
 void TetArray::printDirector(std::string outputBase)

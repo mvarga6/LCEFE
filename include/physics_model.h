@@ -16,7 +16,14 @@ class Physics
 public:
 
 	/**
-	 * Abstract method that calculates all the forces in the system.
+	 * Pass in the data manager and do anything physics required
+	 * to calculate initial conditions 
+	 */
+	__host__
+	void virtual Initialize(DataManager * data) = 0;
+
+	/**
+	 * Abstract method that calculates all the forces from tetrahedra
 	 */
 	__host__
 	void virtual CalculateForces(DataManager *data, real time) = 0;
@@ -73,6 +80,7 @@ public:
 class SelingerPhysics : public Physics
 {
 public:
+	void Initialize(DataManager *data);
 	void CalculateForces(DataManager *data, real time);
 	void UpdateSystem(DataManager *data);
 };

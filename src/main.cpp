@@ -85,16 +85,16 @@ int main(int argc, char *argv[])
 	{
 		// optimize the mesh
 		log->Msg(" *** Optimizing mesh *** ");
-		
+
 		// simple sorting based on location in sim space
 		mesh->Apply(new SortOnTetrahedraPosition());
-		
+
 		// re-order using mc simulation
 		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.999999f));
-		
+
 		// re-index the mesh and tet's neighbors
 		mesh->Apply(new ReassignIndices());
-		
+
 		// save the optimized mesh
 		mesh->Cache();
 	}
@@ -108,8 +108,9 @@ int main(int argc, char *argv[])
 	/// Calculate values for mesh
 	///
 
-	mesh->Apply(new CalculateVolumes());
-	mesh->Apply(new CalculateAinv());
+	mesh->Apply(new CalculateProperties());
+	//mesh->Apply(new CalculateVolumes());
+	//mesh->Apply(new CalculateAinv());
 
 	///
 	/// Endow mesh with liquid crystal properities
@@ -121,14 +122,14 @@ int main(int argc, char *argv[])
 	mesh->Apply(new SetDirector(director));
 			
 	//print director
-	mesh->Tets->printDirector(parameters->Output.Base);
+	//mesh->Tets->printDirector(parameters->Output.Base);
 
 	///
 	/// Create data management objects
 	///
 
 	// Create Host and Device Data blocks with the mesh
-	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, parameters);
+	HostDataBlock 	* host 	= new HostDataBlock(mesh->Nodes, mesh->Tets, mesh->Tris->SelectTag(2), parameters);
 	DevDataBlock 	* dev 	= host->CreateDevDataBlock();
 	DataProcedure 	* setup = new PushAllToGpu();
 	DataProcedure 	* print = new GetPrintData();
@@ -142,7 +143,7 @@ int main(int argc, char *argv[])
 	real start = parameters->Dynamics.ExperimentStart();
 	real stop = parameters->Dynamics.ExperimentStop();
 	ExperimentComponent * orderDynamics = new NematicToIsotropic(start, stop, dev->HandleForS());
-	experiment->AddComponent("OrderDynamics", orderDynamics);
+	//experiment->AddComponent("OrderDynamics", orderDynamics);
 
 	///
 	/// Create the physics model to simulate

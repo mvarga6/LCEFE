@@ -88,6 +88,23 @@ class PushVelocityToGpu : public DataOperation
 class PushForceToGpu : public DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
 
+
+
+
+
+class PushTriAreaToGpu : public DataOperation
+{ public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
+
+class PushTriToNodeMapToGpu : public DataOperation
+{ public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
+
+class PushTriNodeRankToGpu : public DataOperation
+{ public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
+
+class PushTriNormalToGpu : public DataOperation
+{ public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
+
+
 ///
 /// Binds position ptr to texture object on gpu
 class BindPositionTexture : public DataOperation
