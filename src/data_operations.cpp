@@ -179,7 +179,7 @@ bool PushTriToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 	size_t size = host->Ntris*3*sizeof(int);
 	HANDLE_ERROR(
 		cudaMemcpy( dev->TriToNode
-		, dev->TriToNodepitch
+		, host->TriToNode
 		, size
 		, cudaMemcpyHostToDevice ) 
 	);
