@@ -136,9 +136,6 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	int Nnodes = this->Nnodes;
 	int Ntets = this->Ntets;
 	int Ntris = this->Ntris;
-	size_t height16 = 16;
-	size_t height4 = 4;
-	size_t height3 = 3;
 	size_t heightMR = MaxNodeRank*3;
 	size_t widthNODE = Nnodes;
 	size_t widthTETS = Ntets;
