@@ -14,41 +14,27 @@ __constant__ PackedParameters Parameters;
 
 __global__ void BulkForceKernel(DevDataBlock data, real t)
 {
-	// ** NOTE **
-	// Not using pitched memory anymore
-	// so shift values are just equal to
-	// to either the # of tets or nodes
-	// based on what the array is.
-	// Assigning the same values here so not
-	// every function definition and parameters
-	// need to change.
-	const int Ntets = data.Ntets;
-	const int Nnodes = data.Nnodes;
-	const int Ashift = Ntets;
-	const int dFshift = Nnodes;
-	const int vshift = Nnodes;
-	const int TTNshift = Ntets;
-	real Ainv[16];
-	real r[12];
-	real r0[12];
-	real F[12]={0.0};
-	real vlocal[12];
-	int NodeNum[4];
-	int TetNodeRank[4];
-	real Q[9] = {0.0};
-	real myVol;
-
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
 	//if thread executed has a tetrahedra
 	if(tid < data.Ntets)
-	{ 
-		int Ashift = data.Apitch/sizeof(real);
-		int dFshift = data.dFpitch/sizeof(real);
-		int vshift = data.vpitch/sizeof(real);
-		int TTNshift = data.TetToNodepitch/sizeof(int);
-		int TNRshift = data.TetNodeRankpitch/sizeof(int);
+	{
+		// ** NOTE **
+		// Not using pitched memory anymore
+		// so shift values are just equal to
+		// to either the # of tets or nodes
+		// based on what the array is.
+		// Assigning the same values here so not
+		// every function definition and parameters
+		// need to change.
+		const int Ntets = data.Ntets;
+		const int Nnodes = data.Nnodes;
+		const int Ashift = Ntets;
+		const int dFshift = Nnodes;
+		const int vshift = Nnodes;
+		const int TTNshift = Ntets;
+		const int TNRshift = Ntets;
 		real Ainv[16];
 		real r[12];
 		real r0[12];

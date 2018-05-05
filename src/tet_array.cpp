@@ -2,6 +2,7 @@
 #include "parameters.h"
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 static const int PrintRankIdx = 14560;
 
