@@ -5,10 +5,10 @@ GPU accelerated finite element based electrodynamics simulation.
 Written for research at Liquid Crystal 
 Institute @ Kent State University, Kent OH
 
-#### Authers: 
+#### Authors: 
 
-** Andrew Konya
-** Michael Varga
+* Andrew Konya
+* Michael Varga
 
 ---
 
@@ -67,9 +67,3 @@ Institute @ Kent State University, Kent OH
 `updateKernel.h` is the GPU kernel to handle updating node positions and uses:
 * `update_r.h` to do the actual update equation calculations
 * `sumForce.h` is used to read and sum forces stored in global memory
-
-
-
-
-
-
