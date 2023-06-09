@@ -6,3 +6,11 @@
 *.dat
 builds/*
 .vscode/
+*.xyzv
+
+# External library binaries
+extlib/**/*.a
+extlib/jsmn/test/test_default
+extlib/jsmn/test/test_links
+extlib/jsmn/test/test_strict
+extlib/jsmn/test/test_strict_links
