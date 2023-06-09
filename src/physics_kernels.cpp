@@ -116,19 +116,16 @@ __global__ void UpdateKernel(DevDataBlock data)
 {
 	const int Ntets = data.Ntets;
 	const int Nnodes = data.Nnodes;
-
-	//int dFshift = data.dFpitch/sizeof(real);
 	const int dFshift = Nnodes;
-
-	//int Fshift = data.Fpitch/sizeof(real);
 	const int Fshift = Nnodes;
-
-
-	//int vshift = data.vpitch/sizeof(real);
 	const int vshift = Nnodes;
-
-	//int rshift = data.rpitch/sizeof(real);
 	const int rshift = Nnodes;
+
+	// If using pitched memory allocation
+	//int dFshift = data.dFpitch/sizeof(real);
+	//int Fshift = data.Fpitch/sizeof(real);
+	//int vshift = data.vpitch/sizeof(real);
+	//int rshift = data.rpitch/sizeof(real);
 
 	int myNode;
 	int myNodeRank;
@@ -139,7 +136,6 @@ __global__ void UpdateKernel(DevDataBlock data)
 	real localMass;
 	//thread ID
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-
 	if (tid < data.Nnodes) //if a node is here
 	{
 		myNode = tid;
