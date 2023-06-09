@@ -1,0 +1,14 @@
+nsteps: 1000000
+dt: 0.0000025
+framerate: 5000
+meshfile: "Mesh/thinfilm4.msh"
+meshScale: 1.0
+outputBase: "VTKOUT/thinfilm4"
+cxxxx: 29400000
+cxxyy: 28000000
+cxyxy: 570000
+alpha: 1000000
+damp: 0.9999
+density: 1.2
+threadsperblock: 256
+caching: false
