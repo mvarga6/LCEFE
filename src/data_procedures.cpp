@@ -5,6 +5,9 @@ GetPrintData::GetPrintData()
 	Operations.push_back(new PullPositionFromGpu());
 	Operations.push_back(new PullVelocityFromGpu());
 	Operations.push_back(new PullEnergyFromGpu());
+	Operations.push_back(new PullForceFromGpu());
+	Operations.push_back(new PullSFromGpu());
+	// Operations.push_back(new PullDirectorFromGpu());
 }
 
 

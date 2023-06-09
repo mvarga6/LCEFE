@@ -16,7 +16,7 @@
 //         (returned as refference)                          //
 //                                                           //
 //===========================================================//
-void getThPhi(real rx				// x position [cm] 
+void getThPhi(real rx				// x position [cm]
 			, real ry				// y position [cm]
 			, real rz				// z position [cm]
 			, real &theta			// theta [rad] (reference return)
@@ -77,7 +77,7 @@ void getThPhi(real rx				// x position [cm]
 //   Output: F[12] refference return                         //
 //                                                           //
 //===========================================================//
-__device__ void userForce(real *r                // node pos 
+__device__ void userForce(real *r                // node pos
 			, real (&F)[12]          // node-force tensor
 			, real xmax
 						 ){

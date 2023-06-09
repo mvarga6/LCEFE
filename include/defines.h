@@ -7,7 +7,7 @@
 /// when 'building' ('compiling') the code using 'make'
 ///
 
-/// Uncomment to get explicit 
+/// Uncomment to get explicit
 /// debugging information from
 /// within kenel execution
 // #define __DEBUG_FORCE__ 		10
@@ -19,7 +19,7 @@
 ///
 /// Data specifications
 ///
-#define real float
+#define real double
 #define MaxNodeRank 90
 #define DefaultThreadsPerBlock 256
 

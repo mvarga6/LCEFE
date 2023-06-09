@@ -26,17 +26,19 @@ public:
 	MeshDimensions *dimensions;
 
 	Mesh(SimulationParameters *, Logger *log);
-	
+
+	void DirectorFromFile();//YMG
+
 	bool Load(bool*);
 	bool Cache();
 	void Apply(MeshOperation*);
-	
+
 private:
-	
+
 	bool LoadMesh(const std::string&);
 	bool ReadCache(const std::string&);
 	bool WriteCache(const std::string&);
-	
+
 	std::string GetCacheKey();
 };
 

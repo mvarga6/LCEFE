@@ -7,9 +7,9 @@
 #include "defines.h"
 
 //=============================================================
-// update velocities 
+// update velocities
 //=============================================================
-inline __host__ __device__ 
+inline __host__ __device__
 void update_v(real (&vnew)[3]
 			,real *vold
 			,real *Fold
@@ -19,18 +19,21 @@ void update_v(real (&vnew)[3]
 			,int myNode
 			,real mass
 			,real dt
-			,real damp)
+			,real damp
+			,real *r
+			,int rshift
+			)
 {
 
 	//const real damp = Parameters.Damp;
 	const real dto2 = dt / 2.0f;
-	
+
 	for (int c = 0; c < 3; c++)
 	{
 		vnew[c] = vold[c] * damp + dto2 * ((Fold[c] + Fnew[c]) / mass);  //--[ mm / s ]
 		v[vshift * c + myNode] = vnew[c];
 	}
-	
+
 	#ifdef __DEBUG_UPDATE_V__
 	if (myNode == __DEBUG_UPDATE_V__)
 	{
@@ -48,7 +51,7 @@ void update_v(real (&vnew)[3]
 //=============================================================
 // calculate change in positions
 //=============================================================
-inline __host__ __device__ 
+inline __host__ __device__
 void update_r(real *r
 			,int rshift
 			,real *v
@@ -60,14 +63,14 @@ void update_r(real *r
 	//const real dt = Parameters.Dt;
 	const real dt2o2 = (dt*dt) / 2.0f;
 	real dr[3] = { 0.0f, 0.0f, 0.0f };
-	
+
 	//update new r's from new v and new F
 	for (int c = 0; c < 3; c++)
 	{
 		dr[c] = dt * v[c] + dt2o2 * (F[c] / mass); //--[ mm ]
 		r[rshift * c + myNode] += dr[c];
 	}
-	
+
 	#ifdef __DEBUG_UPDATE_R__
 	if (myNode == __DEBUG_UPDATE_R__)
 	{

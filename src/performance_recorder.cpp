@@ -63,30 +63,30 @@ void PerformanceMetric::Mark(bool restart = true)
 	{
 		return;
 	}
-	
+
 	// Update the metric
 	nevents++;
 
-	real _elapsed;
+	float _elapsed;
 	HANDLE_ERROR(cudaEventRecord(stop));
-	HANDLE_ERROR(cudaEventSynchronize(stop));		
-	HANDLE_ERROR(cudaEventElapsedTime(&_elapsed, 
+	HANDLE_ERROR(cudaEventSynchronize(stop));
+	HANDLE_ERROR(cudaEventElapsedTime(&_elapsed,
 		start, stop));
-			
+
 	elapsed = _elapsed;
 	elapsed_total += elapsed;
 	elapsed_average = elapsed_total / (real)nevents;
-		
+
 	if (elapsed < elapsed_min)
 	{
 		elapsed_min = elapsed;
 	}
-		
+
 	if (elapsed > elapsed_max)
 	{
 		elapsed_max = elapsed;
 	}
-		
+
 	// reset the start events
 	if (restart)
 	{
@@ -132,7 +132,7 @@ PerformanceRecorder::PerformanceRecorder(Logger * logger)
 PerformanceMetric* PerformanceRecorder::Create(string key)
 {
 	// already exists
-	auto it = metrics.find(key); 
+	auto it = metrics.find(key);
 	if ( it == metrics.end() )
 	{
 		// add a new performance metric
@@ -149,7 +149,7 @@ PerformanceMetric* PerformanceRecorder::Start(string key)
 	if (it != metrics.end())
 	{
 		 it->second.Start();
-		 return &metrics[key]; 
+		 return &metrics[key];
 	}
 	return NULL;
 }

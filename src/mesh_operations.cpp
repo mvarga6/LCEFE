@@ -14,36 +14,36 @@ OperationResult SortOnTetrahedraPosition::Run(TetArray *Tets, NodeArray *Nodes, 
 	try
 	{
 		log->Msg("Running Sort-On-Tetrahedra-Position ...");
-		int Ntets = Tets->size;	
-		
-	
-		
+		int Ntets = Tets->size;
+
+
+
 		log->Msg("Creating tetrahedra index list");
 		// create value/key pairs to sort
 		std::vector<std::pair<real, int> > posIdxList;
-		
+
 		// initialize the list
 		for (int n = 0; n < Ntets; n++)
 		{
 			posIdxList.push_back(std::pair<real, int>(Tets->get_pos(n, 3), n));
 		}
-		
+
 		// sort on position
 		log->Msg("Sorting index list on tetrahedra CoM distance from origin");
 		std::sort(posIdxList.begin(), posIdxList.end());
-		
+
 		log->Msg("Reordering data: ");
 		std::vector<int> tetOrder(Ntets);
 		for (int i = 0; i < Ntets; i++)
 		{
 			tetOrder.at(i) = posIdxList.at(i).second;
 		}
-		
+
 		// put them into the proper order
 		Tets->reorder(tetOrder);
-				
+
 		log->Msg("Reordering data: complete");
-		
+
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
@@ -70,7 +70,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 	try
 	{
 		log->Msg("Running Monte-Carlo-Minimize-Distance-Between-Pairs ...");
-		int Ntets = Tets->size;	
+		int Ntets = Tets->size;
 		real olddist, newdist;
 		int n1,n2;
 		real KbT = this->kbt_start;
@@ -81,7 +81,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 		stringstream ss;
 		ss << this->kbt_start << " < kbt < " << this->kbt_end << " annealFactor = " << this->anneal_factor;
 		log->Msg(ss.str());
-		
+
 		//simple reordering scheme bassed only on spacial locallity
 		while(KbT >= this->kbt_end)
 		{
@@ -89,7 +89,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 			count++;
 			n1 = int(floor(genrand()*real(Ntets)));
 			n2 = int(floor(genrand()*real(Ntets)));
-		
+
 				olddist = Tets->dist(n1,n1+1) \
 						+ Tets->dist(n1,n1-1) \
 						+ Tets->dist(n2,n2+1) \
@@ -111,7 +111,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 					Tets->switch_tets(n1,n2);
 					count = 0;
 					switched++;
-				}	
+				}
 
 			KbT *= this->anneal_factor; //KbT*0.9999999;
 			if ((tot % 1000) == 0)
@@ -123,7 +123,7 @@ OperationResult MonteCarloMinimizeDistanceBetweenPairs::Run(TetArray *Tets, Node
 				switched = 0;
 			}
 		}
-		
+
 		log->Msg("Completed!");
 		return OperationResult::SUCCESS;
 	}
@@ -145,7 +145,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		int Nnodes = Nodes->size;
 
 		int nrank;
-		//set all new node numbers negative so we can 
+		//set all new node numbers negative so we can
 		//see when one is replaced and not replace it again
 		//this should account for all the redundancies
 		//in the tet nab lists
@@ -153,12 +153,12 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		{
 			Nodes->set_newnum(i,-100);
 		}
-	
-	
-		//Loop though the lists of tetrahedra and if 
+
+
+		//Loop though the lists of tetrahedra and if
 		//a node has not been reassigned reassign it
-		//should keep nodes in same tetrahedra close 
-		//in memory and should keep nodes which share 
+		//should keep nodes in same tetrahedra close
+		//in memory and should keep nodes which share
 		//tetrahedra also close in memory
 		log->Msg("Setting new node numbers: ");
 		int newi = 0;
@@ -177,7 +177,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		}
 		log->StaticMsg("Setting new node numbers: complete");
 
-	
+
 		//now reassign each tetrahedra to neighbors
 		//in the new arrangement of nodes
 		log->Msg("Assigning nodes to tetrahedra: ");
@@ -194,18 +194,18 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 				newOrder.at(i) = Nodes->get_newnum(i);
 			}
 		}
-		
+
 		log->StaticMsg("Assigning nodes to tetrahedra: complete");
 
 		log->Msg("Reordering nodes in this configuration: ");
 		Nodes->reorder(newOrder);
 		log->StaticMsg("Reordering nodes in this configuration: complete");
 
-		
+
 		int outOfOrderCount = 0;
 		for (int i = 0; i < Nnodes; i++)
 		{
-			if (i != Nodes->get_newnum(i)) 
+			if (i != Nodes->get_newnum(i))
 			{
 				outOfOrderCount++;
 			}
@@ -215,7 +215,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		{
 			printf("\n[ ERROR ] # of nodes out of order: %d", outOfOrderCount);
 		}
-		
+
 
 		//switch actual order of nodes
 		//do this by sweeping though and switching
@@ -243,7 +243,7 @@ OperationResult ReassignIndices::Run(TetArray *Tets, NodeArray *Nodes, Logger *l
 		// 	}
 		// }
 		// log->StaticMsg("Sorting nodes by value: complete");
-		
+
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)
@@ -266,29 +266,29 @@ OperationResult SetDirector::Run(TetArray *Tets, NodeArray *Nodes, Logger *log)
 	try
 	{
 		log->Msg("Assigning director to mesh...");
-	
+
 		int Ntets = Tets->size;
-	
+
 		DirectorOrientation dir;
 		real x, y, z;
-	
+
 		for (int t = 0; t < Ntets; t++)
 		{
 			// the position of this tet
 			x = Tets->get_pos(t, 0);
 			y = Tets->get_pos(t, 1);
 			z = Tets->get_pos(t, 2);
-	
+
 			// get the director there
 			// done this way so it could be read
 			// from file or hardcoded etc
 			dir = this->director->GetDirectorAt(x, y, z);
-			
-			// assign 
+
+			// assign
 			Tets->set_theta(t, dir.theta);
 			Tets->set_phi(t, dir.phi);
 		}
-		
+
 		log->StaticMsg("Assigning director to mesh...\t\tcomplete");
 		return OperationResult::SUCCESS;
 	}
@@ -323,11 +323,11 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 	try
 	{
 		log->Msg("Calculating tetrahedra volumes...");
-	
+
 		real tempVol;
 		int n0, n1, n2, n3;
 		int Ntets = Tets->size;
-	
+
 		//calculate volume of each tetrahedra
 		for(int t = 0;t < Ntets; t++)
 		{
@@ -350,8 +350,8 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 
 			Tets->set_volume(t,tempVol);
 		}
-	
-	
+
+
 		//calculate effective volume of each node
 		int i;
 		for(int t = 0; t < Ntets; t++)
@@ -366,13 +366,13 @@ OperationResult CalculateVolumes::Run(TetArray *Tets, NodeArray *Nodes, Logger *
 
 		//normalize volume so that each node
 		//has an average volume of 1
-		//i_Node.normalize_volume(real(Nnodes));
+		// Nodes->normalize_volume(real(Nodes->size));
 
 		//calculate total volume
 		Tets->calc_total_volume();
-		
+
 		log->StaticMsg("Calculating tetrahedra volumes...\t\tcomplete");
-		
+
 		return OperationResult::SUCCESS;
 	}
 	catch (const std::exception& e)

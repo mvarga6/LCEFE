@@ -5,16 +5,16 @@
 #include "parameters.h"
 #include <math.h>
 
-inline __host__ __device__ 
+inline __host__ __device__
 real sigmoid(const real &x){
 	return 1.0f/(1.0f + exp(-x));
 }
 
 //==============================================
-//Calculate what Q should be for this tetrahedra 
+//Calculate what Q should be for this tetrahedra
 //given its position (initial) and time
 //==============================================
-inline __host__ __device__ 
+inline __host__ __device__
 void getQ(int myThPhi    //theta and Phi
 					,real (&Q)[9] //array to store Q in
 					,real t       //time
@@ -30,7 +30,7 @@ const real mythphi = real(myThPhi);
 //calculate S as sigmoid function:
 // if {t_on - _t_off = 0} then {S = S0 / 2}
 // if {t_on >> t_off}     then {S --> S0}
-// if {t_on << t_off}	  then {S --> 0} 
+// if {t_on << t_off}	  then {S --> 0}
 // maybe this
 //const real S = S0 * sigmoid((t_on - t_off)/tau);
 // or maybe this
@@ -43,7 +43,7 @@ const real mythphi = real(myThPhi);
 //real S = real((S_in)/real(SRES));//*(t/2.0);
 
 //old calculation
-S = -1.0 * t / 0.2;
+S = -t;
 if (S < -1.0){ S = -1.0; }
 
 //convert ThPhi into theta and phi
