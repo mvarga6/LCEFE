@@ -8,6 +8,29 @@ size_t global_texture_offset = 0;
 texture<real, 2, cudaReadModeElementType> texRef_r0;
 texture<real, 2, cudaReadModeElementType> texRef_r;
 
+//YMG
+bool PullSFromGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	size_t size = host->Ntets*sizeof(real);
+	HANDLE_ERROR( cudaMemcpy(  host->S
+							 , dev->S
+							 , size
+							 , cudaMemcpyDeviceToHost ) );
+	return true;
+}//YMG
+
+
+//YMG
+bool PullDirectorFromGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
+{
+	size_t size = host->Ntets*sizeof(int);
+	HANDLE_ERROR( cudaMemcpy(  host->ThPhi
+							 , dev->ThPhi
+							 , size
+							 , cudaMemcpyDeviceToHost ) );
+	return true;
+}//YMG
+
 bool PullPositionFromGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Nnodes*3*sizeof(real);
@@ -54,11 +77,11 @@ bool PullEnergyFromGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 
 bool PushTetNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy(dev->TetNodeRank
 		,host->TetNodeRank
 		,host->Ntets*4*sizeof(int)
-		,cudaMemcpyHostToDevice) 
+		,cudaMemcpyHostToDevice)
 	);
 	return true;
 }
@@ -66,146 +89,146 @@ bool PushTetNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 
 bool PushThetaPhiToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy(dev->ThPhi
 		,host->ThPhi
 		,host->Ntets*sizeof(int)
-		,cudaMemcpyHostToDevice) 
+		,cudaMemcpyHostToDevice)
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushNodeRankToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy(dev->nodeRank
 		,host->nodeRank
 		,host->Nnodes*sizeof(int)
-		,cudaMemcpyHostToDevice) 
+		,cudaMemcpyHostToDevice)
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushMassToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy(dev->m
 		,host->m
 		,host->Nnodes*sizeof(real)
-		,cudaMemcpyHostToDevice) 
+		,cudaMemcpyHostToDevice)
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushTetVolumeToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy(dev->TetVol
 		,host->TetVol
 		,host->Ntets*sizeof(real)
-		,cudaMemcpyHostToDevice) 
+		,cudaMemcpyHostToDevice)
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushNematicOrderParameterToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy(dev->S
 		,host->S
 		,host->Ntets*sizeof(int)
-		,cudaMemcpyHostToDevice) 
+		,cudaMemcpyHostToDevice)
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushAinvToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Ntets*16*sizeof(real);
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy( dev->A
 					, host->A
 					, size
-					, cudaMemcpyHostToDevice ) 
+					, cudaMemcpyHostToDevice )
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushTetToNodeMapToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Ntets*4*sizeof(int);
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy( dev->TetToNode
 				, host->TetToNode
 				, size
-				, cudaMemcpyHostToDevice ) 
+				, cudaMemcpyHostToDevice )
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushPostionToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Nnodes*3*sizeof(real);
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy( dev->r
 				  , host->r
 				  , size
-				  , cudaMemcpyHostToDevice ) 
+				  , cudaMemcpyHostToDevice )
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushReferencePositionToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Nnodes*3*sizeof(real);
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy( dev->r0
 				  , host->r0
 				  , size
-				  , cudaMemcpyHostToDevice ) 
+				  , cudaMemcpyHostToDevice )
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushVelocityToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Nnodes*3*sizeof(real);
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy( dev->v
 				  , host->v
 				  , size
-				  , cudaMemcpyHostToDevice ) 
+				  , cudaMemcpyHostToDevice )
 	);
-	return true;	
+	return true;
 }
 
 
 bool PushForceToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 {
 	size_t size = host->Nnodes*3*sizeof(real);
-	HANDLE_ERROR( 
+	HANDLE_ERROR(
 		cudaMemcpy( dev->F
 				  , host->F
 				  , size
-				  , cudaMemcpyHostToDevice ) 
+				  , cudaMemcpyHostToDevice )
 	);
-	return true;	
+	return true;
 }
 
 
 // bool BindPositionTexture::operator()(DevDataBlock *dev, HostDataBlock *host)
 // {
-// 	HANDLE_ERROR( 
-// 		cudaBindTexture2D( &global_texture_offset 
+// 	HANDLE_ERROR(
+// 		cudaBindTexture2D( &global_texture_offset
 // 		, texRef_r
 // 		, dev->r
 // 		, texRef_r.channelDesc
@@ -213,14 +236,14 @@ bool PushForceToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 // 		, 3
 // 		, dev->rpitch) );
 // 	texRef_r.normalized = false;
-// 	return true;	
+// 	return true;
 // }
 
 
 // bool BindReferencePositionTexture::operator()(DevDataBlock *dev, HostDataBlock *host)
 // {
-// 	HANDLE_ERROR( 
-// 		cudaBindTexture2D( &global_texture_offset 
+// 	HANDLE_ERROR(
+// 		cudaBindTexture2D( &global_texture_offset
 // 		, texRef_r0
 // 		, dev->r0
 // 		, texRef_r0.channelDesc
@@ -228,5 +251,5 @@ bool PushForceToGpu::operator()(DevDataBlock *dev, HostDataBlock *host)
 // 		, 3
 // 		, dev->r0pitch) );
 // 	texRef_r0.normalized = false;
-// 	return true;	
+// 	return true;
 // }

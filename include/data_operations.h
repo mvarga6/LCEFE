@@ -5,27 +5,40 @@
 
 ///
 /// Abstract parent of anything that moves data to/from gpu
-class DataOperation 
+class DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*) = 0; };
+
+//YMG
+///
+///
+class PullDirectorFromGpu : public DataOperation
+{ public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
+
+//YMG
+///
+/// Copies tet scalar order parameter data on gpu to cpu constainers
+class PullSFromGpu : public DataOperation
+{ public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
+
 
 ///
 /// Copies node position data on gpu to cpu constainers
-class PullPositionFromGpu : public DataOperation 
+class PullPositionFromGpu : public DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
 
 ///
-/// Copies node velocity data on gpu to cpu constainers 
-class PullVelocityFromGpu : public DataOperation 
+/// Copies node velocity data on gpu to cpu constainers
+class PullVelocityFromGpu : public DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
 
 ///
 /// Copies node force data on gpu to cpu constainers
-class PullForceFromGpu : public DataOperation 
+class PullForceFromGpu : public DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
 
 ///
 /// Copies tetrahedra energy data on gpu to cpu constainers
-class PullEnergyFromGpu : public DataOperation 
+class PullEnergyFromGpu : public DataOperation
 { public: virtual bool operator()(DevDataBlock*, HostDataBlock*); };
 
 ///

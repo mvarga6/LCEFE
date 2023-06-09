@@ -41,11 +41,11 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 
 	//if thread executed has a tetrahedra
 	if(tid < data.Ntets)
-	{ 
+	{
 
 
 		//========================================
-		//read in all the data that will not change 
+		//read in all the data that will not change
 		//though entire simulation
 		//========================================
 		myVol = data.TetVol[tid];   //simple enough here
@@ -63,7 +63,7 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 			data.TetToNode, TTNshift,
 			Ntets, Nnodes
 		);
-		
+
 		//========================================
 		//Calcuate Q as a function of Position
 		//and time for this tetrahedra
@@ -73,7 +73,6 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 		// S for next calculation.
 		//========================================
 		getQ(data.ThPhi[tid], Q, t, data.S[tid]); // just for debugging
-
 		//========================================
 		//calculate the force on each node due
 		//to interactions in this tetrahedra
@@ -81,15 +80,15 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 		Physics::CalculateForcesAndEnergies(Parameters, Ainv, r0, r, Q, F, TetNodeRank, data.pe, tid, myVol);
 
 		//========================================
-		//Send each force calculated to global 
-		//memroy so force can be summed in 
+		//Send each force calculated to global
+		//memroy so force can be summed in
 		//update kernal
 		//========================================
 		//sendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol);
 		DeviceHelpers::SendForce(data.dF, dFshift, F, NodeNum, TetNodeRank, myVol, tid);
 
 #ifdef __DEBUG_FORCE__
-		
+
 		// debugging info
 		if (tid == __DEBUG_FORCE__)
 		{
@@ -114,11 +113,23 @@ __global__ void ForceKernel(DevDataBlock data, real t)
 
 
 __global__ void UpdateKernel(DevDataBlock data)
-{	
-	int dFshift = data.dFpitch/sizeof(real);
-	int Fshift = data.Fpitch/sizeof(real);
-	int vshift = data.vpitch/sizeof(real);
-	int rshift = data.rpitch/sizeof(real);
+{
+	const int Ntets = data.Ntets;
+	const int Nnodes = data.Nnodes;
+
+	//int dFshift = data.dFpitch/sizeof(real);
+	const int dFshift = Nnodes;
+
+	//int Fshift = data.Fpitch/sizeof(real);
+	const int Fshift = Nnodes;
+
+
+	//int vshift = data.vpitch/sizeof(real);
+	const int vshift = Nnodes;
+
+	//int rshift = data.rpitch/sizeof(real);
+	const int rshift = Nnodes;
+
 	int myNode;
 	int myNodeRank;
 	real Fnew[3]={0.0};
@@ -130,7 +141,7 @@ __global__ void UpdateKernel(DevDataBlock data)
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 
 	if (tid < data.Nnodes) //if a node is here
-	{  
+	{
 		myNode = tid;
 		myNodeRank = data.nodeRank[myNode];
 		localMass = data.m[myNode];
@@ -139,7 +150,8 @@ __global__ void UpdateKernel(DevDataBlock data)
 		sumForce(myNode, myNodeRank, Fnew, Fold, vold, data.dF, dFshift, data.F, Fshift, data.v, vshift);
 
 		//calculate and store new velocites
-		update_v(vnew, vold, Fold, Fnew, data.v, vshift, myNode, localMass, Parameters.Dt, Parameters.Damp);
+		update_v(vnew, vold, Fold, Fnew, data.v, vshift, myNode, localMass, Parameters.Dt, Parameters.Damp, data.r, rshift);
+		//update_v(vnew, vold, Fold, Fnew, data.v, vshift, myNode, localMass, Parameters.Dt, Parameters.Damp);
 
 		//calculate and store new positions
 		update_r(data.r, rshift, vnew, Fnew, myNode, localMass, Parameters.Dt);

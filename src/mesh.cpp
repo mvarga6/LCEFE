@@ -32,8 +32,8 @@ bool Mesh::Load(bool *loadedFromCache)
 		(*loadedFromCache) = false;
 		return true;
 	}
-	
-	// could not read it from cache or 
+
+	// could not read it from cache or
 	// from parameters given mesh file
 	return false;
 }
@@ -58,15 +58,15 @@ void Mesh::Apply(MeshOperation *operation)
 		case OperationResult::SUCCESS:
 			// log success
 			return;
-		
+
 		case OperationResult::FAILURE_NO_OPTIMATION:
 			// log no optimization
 			return;
-		
+
 		case OperationResult::FAILURE_EXCEPTION_THROWN:
 			// log exception
 			exit(101);
-		
+
 		default:
 			// log unknown result
 			return;
@@ -92,7 +92,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 	try
 	{
 		(*dimensions) = get_gmsh_dim(meshFile);
-		
+
 	}
 	catch (const std::exception& e)
 	{
@@ -100,18 +100,18 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 		this->log->Error(e.what());
 		return false;
 	}
-	
+
 	// unload if loaded
 	if (loaded)
 	{
 		delete this->Tets;
 		delete this->Nodes;
 	}
-	
+
 	// allocate the containers for nodes and tets
 	this->Tets = new TetArray(dimensions->Ntets);
-	this->Nodes = new NodeArray(dimensions->Nnodes);	
-	
+	this->Nodes = new NodeArray(dimensions->Nnodes);
+
 	// read the positions of nodes and tet indices
 	try
 	{
@@ -122,7 +122,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 		this->log->Error(e.what());
 		return false;
 	}
-	
+
 	// read the positions of nodes and tet indices
 	try
 	{
@@ -133,7 +133,7 @@ bool Mesh::LoadMesh(const std::string &meshFile)
 		this->log->Error(e.what());
 		return false;
 	}
-	
+
 	loaded = true;
 	return true;
 }
@@ -149,7 +149,7 @@ bool Mesh::ReadCache(const std::string &cachedMeshFile)
 		this->log->Msg(ss.str());
 		return false;
 	}
-	
+
 	// load it like a normal mesh file
 	return LoadMesh(cachedMeshFile);
 }
@@ -166,15 +166,15 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 		this->log->Msg(ss.str());
 		return true;
 	}
-	
+
 	try
 	{
 		ss << "Caching mesh " << cacheFileName;
 		this->log->Msg(ss.str());
 		int Nnodes = Nodes->size;
 		int Ntets = Tets->size;
-		
-		// need to make copy of tet nab array 
+
+		// need to make copy of tet nab array
 		// gmsh_writer changes it to base-1
 		int * element_node = new int[Ntets*4];
 		for(int t = 0; t < Ntets; t++)
@@ -184,10 +184,10 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 				element_node[n + t*4] = Tets->get_nab(t, n);
 			}
 		}
-		
+
 		// write the cached mesh file
 		gmsh_mesh3d_write(cacheFileName, 3, Nnodes, (float*)Nodes->MyPos, 4, Ntets, element_node);
-		
+
 		delete [] element_node;
 	}
 	catch (const std::exception& e)
@@ -195,7 +195,7 @@ bool Mesh::WriteCache(const std::string &cacheFileName)
 		this->log->Error(e.what());
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -204,13 +204,13 @@ std::string Mesh::GetCacheKey()
 {
 	std::string meshFile = this->params->Mesh.File;
 	FileInfo info = FileOperations::GetFileInfo(meshFile);
-	
+
 	string key = "";
 	if (!info.Path.empty())
 	{
 		key += info.Path + "/";
 	}
-	
+
 	key += info.FileName + ".cache";
 	return key;
 }

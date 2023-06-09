@@ -5,9 +5,9 @@
 
 __host__ __device__
 void Physics::CalculateEpsilon(
-	real eps[9], 
-	real a[4], 
-	real b[4], 
+	real eps[9],
+	real a[4],
+	real b[4],
 	real c[4])
 {
 	eps[3*0+0] = a[1]+0.5*(a[1]*a[1]+b[1]*b[1]+c[1]*c[1]);
@@ -24,12 +24,12 @@ void Physics::CalculateEpsilon(
 
 __host__ __device__
 void Physics::CalculateLiquidCrystalEnergy(
-	real &lcEnergy, 
-	const real eps[9], 
-	const real Q[9], 
+	real &lcEnergy,
+	const real eps[9],
+	const real Q[9],
 	const real &alpha)
 {
-	// alpha has units of energy density 
+	// alpha has units of energy density
 	lcEnergy = -1.0*alpha*(eps[3*0+0]*Q[3*0+0]
 				+eps[3*1+1]*Q[3*1+1]+eps[3*2+2]*Q[3*2+2]
 				+eps[3*0+1]*Q[3*0+1]+eps[3*1+0]*Q[3*1+0]
@@ -40,10 +40,10 @@ void Physics::CalculateLiquidCrystalEnergy(
 
 __host__ __device__
 void Physics::CalculateElasticPotential(
-	real &local_Pe, 
-	const real eps[9], 
-	const real &cxxxx, 
-	const real &cxxyy, 
+	real &local_Pe,
+	const real eps[9],
+	const real &cxxxx,
+	const real &cxxyy,
 	const real &cxyxy)
 {
 	local_Pe = 0.0f;
@@ -54,14 +54,14 @@ void Physics::CalculateElasticPotential(
 
 __host__ __device__
 void Physics::AddElasticForces(
-	real F[12], 
-	const real eps[9], 
-	const real Ainv[16], 
-	const real a[4], 
-	const real b[4], 
-	const real c[4], 
-	const real &cxxxx, 
-	const real &cxxyy, 
+	real F[12],
+	const real eps[9],
+	const real Ainv[16],
+	const real a[4],
+	const real b[4],
+	const real c[4],
+	const real &cxxxx,
+	const real &cxxyy,
 	const real &cxyxy)
 {
 	for(int n = 0; n < 4; n++)
@@ -122,12 +122,12 @@ void Physics::AddElasticForces(
 
 __host__ __device__
 void Physics::AddLiquidCrystalForces(
-	real F[12], 
-	const real Q[9], 
-	const real Ainv[16], 
-	const real a[4], 
-	const real b[2], 
-	const real c[4], 
+	real F[12],
+	const real Q[9],
+	const real Ainv[16],
+	const real a[4],
+	const real b[4],
+	const real c[4],
 	const real &alpha)
 {
 	for(int n = 0; n < 4; n++)
@@ -159,18 +159,18 @@ void Physics::AddLiquidCrystalForces(
 
 __host__ __device__
 void Physics::CalculateShapeFunction(
-	real a[4], 
-	real b[4], 
-	real c[4], 
-	const real r[12], 
-	const real r0[12], 
+	real a[4],
+	real b[4],
+	real c[4],
+	const real r[12],
+	const real r0[12],
 	const real Ainv[16])
 {
 	real u[4], v[4] ,w[4];
 	a[0] = a[1] = a[2] = a[3] = 0.0f;
 	b[0] = b[1] = b[2] = b[3] = 0.0f;
 	c[0] = c[1] = c[2] = c[3] = 0.0f;
-	
+
 	//clacluate displacements from original position and zero out forces
 	for(int n = 0; n < 4; n++){
 		u[n] = (r[n*3] - r0[n*3]);
@@ -191,7 +191,7 @@ void Physics::CalculateShapeFunction(
 //=============================================================
 //calculate forces on all 4 nodes in tetrahedra
 //=============================================================
-__device__ 
+__device__
 void Physics::CalculateForcesAndEnergies(PackedParameters params,
 	real *Ainv,
 	real *r0,

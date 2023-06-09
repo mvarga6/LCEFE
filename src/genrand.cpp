@@ -22,7 +22,7 @@ unsigned long randmt() {
     int idx = mt_index;
     unsigned long s;
     int i;
-	
+
     if (idx == MT_LEN*sizeof(unsigned long))
     {
         idx = 0;
@@ -35,7 +35,7 @@ unsigned long randmt() {
             s = TWIST(b, i, i+1);
             b[i] = b[i - MT_IB] ^ (s >> 1) ^ MAGIC(s);
         }
-        
+
         s = TWIST(b, MT_LEN-1, 0);
         b[MT_LEN-1] = b[MT_IA-1] ^ (s >> 1) ^ MAGIC(s);
     }
@@ -64,19 +64,20 @@ for (int j = 0; j < 2500; j++)
 
 double randgauss(double sigma, double mean)
 {
-real x1, x2, w, y2, gauss; //y1, 
- 
-         do {
-                 x1 = 2.0 * genrand() - 1.0;
-                 x2 = 2.0 * genrand() - 1.0;
-                 w = x1 * x1 + x2 * x2;
-         } while ( w >= 1.0 );
+    real x1, x2, w, y2, gauss; //y1,
 
-         w = sqrt( (-2.0 * log( w ) ) / w );
-         //y1 = x1 * w;
-         y2 = x2 * w;
-		gauss = y2*sigma + mean;
-return gauss;
+    do {
+            x1 = 2.0 * genrand() - 1.0;
+            x2 = 2.0 * genrand() - 1.0;
+            w = x1 * x1 + x2 * x2;
+    } while ( w >= 1.0 );
+
+    w = sqrt( (-2.0 * log( w ) ) / w );
+    //y1 = x1 * w;
+    y2 = x2 * w;
+    gauss = y2*sigma + mean;
+
+    return gauss;
 }
 
 

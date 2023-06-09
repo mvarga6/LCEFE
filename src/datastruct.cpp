@@ -10,7 +10,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParamet
 	// set the number of tets and nodes
 	this->Ntets = Ntets;
 	this->Nnodes = Nnodes;
-	
+
 	//allocate memory on host
 	this->A 			 = (real*)malloc(Ntets*16*(sizeof(real)));
 	this->TetToNode 	 = (int*)malloc(Ntets*4*(sizeof(int)));
@@ -27,7 +27,7 @@ HostDataBlock::HostDataBlock(NodeArray* Nodes, TetArray *Tets, SimulationParamet
 	this->TetVol 	 = (real*)malloc(Ntets*sizeof(real));
 	this->ThPhi 		 = (int*)malloc(Ntets*sizeof(int));
 	this->S 			 = (real*)malloc(Ntets*sizeof(real));
-	
+
 	//.. untransformed max's and min's
 	//real L;//, w, h;
 	for(int c = 0; c < 3; c++)
@@ -104,7 +104,7 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	size_t heightMR = MaxNodeRank*3;
 	size_t widthNODE = Nnodes;
 	size_t widthTETS = Ntets;
-	
+
 	dev->Nnodes = Nnodes;
 	dev->Ntets = Ntets;
 
@@ -131,7 +131,7 @@ DevDataBlock* HostDataBlock::CreateDevDataBlock()
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->ThPhi, Ntets*sizeof(int) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->S, Ntets*sizeof(real) ) );
 	HANDLE_ERROR( cudaMalloc( (void**) &dev->L, Ntets*sizeof(int) ) );
-	
+
 	return dev;
 }
 

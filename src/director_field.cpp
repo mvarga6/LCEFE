@@ -1,8 +1,6 @@
 #include "director_field.h"
-#include "genrand.h"
+
 #include <stdio.h>
-#include <math.h>
-#include <time.h>
 
 UniformField::UniformField(const real theta, const real phi)
 {
@@ -12,8 +10,8 @@ UniformField::UniformField(const real theta, const real phi)
 
 
 DirectorOrientation UniformField::GetDirectorAt(
-	const real x, 
-	const real y, 
+	const real x,
+	const real y,
 	const real z)
 {
 	// we always return the same thing no matter
@@ -23,7 +21,7 @@ DirectorOrientation UniformField::GetDirectorAt(
 
 
 CartesianDirectorField::CartesianDirectorField(
-	ScalerField3D *thetaField, 
+	ScalerField3D *thetaField,
 	ScalerField3D *phiField)
 {
 	this->theta_field = thetaField;
@@ -50,32 +48,17 @@ RadialDirectorField::RadialDirectorField(const float3 origin)
 
 DirectorOrientation RadialDirectorField::GetDirectorAt(
 	const real x,
-	const real y, 
+	const real y,
 	const real z)
 {
 	DirectorOrientation result;
 	const real dx = x - origin.x;
 	const real dy = y - origin.y;
 	const real dz = z - origin.z;
-	result.theta = atan2(sqrt(dx*dx + dy*dy), dz);
-	result.phi = atan2(dy, dx);
-	return result;
-}
 
-RandomDirectorField::RandomDirectorField()
-{ 
-	srand(time(NULL));    //seed random number generator
-	mt_init();       //initialize random number generator
-	purge();         //free up memory in random number generator
-}
+	result.theta = PI/2;
+	result.phi = (+1)*atan2(y, x);
 
-DirectorOrientation RandomDirectorField::GetDirectorAt(
-	const real x,
-	const real y, 
-	const real z)
-{
-	DirectorOrientation result;
-	result.theta = genrand() * M_PI;
-	result.phi = genrand() * 2.0 * M_PI;
+
 	return result;
 }

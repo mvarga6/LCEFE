@@ -15,7 +15,7 @@
 /// to only device (GPU) data. Difference that
 /// HostDataBlock becuase we need to store the memory
 /// pitches when allocation 'pitched gpu memory'
-struct DevDataBlock 
+struct DevDataBlock
 {
 	int Ntets, Nnodes;
 	real *A;
@@ -32,7 +32,7 @@ struct DevDataBlock
 	real *pe;
 	real *TetVol;
 	int *ThPhi;
-	float *S;
+	real *S;
 	int *L;
 	size_t TetToNodepitch;
 	size_t Apitch;
@@ -42,12 +42,12 @@ struct DevDataBlock
 	size_t vpitch;
 	size_t drpitch;
 	size_t dFpitch;
-	
-	/// 
+
+	///
 	/// Returns a pointer handle for the S array
 	PointerHandle<real> HandleForS();
-	
-	/// 
+
+	///
 	/// Returns a pointer handle for the theta-phi array
 	PointerHandle<int> HandleForDirector();
 };
@@ -55,7 +55,7 @@ struct DevDataBlock
 ///
 /// Container for all data pointers that point
 /// to host (cpu) data
-class HostDataBlock 
+class HostDataBlock
 {
 public:
 	int Ntets, Nnodes;
@@ -73,15 +73,15 @@ public:
 	real totalVolume;
 	real *TetVol;
 	int *ThPhi;
-	float *S;
+	real *S;
 
 	real min[3], max[3];
-	
+
 	///
 	/// Construct with a NodeArray and TetArray (probably coming from
-	/// members of Mesh) and the SimulationParameters object. 
+	/// members of Mesh) and the SimulationParameters object.
 	HostDataBlock(NodeArray *, TetArray*, SimulationParameters *);
-	
+
 	///
 	/// Create a DevDataBlock with corresponding data allocations
 	/// as the current HostDataBlock object

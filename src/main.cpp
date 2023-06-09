@@ -7,7 +7,7 @@
 //                                                             //
 //                                                             //
 //    Authors: Andrew Konya      (Kent State University)       //
-//             Robin Selinger    (Kent State University)       // 
+//             Robin Selinger    (Kent State University)       //
 //             Badel MBanga      (kent State University)       //
 //                                                             //
 //   Finite elemnt simulation executed on GPU using CUDA       //
@@ -16,6 +16,7 @@
 //   parallelization of all prccess in calculation             //
 //                                                             //
 //=============================================================//
+#include <vector>
 
 #include "simulation_parameters.h"
 #include "parameters_reader.h"
@@ -56,11 +57,11 @@ int main(int argc, char *argv[])
 		printf("%s\n", reader->Result().Message.c_str());
 		return (int)reader->Status();
 	}
-	
+
 	// to write the parameters to console
 	ParametersWriter * writer = new LogWriter(log);
 	writer->Write(parameters);
-	
+
 	///
 	/// Create a Mesh from file
 	///
@@ -85,16 +86,16 @@ int main(int argc, char *argv[])
 	{
 		// optimize the mesh
 		log->Msg(" *** Optimizing mesh *** ");
-		
+
 		// simple sorting based on location in sim space
 		mesh->Apply(new SortOnTetrahedraPosition());
-		
+
 		// re-order using mc simulation
 		mesh->Apply(new MonteCarloMinimizeDistanceBetweenPairs(10000.0f, 0.001f, 0.999999f));
-		
+
 		// re-index the mesh and tet's neighbors
 		mesh->Apply(new ReassignIndices());
-		
+
 		// save the optimized mesh
 		mesh->Cache();
 	}
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
 		mesh->Apply(new ReassignIndices());
 		log->Msg("Mesh Loaded from cache!");
 	}
-	
+
 	///
 	/// Calculate values for mesh
 	///
@@ -117,9 +118,10 @@ int main(int argc, char *argv[])
 
 	// create director field
 	const float3 origin 	 = make_float3(0.0f, 0.0f, 0.0f);
-	DirectorField * director = new RadialDirectorField(origin);
+	// DirectorField * director = new RadialDirectorField(origin);
+	DirectorField * director = new UniformField(2.0f, 2.0f);
 	mesh->Apply(new SetDirector(director));
-			
+
 	//print director
 	mesh->Tets->printDirector(parameters->Output.Base);
 
@@ -154,23 +156,11 @@ int main(int argc, char *argv[])
 	/// Print info before running simulation
 	///
 
-	//Print Simulation Parameters and Such
-	// printf("\n\nPrepared for dynamics with:\nsteps/frame: %d\nVolume: %f cm^3\nMass: %f kg\n",
-	// 			parameters.Output.FrameRate,
-	// 			host->totalVolume,
-	// 			host->totalVolume * parameters.Material.Density);
-
-
-	// // TODO: Move gpu info print somewhere else
-	// //Get Device properties
-	// cudaDeviceProp prop;
-	// HANDLE_ERROR(cudaGetDeviceProperties(&prop,0));
-	// printf( "Code executing on %s\n\n", prop.name );
 	//displayGPUinfo(prop);
-	 
+
 	recorder->Stop("init");
 	recorder->Log("init");
-	 
+
 	///
 	/// Run a simulation the experiment with given physics
 	///
